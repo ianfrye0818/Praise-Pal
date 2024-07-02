@@ -65,7 +65,7 @@ export default function KudosCard({ kudo, commenting = false }: Props) {
           {usersKudo && <KudoCardDropDownMenu kudo={kudo} />}
         </div>
 
-        {commenting && <KudoCommentList comments={kudo.comments} />}
+        {/* {commenting && <KudoCommentList comments={kudo.comments} />} */}
       </div>
     </div>
   );

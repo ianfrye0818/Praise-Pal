@@ -22,18 +22,43 @@ export default function useLikeKudos() {
       }
     },
     onMutate: async ({ kudoId, isLiked }) => {
-      queryClient.cancelQueries(KUDOS_QUERY_OPTIONS);
+      await queryClient.cancelQueries(KUDOS_QUERY_OPTIONS);
       const previousData = queryClient.getQueriesData(KUDOS_QUERY_OPTIONS);
 
-      queryClient.setQueriesData(KUDOS_QUERY_OPTIONS, (old: any) => {
-        old.map((kudo: TKudos) => {
-          if (kudo && kudo.id === kudoId) {
-            return { ...kudo, likes: isLiked ? kudo.likes - 1 : kudo.likes + 1, isLiked: !isLiked };
-          } else {
-            return kudo;
+      try {
+        queryClient.setQueriesData(KUDOS_QUERY_OPTIONS, (old: any) => {
+          console.log('old: ', old);
+          console.log(typeof old);
+
+          // Check if old is an array
+          if (Array.isArray(old)) {
+            return old.map((kudo: TKudos) => {
+              if (kudo && kudo.id === kudoId) {
+                return {
+                  ...kudo,
+                  likes: isLiked ? kudo.likes - 1 : kudo.likes + 1,
+                  isLiked: !isLiked,
+                };
+              } else {
+                return kudo;
+              }
+            });
           }
+
+          // Check if old is a single object
+          if (typeof old === 'object' && old !== null && old.id === kudoId) {
+            return {
+              ...old,
+              likes: isLiked ? old.likes - 1 : old.likes + 1,
+              isLiked: !isLiked,
+            };
+          }
+
+          return old;
         });
-      });
+      } catch (error) {
+        console.error('error: ', error);
+      }
       return { previousData };
     },
     onError: (_, __, context) => {

@@ -9,7 +9,7 @@ export default function useGetSingleKudo({
   kudoId: string;
 }) {
   const query = useQuery({
-    queryKey: ['singleKudo', kudoId],
+    queryKey: ['kudos', kudoId],
     queryFn: async () => getsingleKudo(companyId, kudoId),
     enabled: !!companyId && !!kudoId,
   });

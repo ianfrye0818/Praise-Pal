@@ -14,7 +14,10 @@ export default function KudoCommentList({ comments }: KudoCommentListProps) {
       {comments.map((comment) => {
         const displayName = getUserDisplayName(comment.user);
         return (
-          <div className='flex gap-2 place-items-start'>
+          <div
+            key={comment.id}
+            className='flex gap-2 place-items-start'
+          >
             <Avatar>
               <AvatarFallback>{displayName[0]}</AvatarFallback>
             </Avatar>

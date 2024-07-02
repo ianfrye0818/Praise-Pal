@@ -41,6 +41,7 @@ export default function NotificationsDropDown({
           <div className='flex flex-col gap-2 h-[250px]'>
             {notifications.map((notification) => (
               <NotificationCard
+                key={notification.id}
                 notification={notification}
                 setOpen={setOpen}
               />

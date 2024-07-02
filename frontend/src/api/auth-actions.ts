@@ -16,6 +16,7 @@ import {
   setErrorMessage,
   setUserToken,
 } from '@/lib/localStorage';
+import { CustomError } from '@/errors';
 
 const AuthActions = {
   login: async (signInPayload: SignInFormProps) => {
@@ -28,14 +29,17 @@ const AuthActions = {
     return await patchUpdateUser(companyId, userId, updateUserPayload);
   },
   logout: async () => {
-    const { refreshToken } = getAuthTokens();
-    if (!refreshToken) throw new Error('No refresh token found');
-    await postLogout(refreshToken);
+    const authTokens = getAuthTokens();
+    if (!authTokens || !authTokens.refreshToken) throw new Error('No refresh token found');
+    await postLogout(authTokens.refreshToken);
   },
   refreshTokens: async () => {
-    const { refreshToken } = getAuthTokens();
-    if (!refreshToken) throw new Error('No refresh token found');
-    setAuthTokens(await postRefreshTokens(refreshToken));
+    const authTokens = getAuthTokens();
+    if (!authTokens || !authTokens.refreshToken) {
+      errorLogout();
+      throw new CustomError('No auth tokens found', 401);
+    }
+    setAuthTokens(await postRefreshTokens(authTokens.refreshToken));
   },
 };
 
@@ -108,9 +112,9 @@ export async function updateCurrentUser(
 }
 
 export function errorLogout(errorMessage?: string) {
+  localStorage.clear();
   setErrorMessage(errorMessage || 'Session expired. Please sign in again.');
-  removeAuthTokens();
-  removeUserToken();
+  sessionStorage.clear();
   window.location.pathname !== '/sign-in' && window.location.replace('/sign-in');
 }
 

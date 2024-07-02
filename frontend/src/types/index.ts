@@ -133,6 +133,7 @@ export interface UserNotification {
   createdAt: string;
   actionType: ActionTypes;
   message: string;
+  referenceId: string;
 }
 
 export type HTTPClients = 'AUTH' | 'API';

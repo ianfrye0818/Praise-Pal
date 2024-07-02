@@ -108,8 +108,8 @@ export const getUserNotifications = async (queryParams?: UserNotificationQueryPa
   });
 };
 
-export const patchMarkNotificationAsRead = async (notificationId: string) => {
-  await patcher<void, void>({ url: ApiRoutes.userNotifications.markAsRead(notificationId) });
+export const patchMarkAllNotificationAsRead = async () => {
+  await patcher<void, void>({ url: ApiRoutes.userNotifications.markAllAsRead() });
 };
 
 export const deleteNotificationById = async (notificationId: string) => {

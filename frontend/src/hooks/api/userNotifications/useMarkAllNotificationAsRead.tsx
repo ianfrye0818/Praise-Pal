@@ -1,23 +1,19 @@
-import { patchMarkNotificationAsRead } from '@/api/api-handlers';
+import { patchMarkAllNotificationAsRead } from '@/api/api-handlers';
 import { USER_NOTIFICATION_QUERY_OPTIONS } from '@/constants';
-import { UserNotification } from '@/types';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
-export default function usePatchMarkAsRead() {
+export default function useMarkAllNotificationsAsRead() {
   const queryClient = useQueryClient();
   const mutation = useMutation({
-    mutationFn: async (notificationId: string) => {
-      await patchMarkNotificationAsRead(notificationId);
+    mutationFn: async () => {
+      await patchMarkAllNotificationAsRead();
     },
-    onMutate: async (notificationId) => {
+    onMutate: async () => {
       const previousData = queryClient.getQueriesData(USER_NOTIFICATION_QUERY_OPTIONS);
 
       queryClient.setQueriesData(USER_NOTIFICATION_QUERY_OPTIONS, (old: any) => {
-        return old.map((notification: UserNotification) => {
-          if (notification.id === notificationId) {
-            return { ...notification, isRead: true };
-          }
-          return notification;
+        return old.map(() => {
+          return { ...old, isRead: true };
         });
       });
 

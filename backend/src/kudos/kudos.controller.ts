@@ -8,6 +8,7 @@ import {
   Patch,
   Delete,
   Query,
+  Req,
 } from '@nestjs/common';
 import { JwtGuard } from '../auth/guards/jwt.guard';
 import { KudosService } from './kudos.service';
@@ -26,7 +27,8 @@ export class KudosController {
   // @UseGuards(SuperAdminGuard)
   @UseGuards(CompanyGuard)
   @Get()
-  async findAll(@Query() query: KudosFilterDTO) {
+  async findAll(@Query() query: KudosFilterDTO, @Req() req: any) {
+    console.log(req);
     return await this.kudosService.getAllKudos(query);
   }
 

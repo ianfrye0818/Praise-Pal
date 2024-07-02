@@ -42,10 +42,10 @@ export class UserNotificationsController {
   //   );
   // }
 
-  @Patch(':id')
-  async markNotificationAsRead(@Req() req: any) {
-    return await this.userNotificationService.markNotificationAsRead(
-      req.params.id,
+  @Patch('mark-all-as-read')
+  async markAllNotificationAsRead(@Req() req: any) {
+    return await this.userNotificationService.markAllNotificationAsRead(
+      req.user.userId,
     );
   }
 

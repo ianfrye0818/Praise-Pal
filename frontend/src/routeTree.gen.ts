@@ -15,6 +15,7 @@ import { createFileRoute } from '@tanstack/react-router'
 import { Route as rootRoute } from './routes/__root'
 import { Route as RootLayoutImport } from './routes/_rootLayout'
 import { Route as AuthLayoutImport } from './routes/_authLayout'
+import { Route as RootLayoutIndexImport } from './routes/_rootLayout/index'
 import { Route as RootLayoutAdminLayoutImport } from './routes/_rootLayout/_adminLayout'
 import { Route as AuthLayoutSignUpImport } from './routes/_authLayout/sign-up'
 import { Route as AuthLayoutSignInImport } from './routes/_authLayout/sign-in'
@@ -22,7 +23,6 @@ import { Route as RootLayoutAdminLayoutAdminDashboardImport } from './routes/_ro
 
 // Create Virtual Routes
 
-const RootLayoutIndexLazyImport = createFileRoute('/_rootLayout/')()
 const RootLayoutNotificationsLazyImport = createFileRoute(
   '/_rootLayout/notifications',
 )()
@@ -54,12 +54,10 @@ const AuthLayoutRoute = AuthLayoutImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
-const RootLayoutIndexLazyRoute = RootLayoutIndexLazyImport.update({
+const RootLayoutIndexRoute = RootLayoutIndexImport.update({
   path: '/',
   getParentRoute: () => RootLayoutRoute,
-} as any).lazy(() =>
-  import('./routes/_rootLayout/index.lazy').then((d) => d.Route),
-)
+} as any)
 
 const RootLayoutNotificationsLazyRoute =
   RootLayoutNotificationsLazyImport.update({
@@ -184,7 +182,7 @@ declare module '@tanstack/react-router' {
       id: '/_rootLayout/'
       path: '/'
       fullPath: '/'
-      preLoaderRoute: typeof RootLayoutIndexLazyImport
+      preLoaderRoute: typeof RootLayoutIndexImport
       parentRoute: typeof RootLayoutImport
     }
     '/_rootLayout/kudos/$kudosId': {
@@ -246,7 +244,7 @@ export const routeTree = rootRoute.addChildren({
       RootLayoutAdminLayoutAdminUsersLazyRoute,
     }),
     RootLayoutNotificationsLazyRoute,
-    RootLayoutIndexLazyRoute,
+    RootLayoutIndexRoute,
     RootLayoutKudosKudosIdLazyRoute,
     RootLayoutKudosReceivedLazyRoute,
     RootLayoutKudosSentLazyRoute,
@@ -305,7 +303,7 @@ export const routeTree = rootRoute.addChildren({
       "parent": "/_rootLayout"
     },
     "/_rootLayout/": {
-      "filePath": "_rootLayout/index.lazy.tsx",
+      "filePath": "_rootLayout/index.tsx",
       "parent": "/_rootLayout"
     },
     "/_rootLayout/kudos/$kudosId": {

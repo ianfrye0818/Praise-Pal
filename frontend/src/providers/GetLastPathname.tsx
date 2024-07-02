@@ -1,10 +1,9 @@
 import { useEffect } from 'react';
-import { useRouterState, redirect } from '@tanstack/react-router';
+import { redirect, useLocation } from '@tanstack/react-router';
 
 const GetLastPathName = () => {
   const lastPath = sessionStorage.getItem('lastPath') || null;
-
-  const { pathname } = useRouterState().location;
+  const { pathname } = useLocation();
 
   useEffect(() => {
     if (lastPath && lastPath !== pathname) {

@@ -22,6 +22,10 @@ const clients = {
 
 apiClient.interceptors.request.use((config) => {
   const authTokens = getAuthTokens();
+  if (!authTokens || !authTokens.accessToken) {
+    errorLogout();
+    throw new CustomError('No auth tokens found', 401);
+  }
   config.headers.Authorization = `Bearer ${authTokens.accessToken}`;
   return config;
 });
@@ -63,7 +67,12 @@ apiClient.interceptors.response.use(
         return Promise.reject(customError);
       }
       const originalRequest = error.config;
-      originalRequest.headers.Authorization = `Bearer ${getAuthTokens().accessToken}`;
+      const authTokens = getAuthTokens();
+      if (!authTokens || !authTokens.refreshToken) {
+        errorLogout();
+        throw new CustomError('No auth tokens found', 401);
+      }
+      originalRequest.headers.Authorization = `Bearer ${authTokens.accessToken}`;
       return apiClient(originalRequest);
     } else if (error.response) {
       const customError = new CustomError(

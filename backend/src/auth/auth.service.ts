@@ -25,7 +25,7 @@ export class AuthService {
     email: string,
     password: string,
   ): Promise<ClientUser | null> {
-    const user = await this.userService.findOneByEmail(email);
+    const user = await this.userService.findOneByEmail(email.toLowerCase());
     if (user && user.deletedAt !== null)
       throw new HttpException(
         'Your account has been deleted! See admin for access.',

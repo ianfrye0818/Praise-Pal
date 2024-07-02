@@ -1,10 +1,10 @@
 import KudosCard from '@/components/kudos-card/kudos-card';
-import { createLazyFileRoute } from '@tanstack/react-router';
+import { createFileRoute } from '@tanstack/react-router';
 
 import useGetCompanyKudos from '@/hooks/api/useKudos/useGetCompanyKudos';
 import { useAuth } from '@/hooks/useAuth';
 
-export const Route = createLazyFileRoute('/_rootLayout/')({
+export const Route = createFileRoute('/_rootLayout/')({
   component: () => <HomePage />,
 });
 
@@ -22,6 +22,8 @@ function HomePage() {
 
   //TODO: replace with no kudos component
   if (!kudos || !kudos.length) return <div>No Kudos</div>;
+
+  console.log({ kudos });
 
   return (
     <div>

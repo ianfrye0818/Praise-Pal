@@ -1,4 +1,3 @@
-import { Card, CardContent, CardTitle } from '@/components/ui/card';
 import useGetUserNotifications from '@/hooks/api/userNotifications/useGetUserNotifications';
 import { useAuth } from '@/hooks/useAuth';
 import { getUserDisplayName } from '@/lib/utils';

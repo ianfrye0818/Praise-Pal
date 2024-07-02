@@ -8,6 +8,8 @@ export default function useGetUserNotifications(queryParams?: UserNotificationQu
     queryFn: async () => {
       return await getUserNotifications(queryParams);
     },
+    refetchInterval: 60000,
+    refetchIntervalInBackground: true,
   });
   return query;
 }

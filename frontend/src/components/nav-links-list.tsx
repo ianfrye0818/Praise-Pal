@@ -7,13 +7,13 @@ import { Button } from './ui/button';
 import { ShieldCheck } from 'lucide-react';
 import logo from '@/assets/logo.png';
 import useGetUserNotifications from '@/hooks/api/userNotifications/useGetUserNotifications';
+import NotificationsDropDown from './sidebar/notifications-dropdown';
 
 export default function NavLinksList() {
   const { isAdmin } = useAuth().state;
   const { setAdminMode } = useAdminMode();
   const navigate = useNavigate();
   const { data: userNotifications } = useGetUserNotifications();
-  console.log({ notificationAmount: userNotifications?.length, notifications: userNotifications });
   return (
     <nav className='flex flex-col gap-4'>
       <Link
@@ -35,6 +35,7 @@ export default function NavLinksList() {
           link={link}
         />
       ))}
+      <NotificationsDropDown />
       {isAdmin && (
         <Button
           variant={'link'}

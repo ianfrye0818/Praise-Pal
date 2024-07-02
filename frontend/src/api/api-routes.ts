@@ -65,7 +65,7 @@ export const ApiRoutes = {
     baseUrl: '/user-notifications',
     findAll: (query?: UserNotificationQueryParams) =>
       `/user-notifications?${generateQueryString(query)}`,
-    markAsRead: (notificationId: string) => `/user-notifications/${notificationId}`,
+    markAllAsRead: () => `/user-notifications/mark-all-as-read`,
     deleteNotificationById: (notificationId: string) => `/user-notifications/${notificationId}`,
   },
 };

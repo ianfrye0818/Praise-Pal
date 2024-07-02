@@ -7,7 +7,6 @@ import {
   UserIcon,
   ScrollText,
   LayoutDashboard,
-  BellIcon,
 } from 'lucide-react';
 import { env } from '@/zodSchemas/env';
 
@@ -26,11 +25,6 @@ export const sidebarLinks: SidebarLink[] = [
     label: 'Sent Kudos',
     route: '/kudos/sent',
     icon: SendIcon,
-  },
-  {
-    label: 'Notifications',
-    route: '/notifications',
-    icon: BellIcon,
   },
 ];
 

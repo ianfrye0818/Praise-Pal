@@ -11,7 +11,6 @@ const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       retry: 2,
-      staleTime: 30000,
     },
     mutations: {
       retry: 2,

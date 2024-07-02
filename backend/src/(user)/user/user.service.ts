@@ -92,12 +92,18 @@ export class UserService {
     const { companyCode, password, ...userData } = data;
 
     const hashedPassword = await bcrypt.hash(password, 10);
+    const formattedEmail = userData.email.toLowerCase();
     const company = await this.prismaService.company.findUnique({
       where: { companyCode },
     });
     if (!company) throw new NotFoundException('Company not found');
     const newUser = await this.prismaService.user.create({
-      data: { ...userData, companyId: company.id, password: hashedPassword },
+      data: {
+        ...userData,
+        companyId: company.id,
+        password: hashedPassword,
+        email: formattedEmail,
+      },
     });
     return newUser;
   }

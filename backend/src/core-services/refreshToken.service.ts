@@ -53,6 +53,7 @@ export class RefreshTokenService {
         data: { userId, token: newToken },
       });
     } catch (error) {
+      console.error(['safeRefreshToken Error', error]);
       if (error.code === 'p2003') {
         throw new HttpException('Error Refreshing Token', 401);
       }

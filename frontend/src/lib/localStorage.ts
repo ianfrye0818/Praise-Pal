@@ -1,7 +1,7 @@
 import { AuthTokens, User } from '@/types';
 import { isObjEmpty } from './utils';
 
-export function getAuthTokens() {
+export function getAuthTokens(): AuthTokens | null {
   const authTokens = JSON.parse(localStorage.getItem('auth') || '{}');
 
   if (isObjEmpty(authTokens)) {

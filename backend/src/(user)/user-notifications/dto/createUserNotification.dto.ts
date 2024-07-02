@@ -6,6 +6,9 @@ export class CreateUserNotificationDTO {
   @IsString()
   userId: string;
 
+  @IsString()
+  message: string;
+
   @IsEnum(['LIKE', 'COMMENT', 'KUDOS'], {
     message: 'Action Type Must Be LIKE, COMMENT, or KUDOS',
   })

@@ -14,27 +14,26 @@ enum Role {
 }
 
 model User {
-  userId            String             @id @default(cuid())
+  userId        String              @id @default(cuid())
   displayName   String
   firstName     String?
   lastName      String?
-  email         String             @unique
+  email         String              @unique
   password      String
-  role          Role?              @default(USER)
+  role          Role?               @default(USER)
   companyId     String
-  company       Company            @relation(fields: [companyId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  company       Company             @relation(fields: [companyId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   notifications UserNotifications[]
   settings      UserSettings[]
-  createdAt     DateTime           @default(now())
-  updatedAt     DateTime           @updatedAt
+  createdAt     DateTime            @default(now())
+  updatedAt     DateTime            @updatedAt
   deletedAt     DateTime?
-  sentKudos     Kudos[]            @relation(name: "SentKudos")
-  receivedKudos Kudos[]            @relation(name: "ReceivedKudos")
+  sentKudos     Kudos[]             @relation(name: "SentKudos")
+  receivedKudos Kudos[]             @relation(name: "ReceivedKudos")
   userLikes     User_Like[]
   refreshTokens RefreshToken[]
   comments      Comment[]
 }
-
 
 model Company {
   id          String    @id @default(cuid())
@@ -53,35 +52,35 @@ model Company {
 }
 
 model Kudos {
-  id          String    @id @default(cuid())
+  id          String      @id @default(cuid())
   senderId    String
-  receiverId String
+  receiverId  String
   companyId   String
   message     String
   title       String?
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
   deletedAt   DateTime?
-  likes       Int       @default(0)
-  isAnonymous Boolean   @default(false)
-  isHidden    Boolean   @default(false)
+  likes       Int         @default(0)
+  isAnonymous Boolean     @default(false)
+  isHidden    Boolean     @default(false)
   comments    Comment[]
-  sender   User    @relation(fields: [senderId], references: [userId], name: "SentKudos")
-  receiver User   @relation(fields: [receiverId], references: [userId], name: "ReceivedKudos")
-  company  Company @relation(fields: [companyId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  userLikes User_Like[]
+  sender      User        @relation(fields: [senderId], references: [userId], name: "SentKudos")
+  receiver    User        @relation(fields: [receiverId], references: [userId], name: "ReceivedKudos")
+  company     Company     @relation(fields: [companyId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  userLikes   User_Like[]
 }
 
 model Comment {
-  id        String    @id @default(cuid())
-  kudosId   String
-  parentId  String?
-  userId    String
-   likes       Int       @default(0)
-  content   String
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  deletedAt DateTime?
+  id            String    @id @default(cuid())
+  kudosId       String
+  parentId      String?
+  userId        String
+  likes         Int       @default(0)
+  content       String
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  deletedAt     DateTime?
   kudos         Kudos     @relation(fields: [kudosId], references: [id], onDelete: Cascade)
   user          User      @relation(fields: [userId], references: [userId], onDelete: Cascade)
   parentComment Comment?  @relation("CommentToComment", fields: [parentId], references: [id])
@@ -104,19 +103,18 @@ model User_Like {
 //   likedAt DateTime @default(now())
 // }
 
-
 model UserNotifications {
-  id        String    @id @default(cuid())
-  userId    String
-  user      User      @relation(fields: [userId], references: [userId])
-  actionType ActionType
-  referenceId String 
-  isRead Boolean @default(false)
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  deletedAt DateTime?
+  id          String     @id @default(cuid())
+  userId      String
+  user        User       @relation(fields: [userId], references: [userId])
+  actionType  ActionType
+  referenceId String
+  message     String
+  isRead      Boolean    @default(false)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  deletedAt   DateTime?
 }
-
 
 model UserSettings {
   id        String    @id @default(cuid())
@@ -127,7 +125,6 @@ model UserSettings {
   updatedAt DateTime  @updatedAt
   deletedAt DateTime?
 }
-
 
 model RefreshToken {
   id        String   @id @default(cuid())

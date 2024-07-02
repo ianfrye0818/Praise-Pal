@@ -24,16 +24,7 @@ export class UserLikesService {
         },
       });
 
-      const updateKudo = await this.kudosService.increaseLikes(kudosId);
-      console.log({ updateKudo, kudosId, userId });
-
-      if (updateKudo.senderId !== userId) {
-        await this.userNotificationsService.createNotification({
-          userId: updateKudo.senderId,
-          referenceId: kudosId,
-          actionType: 'LIKE',
-        });
-      }
+      await this.kudosService.increaseLikes(kudosId, userId);
     } catch (error) {
       console.error(error);
       if (error.code === 'P2002') {
@@ -54,14 +45,7 @@ export class UserLikesService {
         },
       });
 
-      const updateKudos = await this.kudosService.decreaseLikes(kudosId);
-
-      if (updateKudos.senderId !== userId) {
-        await this.userNotificationsService.hardDeleteNotification({
-          referenceId: kudosId,
-          userId: updateKudos.senderId,
-        });
-      }
+      await this.kudosService.decreaseLikes(kudosId, userId);
     } catch (error) {
       console.error(error);
       if (error.code === 'P2025')

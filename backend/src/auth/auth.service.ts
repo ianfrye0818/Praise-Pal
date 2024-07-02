@@ -1,5 +1,6 @@
 import {
   HttpException,
+  HttpStatus,
   Injectable,
   InternalServerErrorException,
   UnauthorizedException,
@@ -87,6 +88,22 @@ export class AuthService {
       if (error instanceof UnauthorizedException) throw error;
       console.error(error);
       throw new InternalServerErrorException('Something went wrong');
+    }
+  }
+
+  async resetPassword(email: string, newPassword: string) {
+    try {
+      const user = await this.userService.findOneByEmail(email);
+      if (!user) throw new UnauthorizedException('User not found');
+      const updatedUser = await this.userService.updatePassword(
+        user.userId,
+        await bcrypt.hash(newPassword, 10),
+      );
+      return updatedUser;
+    } catch (error) {
+      console.error(['Reset Password Error'], error);
+      if (error instanceof UnauthorizedException) throw error;
+      throw new InternalServerErrorException('Could not reset password');
     }
   }
 

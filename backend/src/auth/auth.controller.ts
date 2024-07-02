@@ -1,4 +1,11 @@
-import { Controller, Request, UseGuards, Post, Body } from '@nestjs/common';
+import {
+  Controller,
+  Request,
+  UseGuards,
+  Post,
+  Body,
+  Response,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { UserService } from '../(user)/user/user.service';
 import { LocalAuthGuard } from './guards/local.guard';
@@ -38,5 +45,22 @@ export class AuthController {
   async logout(@Request() req) {
     const refreshToken = req.headers.authorization.split(' ')[1];
     return this.authService.logout(refreshToken);
+  }
+
+  @Post('update-password')
+  async updatePassword(
+    @Body() data: { email: string; oldPassword; newPassword: string },
+  ) {
+    //TODO: add validation
+  }
+
+  //TODO secure this by verifying email with link
+  @Post('forgot-password')
+  async resetPassword(@Body() data: { email: string; newPassword: string }) {
+    const updatedUser = await this.authService.resetPassword(
+      data.email,
+      data.newPassword,
+    );
+    if (updatedUser) return { message: 'Password reset successfully' };
   }
 }

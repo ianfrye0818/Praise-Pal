@@ -1,7 +1,7 @@
 import { deleteRemoveLikeKudo, postAddLikeKudo } from '@/api/api-handlers';
+import { KUDOS_QUERY_OPTIONS } from '@/constants';
 import { TKudos } from '@/types';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { getPreviousKudos } from './updateKudoCache';
 
 interface LikeKudoProps {
   kudoId: string;
@@ -22,66 +22,25 @@ export default function useLikeKudos() {
       }
     },
     onMutate: async ({ kudoId, isLiked }) => {
-      const { hiddenKudosKey, nonHiddenKudosKey, previousHiddenKudos, previousNonHiddenKudos } =
-        getPreviousKudos(queryClient, kudoId);
+      queryClient.cancelQueries(KUDOS_QUERY_OPTIONS);
+      const previousData = queryClient.getQueriesData(KUDOS_QUERY_OPTIONS);
 
-      if (previousHiddenKudos) {
-        queryClient.setQueryData(hiddenKudosKey, (old: TKudos[] | undefined) => {
-          if (!old) return [];
-          return old.map((kudo) => {
-            if (kudoId && kudo.id === kudoId)
-              return { ...kudo, likes: isLiked ? kudo.likes - 1 : kudo.likes + 1 };
+      queryClient.setQueriesData(KUDOS_QUERY_OPTIONS, (old: any) => {
+        old.map((kudo: TKudos) => {
+          if (kudo && kudo.id === kudoId) {
+            return { ...kudo, likes: isLiked ? kudo.likes - 1 : kudo.likes + 1, isLiked: !isLiked };
+          } else {
             return kudo;
-          });
+          }
         });
-      }
-
-      if (previousNonHiddenKudos) {
-        queryClient.setQueryData(nonHiddenKudosKey, (old: TKudos[] | undefined) => {
-          if (!old) return [];
-          return old.map((kudo) => {
-            if (kudoId && kudo.id === kudoId)
-              return { ...kudo, likes: isLiked ? kudo.likes - 1 : kudo.likes + 1 };
-            return kudo;
-          });
-        });
-      }
-
-      return { previousHiddenKudos, previousNonHiddenKudos };
-
-      // queryClient.setQueryData(['kudos'], (old: TKudos[]) => {
-      //   return old.map((kudo: TKudos) => {
-      //     if (kudo.id === kudoId) {
-      //       const isLiked = kudo.userLikes.some((like) => like.userId === userId);
-      //       const newUserLikes = isLiked
-      //         ? kudo.userLikes.filter((like) => like.userId !== userId)
-      //         : [...kudo.userLikes, { userId }];
-
-      //       return {
-      //         ...kudo,
-      //         likes: isLiked ? kudo.likes - 1 : kudo.likes + 1,
-      //         userLikes: newUserLikes,
-      //       };
-      //     }
-      //     return kudo;
-      //   });
-      // });
-      // return { previousKudos };
+      });
+      return { previousData };
     },
-    onError: (_, variables, context) => {
-      if (context?.previousHiddenKudos) {
-        queryClient.setQueryData(['kudos', variables.companyId, true], context.previousHiddenKudos);
-      }
-
-      if (context?.previousNonHiddenKudos) {
-        queryClient.setQueryData(
-          ['kudos', variables.companyId, false],
-          context.previousNonHiddenKudos
-        );
-      }
+    onError: (_, __, context) => {
+      queryClient.setQueriesData(KUDOS_QUERY_OPTIONS, context?.previousData);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['kudos'], exact: false });
+      queryClient.invalidateQueries(KUDOS_QUERY_OPTIONS);
     },
   });
 }

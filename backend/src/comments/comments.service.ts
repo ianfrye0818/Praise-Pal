@@ -72,48 +72,36 @@ export class CommentsService {
 
   async createKudoComment(payload: CreateCommentDTO): Promise<ClientComment> {
     try {
-      const newComment = await this.prismaService.comment.create({
-        data: payload,
-        ...this.commentSelectProps,
-      });
+      const newComment = await this.prismaService.$transaction(
+        async (prisma) => {
+          const comment = await prisma.comment.create({
+            data: payload,
+            ...this.commentSelectProps,
+          });
 
-      if (newComment) {
-        const senderId = newComment.kudos.senderId;
-        const receiverId = newComment.kudos.receiverId;
-        const commenterId = payload.userId;
+          const commentingUser = await prisma.user.findUnique({
+            where: { userId: payload.userId },
+            select: {
+              displayName: true,
+              firstName: true,
+              lastName: true,
+            },
+          });
 
-        if (commenterId === receiverId && commenterId !== senderId) {
+          const displayName =
+            `${commentingUser.firstName} ${commentingUser.lastName[0]}` ||
+            commentingUser.displayName;
+
           await this.userNotificationsService.createNotification({
             actionType: ActionType.COMMENT,
-            referenceId: newComment.id,
-            userId: senderId,
+            referenceId: comment.kudosId,
+            userId: comment.user.userId,
+            message: `${displayName} commented on your kudos`,
           });
-        }
 
-        if (commenterId === senderId && commenterId !== receiverId) {
-          await this.userNotificationsService.createNotification({
-            actionType: ActionType.COMMENT,
-            referenceId: newComment.id,
-            userId: receiverId,
-          });
-        }
-
-        if (commenterId !== senderId && commenterId !== receiverId) {
-          await Promise.all([
-            this.userNotificationsService.createNotification({
-              actionType: ActionType.COMMENT,
-              referenceId: newComment.id,
-              userId: senderId,
-            }),
-            this.userNotificationsService.createNotification({
-              actionType: ActionType.COMMENT,
-              referenceId: newComment.id,
-              userId: receiverId,
-            }),
-          ]);
-        }
-      }
-
+          return comment;
+        },
+      );
       return newComment;
     } catch (error) {
       console.error(error);
@@ -123,24 +111,44 @@ export class CommentsService {
 
   async createChildComment(payload: CreateCommentDTO): Promise<ClientComment> {
     try {
-      const newComment = await this.prismaService.comment.create({
-        data: payload,
-        ...this.commentSelectProps,
-      });
+      const newComment = await this.prismaService.$transaction(
+        async (prisma) => {
+          const parentComment = await prisma.comment.findUnique({
+            where: { id: payload.parentId },
+            ...this.commentSelectProps,
+          });
 
-      if (newComment) {
-        const parentId = newComment.parentId;
-        const commenterId = payload.userId;
+          if (!parentComment)
+            throw new NotFoundException('Parent comment not found');
 
-        if (parentId !== commenterId) {
+          const childComment = await prisma.comment.create({
+            data: payload,
+            ...this.commentSelectProps,
+          });
+
+          const commentingUser = await prisma.user.findUnique({
+            where: { userId: payload.userId },
+            select: {
+              displayName: true,
+              firstName: true,
+              lastName: true,
+            },
+          });
+
+          const displayName =
+            `${commentingUser.firstName} ${commentingUser.lastName[0]}` ||
+            commentingUser.displayName;
+
           await this.userNotificationsService.createNotification({
             actionType: ActionType.COMMENT,
-            referenceId: newComment.id,
-            userId: parentId,
+            referenceId: parentComment.id,
+            userId: parentComment.user.userId,
+            message: `${displayName} replied to your comment`,
           });
-        }
-      }
 
+          return childComment;
+        },
+      );
       return newComment;
     } catch (error) {
       console.error(error);
@@ -167,7 +175,29 @@ export class CommentsService {
 
   async softDeleteCommentById(commentId: string): Promise<ClientComment> {
     try {
-      const deletedComment = await this.updateCommentById(commentId, {});
+      const deletedComment = await this.prismaService.$transaction(
+        async (prisma) => {
+          const comment = await prisma.comment.findUnique({
+            where: { id: commentId },
+            ...this.commentSelectProps,
+          });
+
+          if (!comment) throw new NotFoundException('Comment not found');
+
+          const updatedComment = await prisma.comment.update({
+            where: { id: commentId },
+            data: { deletedAt: new Date() },
+            ...this.commentSelectProps,
+          });
+
+          await this.userNotificationsService.hardDeleteNotification({
+            referenceId: comment.id,
+            userId: comment.user.userId,
+          });
+
+          return updatedComment;
+        },
+      );
       return deletedComment;
     } catch (error) {
       console.error(error);

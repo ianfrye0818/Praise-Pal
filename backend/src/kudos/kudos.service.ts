@@ -1,5 +1,4 @@
 import {
-  HttpException,
   Injectable,
   InternalServerErrorException,
   NotFoundException,
@@ -119,27 +118,34 @@ export class KudosService {
 
   async createKudo(data: createKudosDTO): Promise<Kudos> {
     try {
-      const newKudos = await this.prismaService.kudos.create({
-        data: {
-          ...data,
-        },
-      });
-      if (newKudos) {
-        await this.userNotificationsService.createNotification({
-          userId: newKudos.receiverId,
-          actionType: ActionType.KUDOS,
-          referenceId: newKudos.id,
+      const newKudos = await this.prismaService.$transaction(async (prisma) => {
+        const kudo = await prisma.kudos.create({
+          data,
+          include: this.kudosSelectOptions.include,
         });
-      }
+
+        const displayName = kudo.isAnonymous
+          ? 'Someone Special'
+          : `${kudo.sender.firstName} ${kudo.sender.lastName[0]}` ||
+            kudo.sender.displayName;
+
+        if (kudo.senderId !== kudo.receiverId) {
+          await prisma.userNotifications.create({
+            data: {
+              userId: kudo.receiverId,
+              actionType: ActionType.KUDOS,
+              referenceId: kudo.id,
+              message: `${displayName} sent you a kudos`,
+            },
+          });
+        }
+
+        return kudo;
+      });
       return newKudos;
     } catch (error) {
-      console.error(error);
-      if (error.code === 'P2002') {
-        throw new HttpException('Email already exists', 400);
-      }
-      throw new InternalServerErrorException(
-        'Something went wrong creating Kudo',
-      );
+      console.error(['Create Kudo Error'], error);
+      throw new InternalServerErrorException('Could not create Kudo');
     }
   }
 
@@ -153,35 +159,82 @@ export class KudosService {
         throw new NotFoundException('Could not find kudo with id of ' + id);
       return kudo;
     } catch (error) {
-      console.error(error);
-      if (error instanceof NotFoundException) throw error;
-      throw new HttpException('Something went wrong updating Kudo', 500);
+      console.error(['Update Kudo Error'], error);
+
+      throw error;
     }
   }
 
-  async increaseLikes(id: string): Promise<Kudos> {
+  async increaseLikes(id: string, userId: string): Promise<void> {
     try {
-      const kudo = await this.getKudoById(id);
-      const newKudoLike = this.updateKudoById(id, { likes: kudo.likes + 1 });
+      await this.prismaService.$transaction(async (prisma) => {
+        const updatedKudo = await prisma.kudos.update({
+          where: { id },
+          data: {
+            likes: {
+              increment: 1,
+            },
+          },
+          include: this.kudosSelectOptions.include,
+        });
 
-      return newKudoLike;
+        if (updatedKudo.senderId !== userId) {
+          const likingUser = await prisma.user.findUnique({
+            where: { userId },
+          });
+
+          if (likingUser) {
+            const displayName =
+              `${likingUser.firstName} ${likingUser.lastName[0]}` ||
+              likingUser.displayName;
+
+            await prisma.userNotifications.create({
+              data: {
+                userId: updatedKudo.senderId,
+                actionType: ActionType.LIKE,
+                referenceId: updatedKudo.id,
+                message: `${displayName} liked your kudos`,
+              },
+            });
+          }
+        }
+      });
     } catch (error) {
-      console.error(error);
+      console.error(['Increase Likes Error'], error);
       throw new InternalServerErrorException('Could not like Kudo');
     }
   }
-
-  async decreaseLikes(id: string): Promise<Kudos> {
+  async decreaseLikes(id: string, userId: string): Promise<void> {
     try {
-      const kudo = await this.getKudoById(id);
-      if (kudo.likes === 0) return kudo;
-      const newKudoLike = await this.updateKudoById(id, {
-        likes: kudo.likes - 1,
+      await this.prismaService.$transaction(async (prisma) => {
+        const updatedKudo = await prisma.kudos.update({
+          where: { id },
+          data: {
+            likes: {
+              decrement: 1,
+            },
+          },
+          include: this.kudosSelectOptions.include,
+        });
+
+        if (updatedKudo.senderId !== userId) {
+          const unlikingUser = await prisma.user.findUnique({
+            where: { userId },
+          });
+
+          if (unlikingUser) {
+            await prisma.userNotifications.deleteMany({
+              where: {
+                userId,
+                referenceId: updatedKudo.id,
+              },
+            });
+          }
+        }
       });
-      return newKudoLike;
     } catch (error) {
-      console.error(error);
-      throw new InternalServerErrorException('Could not unlike Kudo');
+      console.error(['Decrease Likes Error'], error);
+      throw error;
     }
   }
 

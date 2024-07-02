@@ -132,6 +132,7 @@ export interface UserNotification {
   isRead: boolean;
   createdAt: string;
   actionType: ActionTypes;
+  message: string;
 }
 
 export type HTTPClients = 'AUTH' | 'API';
@@ -227,5 +228,5 @@ export interface APIProps<D> {
 export enum ActionTypes {
   COMMENT = 'COMMENT',
   LIKE = 'LIKE',
-  KUDO = 'KUDO',
+  KUDOS = 'KUDOS',
 }

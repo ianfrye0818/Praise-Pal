@@ -34,6 +34,7 @@ export class UserNotificationsService {
         actionType: true,
         isRead: true,
         createdAt: true,
+        message: true,
       },
     });
   }

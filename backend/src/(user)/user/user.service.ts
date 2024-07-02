@@ -136,6 +136,18 @@ export class UserService {
     }
   }
 
+  async updatePassword(
+    userId: string,
+    newPassword: string,
+  ): Promise<ClientUser> {
+    const updatedUser = await this.prismaService.user.update({
+      where: { userId },
+      data: { password: newPassword },
+    });
+
+    return generateClientSideUserProperties(updatedUser);
+  }
+
   async softDeleteUserById(id: string): Promise<ClientUser> {
     return this.updateUserById(id, { deletedAt: new Date() });
   }

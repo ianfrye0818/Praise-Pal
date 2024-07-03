@@ -9,6 +9,10 @@ export class CreateUserNotificationDTO {
   @IsString()
   message: string;
 
+  @IsOptional()
+  @IsString()
+  commentId?: string;
+
   @IsEnum(
     ['COMMENT_LIKE', 'KUDOS_LIKE', 'COMMENT_COMMENT', 'KUDOS_COMMENT', 'KUDOS'],
     {

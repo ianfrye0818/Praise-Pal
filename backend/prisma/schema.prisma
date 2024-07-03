@@ -53,40 +53,42 @@ model Company {
 }
 
 model Kudos {
-  id          String      @id @default(cuid())
-  senderId    String
-  receiverId  String
-  companyId   String
-  message     String
-  title       String?
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
-  deletedAt   DateTime?
-  likes       Int         @default(0)
-  isAnonymous Boolean     @default(false)
-  isHidden    Boolean     @default(false)
-  comments    Comment[]
-  sender      User        @relation(fields: [senderId], references: [userId], name: "SentKudos")
-  receiver    User        @relation(fields: [receiverId], references: [userId], name: "ReceivedKudos")
-  company     Company     @relation(fields: [companyId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  userLikes   User_Like[]
+  id                String              @id @default(cuid())
+  senderId          String
+  receiverId        String
+  companyId         String
+  message           String
+  title             String?
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime            @updatedAt
+  deletedAt         DateTime?
+  likes             Int                 @default(0)
+  isAnonymous       Boolean             @default(false)
+  isHidden          Boolean             @default(false)
+  comments          Comment[]
+  sender            User                @relation(fields: [senderId], references: [userId], name: "SentKudos")
+  receiver          User                @relation(fields: [receiverId], references: [userId], name: "ReceivedKudos")
+  company           Company             @relation(fields: [companyId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  userLikes         User_Like[]
+  userNotifications UserNotifications[]
 }
 
 model Comment {
-  id            String         @id @default(cuid())
-  kudosId       String
-  parentId      String?
-  userId        String
-  likes         Int            @default(0)
-  content       String
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
-  deletedAt     DateTime?
-  kudos         Kudos          @relation(fields: [kudosId], references: [id], onDelete: Cascade)
-  user          User           @relation(fields: [userId], references: [userId], onDelete: Cascade)
-  parentComment Comment?       @relation("CommentToComment", fields: [parentId], references: [id], onDelete: Cascade)
-  comments      Comment[]      @relation("CommentToComment")
-  commentLikes  Comment_Like[]
+  id                String              @id @default(cuid())
+  kudosId           String
+  parentId          String?
+  userId            String
+  likes             Int                 @default(0)
+  content           String
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime            @updatedAt
+  deletedAt         DateTime?
+  kudos             Kudos               @relation(fields: [kudosId], references: [id], onDelete: Cascade)
+  user              User                @relation(fields: [userId], references: [userId], onDelete: Cascade)
+  parentComment     Comment?            @relation("CommentToComment", fields: [parentId], references: [id], onDelete: Cascade)
+  comments          Comment[]           @relation("CommentToComment")
+  commentLikes      Comment_Like[]
+  usernotifications UserNotifications[]
 }
 
 model User_Like {
@@ -117,15 +119,15 @@ model UserNotifications {
   actionType  ActionType
   referenceId String[]
   message     String
-  kudosId      String?
+  kudosId     String?
+  commentId   String?
+  comment     Comment?   @relation(fields: [commentId], references: [id], onDelete: Cascade)
+  kudo        Kudos?     @relation(fields: [kudosId], references: [id], onDelete: Cascade)
   isRead      Boolean    @default(false)
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @updatedAt
   deletedAt   DateTime?
-
 }
-
-
 
 model UserSettings {
   id        String    @id @default(cuid())

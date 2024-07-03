@@ -9,11 +9,9 @@ import { useAuth } from '@/hooks/useAuth';
 import useCreateComment from '@/hooks/api/useComments.tsx/useCreateComment';
 import { EllipsisIcon, MenuIcon } from 'lucide-react';
 import { DropdownMenuContent, DropdownMenuTrigger, DropdownMenu } from '../ui/dropdown-menu';
-import useDeleteCompanyUser from '@/hooks/api/useCompayUsers/useDeleteCompanyUser';
 import UseDeleteComment from '@/hooks/api/useComments.tsx/useDeleteComment';
 import { DropdownMenuItem } from '@radix-ui/react-dropdown-menu';
 import useUpdateComment from '@/hooks/api/useComments.tsx/useUpdateComment';
-import { set } from 'zod';
 
 export default function CommentComponent(comment: Comment) {
   const [editMode, setEditMode] = useState(false);
@@ -24,7 +22,12 @@ export default function CommentComponent(comment: Comment) {
   const { mutateAsync: createComment } = useCreateComment(currentUser?.companyId as string);
   const { mutateAsync: updateComment } = useUpdateComment(currentUser?.companyId as string);
   const senderDisplayName = getUserDisplayName(comment.user);
-  const isLiked = true;
+
+  const isLiked = comment.commentLikes.some(
+    (commentLike) => commentLike.userId === currentUser?.userId
+  );
+
+  console.log({ commentLikes: comment.commentLikes, currentUserId: currentUser?.userId });
 
   return (
     <div className='flex items-start space-x-4'>
@@ -41,6 +44,7 @@ export default function CommentComponent(comment: Comment) {
             <p>{comment.content}</p>
           ) : (
             <form
+              className='w-full max-w-[90%]'
               onSubmit={(e) => {
                 e.preventDefault();
                 updateComment({ commentId: comment.id, content: editContentValue });
@@ -48,6 +52,7 @@ export default function CommentComponent(comment: Comment) {
               }}
             >
               <CommentInput
+                className='w-full'
                 defaultValue={comment.content}
                 value={editContentValue}
                 onChange={(e) => setEditContentValue(e.target.value)}
@@ -56,7 +61,7 @@ export default function CommentComponent(comment: Comment) {
           )}
           <CommentDropDownMenu
             commentId={comment.id}
-            currentuserId={currentUser?.userId as string}
+            companyId={currentUser?.companyId as string}
             parentId={comment.parentId}
             setEditMode={setEditMode}
           />
@@ -115,7 +120,7 @@ export default function CommentComponent(comment: Comment) {
 }
 
 interface CommentDropDownMenuProps {
-  currentuserId: string;
+  companyId: string;
   commentId: string;
   parentId?: string;
   setEditMode: React.Dispatch<React.SetStateAction<boolean>>;
@@ -124,13 +129,13 @@ interface CommentDropDownMenuProps {
 
 function CommentDropDownMenu({
   commentId,
-  currentuserId,
+  companyId,
   parentId,
   setEditMode,
   children,
 }: CommentDropDownMenuProps) {
   const [open, setOpen] = useState(false);
-  const { mutateAsync: deleteComment } = UseDeleteComment(currentuserId);
+  const { mutateAsync: deleteComment } = UseDeleteComment(companyId);
 
   return (
     <DropdownMenu

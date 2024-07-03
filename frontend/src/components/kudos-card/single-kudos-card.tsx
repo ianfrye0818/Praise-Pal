@@ -8,7 +8,7 @@ import { useAuth } from '@/hooks/useAuth';
 import KudoCardDropDownMenu from './kudo-card-dropdown-menu';
 import CommentInputComponent from './comment-input';
 import useCreateComment from '@/hooks/api/useComments.tsx/useCreateComment';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 
 export default function SingleKudosCard({ kudo }: { kudo: TKudos }) {
   const { user: currentUser } = useAuth().state;
@@ -19,6 +19,11 @@ export default function SingleKudosCard({ kudo }: { kudo: TKudos }) {
   const senderDisplayName = getUserDisplayName(sender);
   const receiverDisplayName = getUserDisplayName(receiver);
   const usersKudo = kudo.sender.userId === currentUser?.userId;
+  const commentInputRef = useRef<HTMLInputElement>(null);
+
+  const handleRefFocus = () => {
+    commentInputRef.current?.focus();
+  };
 
   return (
     <div className='bg-background text-foreground rounded-lg md:shadow-md p-6 space-y-6 container mx-auto md:mt-12'>
@@ -37,6 +42,7 @@ export default function SingleKudosCard({ kudo }: { kudo: TKudos }) {
             <Button
               variant='link'
               size='sm'
+              onClick={handleRefFocus}
             >
               Reply
             </Button>
@@ -67,6 +73,7 @@ export default function SingleKudosCard({ kudo }: { kudo: TKudos }) {
         }}
       >
         <CommentInputComponent
+          ref={commentInputRef}
           placeholder='Add a comment to this kudo'
           value={newComment}
           onChange={(e) => setNewComment(e.target.value)}

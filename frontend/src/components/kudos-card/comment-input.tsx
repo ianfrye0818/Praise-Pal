@@ -1,15 +1,17 @@
-import React from 'react';
+import React, { forwardRef } from 'react';
 import { Input } from '../ui/input';
 import { Button } from '../ui/button';
 import { Send } from 'lucide-react';
 
-interface CommentInputProps extends React.InputHTMLAttributes<HTMLInputElement> {}
-
-export default function CommentInputComponent({ ...props }: CommentInputProps) {
+const CommentInputComponent = forwardRef<
+  HTMLInputElement,
+  React.InputHTMLAttributes<HTMLInputElement>
+>((props, ref) => {
   return (
     <div className='flex w-full items-center space-x-2 mt-4'>
       <div className='relative w-full'>
         <Input
+          ref={ref}
           minLength={2}
           {...props}
         />
@@ -22,4 +24,6 @@ export default function CommentInputComponent({ ...props }: CommentInputProps) {
       </div>
     </div>
   );
-}
+});
+
+export default CommentInputComponent;

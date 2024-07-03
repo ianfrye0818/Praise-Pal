@@ -7,7 +7,7 @@ import { ActionType } from '@prisma/client';
 import { CreateCommentDTO, UpdateCommentDTO } from './dto/createComment.dto';
 import { Cron } from '@nestjs/schedule';
 import { UserNotificationsService } from 'src/(user)/user-notifications/user-notifications.service';
-import { commentSelectOptions } from 'src/utils/constants';
+import { commentSelectOptions, userSelectOptions } from 'src/utils/constants';
 import { FilterCommentDTO } from './dto/filterCommentDTO';
 import { PrismaService } from 'src/core-services/prisma.service';
 import { EmailService } from 'src/core-services/email.service';
@@ -54,49 +54,53 @@ export class CommentsService {
 
   async createKudoComment(payload: CreateCommentDTO) {
     if (payload.parentId) return this.createChildComment(payload);
+    const newComment = await this.prismaService.comment.create({
+      data: payload,
+      select: {
+        kudos: true,
+        id: true,
+      },
+    });
     try {
-      const newComment = await this.prismaService.$transaction(
-        async (prisma) => {
-          const comment = await prisma.comment.create({
-            data: payload,
-            select: {
-              kudos: true,
-              id: true,
-            },
-          });
+      await this.prismaService.$transaction(async (prisma) => {
+        const commentingUser = await prisma.user.findUnique({
+          where: { userId: payload.userId },
+          select: {
+            displayName: true,
+            firstName: true,
+            lastName: true,
+          },
+        });
 
-          const commentingUser = await prisma.user.findUnique({
-            where: { userId: payload.userId },
-            select: {
-              displayName: true,
-              firstName: true,
-              lastName: true,
-            },
-          });
+        const displayName =
+          `${commentingUser.firstName} ${commentingUser.lastName[0]}` ||
+          commentingUser.displayName;
 
-          const displayName =
-            `${commentingUser.firstName} ${commentingUser.lastName[0]}` ||
-            commentingUser.displayName;
+        console.log('creating comment into ', {
+          newComment,
+          commentingUser,
+        });
 
-          await this.userNotificationsService.createNotification({
-            actionType: ActionType.KUDOS_COMMENT,
-            referenceId: [comment.id],
-            kudosId: payload.kudosId,
-            userId: comment.kudos.senderId,
-            message: `${displayName} commented on a Kudo you sent`,
-          });
+        await this.userNotificationsService.createNotification({
+          actionType: ActionType.KUDOS_COMMENT,
+          referenceId: [newComment.id],
+          kudosId: payload.kudosId,
+          commentId: newComment.id,
+          userId: newComment.kudos.senderId,
+          message: `${displayName} commented on a Kudo you sent`,
+        });
 
-          await this.userNotificationsService.createNotification({
-            actionType: ActionType.KUDOS_COMMENT,
-            referenceId: [comment.id],
-            kudosId: payload.kudosId,
-            userId: comment.kudos.receiverId,
-            message: `${displayName} commented on Kudo you received`,
-          });
+        await this.userNotificationsService.createNotification({
+          actionType: ActionType.KUDOS_COMMENT,
+          referenceId: [newComment.id],
+          kudosId: payload.kudosId,
+          commentId: newComment.id,
+          userId: newComment.kudos.receiverId,
+          message: `${displayName} commented on Kudo you received`,
+        });
 
-          return comment;
-        },
-      );
+        return newComment;
+      });
       return newComment;
     } catch (error) {
       console.error(error);
@@ -106,21 +110,20 @@ export class CommentsService {
 
   async createChildComment(payload: CreateCommentDTO) {
     try {
+      const parentComment = await this.prismaService.comment.findUnique({
+        where: { id: payload.parentId },
+        select: commentSelectOptions,
+      });
+
+      if (!parentComment)
+        throw new NotFoundException('Parent comment not found');
+
+      const childComment = await this.prismaService.comment.create({
+        data: payload,
+        select: { id: true },
+      });
       const newComment = await this.prismaService.$transaction(
         async (prisma) => {
-          const parentComment = await prisma.comment.findUnique({
-            where: { id: payload.parentId },
-            select: commentSelectOptions,
-          });
-
-          if (!parentComment)
-            throw new NotFoundException('Parent comment not found');
-
-          const childComment = await prisma.comment.create({
-            data: payload,
-            select: { id: true },
-          });
-
           const commentingUser = await prisma.user.findUnique({
             where: { userId: payload.userId },
             select: {
@@ -138,6 +141,7 @@ export class CommentsService {
             actionType: ActionType.COMMENT_COMMENT,
             referenceId: [parentComment.id, childComment.id],
             kudosId: payload.kudosId,
+            commentId: childComment.id,
             userId: parentComment.user.userId,
             message: `${displayName} replied to your comment`,
           });
@@ -167,18 +171,25 @@ export class CommentsService {
   }
 
   async increaseLikes(id: string, userId: string): Promise<void> {
+    const updatedComment = await this.prismaService.comment.update({
+      where: { id },
+      data: {
+        likes: {
+          increment: 1,
+        },
+      },
+      select: {
+        id: true,
+        kudos: true,
+        user: {
+          select: {
+            userId: true,
+          },
+        },
+      },
+    });
     try {
       await this.prismaService.$transaction(async (prisma) => {
-        const updatedComment = await prisma.comment.update({
-          where: { id },
-          data: {
-            likes: {
-              increment: 1,
-            },
-          },
-          select: commentSelectOptions,
-        });
-
         if (updatedComment.user.userId !== userId) {
           const likingUser = await prisma.user.findUnique({
             where: { userId },
@@ -194,7 +205,8 @@ export class CommentsService {
                 userId: updatedComment.user.userId,
                 actionType: ActionType.COMMENT_LIKE,
                 referenceId: [updatedComment.id],
-                kudosId: updatedComment.kudosId,
+                kudosId: updatedComment.kudos.id,
+                commentId: updatedComment.id,
                 message: `${displayName} liked your comment`,
               },
             });
@@ -239,14 +251,8 @@ export class CommentsService {
 
   async deleteCommentsById(commentId: string) {
     try {
-      await this.prismaService.$transaction(async (prisma) => {
-        await prisma.comment.delete({
-          where: { id: commentId },
-        });
-
-        await this.userNotificationsService.deleteNotificationByReferrenceId([
-          commentId,
-        ]);
+      await this.prismaService.comment.delete({
+        where: { id: commentId },
       });
     } catch (error) {
       console.error(error);

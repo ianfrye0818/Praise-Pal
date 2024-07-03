@@ -80,6 +80,8 @@ export class KudosService {
   //   }
   // }
 
+  //
+
   async getKudoById(id: string) {
     try {
       const kudo = await this.prismaService.kudos.findUnique({
@@ -89,15 +91,8 @@ export class KudosService {
           comments: {
             where: { parentId: null },
             include: {
-              user: true,
-              comments: {
-                include: {
-                  user: { select: userSelectOptions },
-                  comments: {
-                    include: { user: { select: userSelectOptions } },
-                  },
-                },
-              },
+              commentLikes: true,
+              user: { select: userSelectOptions },
             },
             orderBy: { createdAt: 'asc' },
           },
@@ -105,12 +100,35 @@ export class KudosService {
       });
 
       if (!kudo) throw new NotFoundException('Unable to locate Kudo ' + id);
-      console.log({ kudoComments: kudo.comments });
+
+      for (const comment of kudo.comments) {
+        await this.fetchNestedComments(comment);
+      }
       return kudo;
     } catch (error) {
       console.error(error);
       if (error instanceof NotFoundException) throw error;
-      throw new InternalServerErrorException('Could not retreive Kudo');
+      throw new InternalServerErrorException('Could not retrieve Kudo');
+    }
+  }
+
+  async fetchNestedComments(comment: any) {
+    const stack = [comment];
+
+    while (stack.length > 0) {
+      const currentComment = stack.pop();
+      currentComment.comments = await this.prismaService.comment.findMany({
+        where: { parentId: currentComment.id },
+        include: {
+          commentLikes: true,
+          user: { select: userSelectOptions },
+        },
+        orderBy: { createdAt: 'asc' },
+      });
+
+      for (const childComment of currentComment.comments) {
+        stack.push(childComment);
+      }
     }
   }
 

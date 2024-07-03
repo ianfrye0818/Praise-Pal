@@ -48,7 +48,7 @@ export class CommentLikesService {
     userId: string;
   }) {
     try {
-      await this.prismaService.comment_Like.delete({
+      const deletedLike = await this.prismaService.comment_Like.delete({
         where: {
           userId_commentId: {
             commentId,

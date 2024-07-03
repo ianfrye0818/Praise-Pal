@@ -37,6 +37,7 @@ export class UserNotificationsService {
   }
 
   async createNotification(notificaitonData: CreateUserNotificationDTO) {
+    console.log({ notificaitonData });
     return this.prismaservice.userNotifications.create({
       data: notificaitonData,
     });

@@ -13,7 +13,6 @@ export default function CommentLikeButton({ isLiked, commentId }: Props) {
   const { mutateAsync: toggleLikeComment } = useLikeComment();
   const handleToggleCommentLike = async () => {
     await toggleLikeComment({ commentId, isLiked });
-    console.log('Like comment');
   };
   return (
     <Button

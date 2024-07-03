@@ -6,7 +6,6 @@ import { useAuth } from '@/hooks/useAuth';
 import { capitalizeString, formatDate, getUserDisplayName } from '@/lib/utils';
 import { MessageCircle } from 'lucide-react';
 import { Link } from '@tanstack/react-router';
-import KudoCommentList from './kudo-comment-list';
 
 type Props = {
   kudo: TKudos;
@@ -17,7 +16,7 @@ export default function KudosCard({ kudo, commenting = false }: Props) {
   const { user } = useAuth().state;
   const { sender, receiver } = kudo;
   const isLiked = kudo.userLikes.some((userLike) => userLike.userId === user?.userId);
-  const usersKudo = kudo.senderId === user?.userId;
+  const usersKudo = kudo.sender.userId === user?.userId;
   const senderDisplayName = getUserDisplayName(sender);
   const receiverDisplayName = getUserDisplayName(receiver);
   return (
@@ -58,14 +57,12 @@ export default function KudosCard({ kudo, commenting = false }: Props) {
               >
                 <MessageCircle className='size-4 cursor-pointer text-gray-400' />
 
-                <p className='text-sm text-gray-500'>{kudo.comments.length}</p>
+                <p className='text-sm text-gray-500'>{kudo.comments?.length}</p>
               </Link>
             )}
           </div>
           {usersKudo && <KudoCardDropDownMenu kudo={kudo} />}
         </div>
-
-        {/* {commenting && <KudoCommentList comments={kudo.comments} />} */}
       </div>
     </div>
   );

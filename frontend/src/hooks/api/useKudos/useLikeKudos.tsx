@@ -5,9 +5,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 interface LikeKudoProps {
   kudoId: string;
-  companyId: string;
   isLiked: boolean;
-  userId: string;
 }
 
 export default function useLikeKudos() {

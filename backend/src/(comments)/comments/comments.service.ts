@@ -3,13 +3,14 @@ import {
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
-import { ActionType, Comment } from '@prisma/client';
-import { PrismaService } from '../core-services/prisma.service';
+import { ActionType } from '@prisma/client';
 import { CreateCommentDTO, UpdateCommentDTO } from './dto/createComment.dto';
 import { Cron } from '@nestjs/schedule';
-import { EmailService } from '../core-services/email.service';
 import { UserNotificationsService } from 'src/(user)/user-notifications/user-notifications.service';
 import { commentSelectOptions } from 'src/utils/constants';
+import { FilterCommentDTO } from './dto/filterCommentDTO';
+import { PrismaService } from 'src/core-services/prisma.service';
+import { EmailService } from 'src/core-services/email.service';
 
 @Injectable()
 export class CommentsService {
@@ -19,12 +20,15 @@ export class CommentsService {
     private readonly userNotificationsService: UserNotificationsService,
   ) {}
 
-  async findAllComments(filter?: Partial<Comment>) {
+  async findAllComments(filter?: FilterCommentDTO) {
+    const { limit, offset, sort, ...otherFilters } = filter;
     try {
       const comments = await this.prismaService.comment.findMany({
-        where: filter,
-        orderBy: { id: 'desc' },
+        where: { deletedAt: filter.deletedAt || null, ...otherFilters },
+        orderBy: { createdAt: sort || 'desc' },
         select: commentSelectOptions,
+        take: limit,
+        skip: offset,
       });
       if (!comments) throw new NotFoundException('No comments found');
       console.log(comments);
@@ -146,6 +150,79 @@ export class CommentsService {
     } catch (error) {
       console.error(error);
       throw new InternalServerErrorException('Could not update comment');
+    }
+  }
+
+  async increaseLikes(id: string, userId: string): Promise<void> {
+    try {
+      await this.prismaService.$transaction(async (prisma) => {
+        const updatedComment = await prisma.comment.update({
+          where: { id },
+          data: {
+            likes: {
+              increment: 1,
+            },
+          },
+          select: commentSelectOptions,
+        });
+
+        if (updatedComment.user.userId !== userId) {
+          const likingUser = await prisma.user.findUnique({
+            where: { userId },
+          });
+
+          if (likingUser) {
+            const displayName =
+              `${likingUser.firstName} ${likingUser.lastName[0]}` ||
+              likingUser.displayName;
+
+            await prisma.userNotifications.create({
+              data: {
+                userId: updatedComment.user.userId,
+                actionType: ActionType.LIKE,
+                referenceId: updatedComment.id,
+                message: `${displayName} liked your comment`,
+              },
+            });
+          }
+        }
+      });
+    } catch (error) {
+      console.error(['Increase Comment Likes Error'], error);
+      throw new InternalServerErrorException('Could not like Comment');
+    }
+  }
+  async decreaseLikes(id: string, userId: string): Promise<void> {
+    try {
+      await this.prismaService.$transaction(async (prisma) => {
+        const updatedComment = await prisma.comment.update({
+          where: { id },
+          data: {
+            likes: {
+              decrement: 1,
+            },
+          },
+          select: commentSelectOptions,
+        });
+
+        if (updatedComment.user.userId !== userId) {
+          const unlikingUser = await prisma.user.findUnique({
+            where: { userId },
+          });
+
+          if (unlikingUser) {
+            await prisma.userNotifications.deleteMany({
+              where: {
+                userId,
+                referenceId: updatedComment.id,
+              },
+            });
+          }
+        }
+      });
+    } catch (error) {
+      console.error(['Decrease comment Likes Error'], error);
+      throw error;
     }
   }
 

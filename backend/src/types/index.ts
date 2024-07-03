@@ -9,7 +9,6 @@ export interface ClientUser {
   firstName?: string;
   lastName?: string;
 }
-
 export interface ClientComment {
   id: string;
   content: string;

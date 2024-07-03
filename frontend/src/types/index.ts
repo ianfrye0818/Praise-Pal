@@ -53,8 +53,6 @@ export type SidebarLink = {
 
 export type TKudos = {
   id: string;
-  senderId: string;
-  receiverId?: string;
   companyId: string;
   message: string;
   title?: string;
@@ -64,7 +62,7 @@ export type TKudos = {
   sender: User;
   receiver: User;
   userLikes: UserLike[];
-  comments: Comment[];
+  comments?: Comment[];
   createdAt: string;
 };
 
@@ -77,14 +75,25 @@ export interface CreateKudoFormProps {
   isAnonymous: boolean;
 }
 
+export interface CreateCommentFormProps {
+  content: string;
+  parentId?: string;
+  kudosId: string;
+  userId: string;
+}
+
 export type UpdateKudoProps = Partial<Omit<CreateKudoFormProps, 'senderId' | 'companyId'>> & {
   id: string;
   isHidden?: boolean;
 };
 
 export interface UserLike {
-  id: string;
   kudoId: string;
+  userId: string;
+}
+
+export interface CommentLike {
+  commentId: string;
   userId: string;
 }
 
@@ -122,10 +131,12 @@ export interface Comment {
   id: string;
   content: string;
   parentId?: string;
+  likes: number;
   user: User;
   kudosId: string;
   createdAt: string;
   comments?: Comment[];
+  commentLikes: CommentLike[];
 }
 
 export interface UserNotification {

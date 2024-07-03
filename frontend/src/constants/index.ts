@@ -126,3 +126,8 @@ export const USER_NOTIFICATION_QUERY_OPTIONS = {
   queryKey: ['userNotifications'],
   exact: false,
 };
+
+export const COMMENT_QUERY_OPTIONS = {
+  queryKey: ['comments'],
+  exact: false,
+};

@@ -42,8 +42,7 @@ export const ApiRoutes = {
   },
   comments: {
     baseUrl: '/comments',
-    findAll: (companyId: string, query?: CommentQueryParams) =>
-      `/comments?${generateQueryString(query)}&companyId=${companyId}`,
+    findAll: (query?: CommentQueryParams) => `/comments?${generateQueryString(query)}`,
     findOneById: (companyId: string, commentId: string) =>
       `/comments/${commentId}?companyId=${companyId}`,
     createComment: (companyId: string) => `/comments?companyId=${companyId}`,
@@ -51,6 +50,11 @@ export const ApiRoutes = {
       `/comments/${commentId}?companyId=${companyId}`,
     deleteCommentById: (companyId: string, commentId: string) =>
       `/comments/${commentId}?companyId=${companyId}`,
+  },
+  commentLikes: {
+    base: '/comment-likes',
+    createLike: (commentId: string) => `/comment-likes/${commentId}`,
+    deleteLike: (commentId: string) => `/comment-likes/${commentId}`,
   },
   company: {
     baseUrl: '/company',

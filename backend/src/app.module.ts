@@ -12,8 +12,8 @@ import { UserNotificationsModule } from './(user)/user-notifications/user-notifi
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { LoggingInterceptor } from './interceptors/logger.interceptor';
 import { ThrottlerModule } from '@nestjs/throttler';
-
-import { CommentsModule } from './comments/comments.module';
+import { CommentLikesModule } from './(comments)/comment_likes/comment_likes.module';
+import { CommentsModule } from './(comments)/comments/comments.module';
 
 @Module({
   imports: [
@@ -31,6 +31,7 @@ import { CommentsModule } from './comments/comments.module';
       },
     ]),
     CommentsModule,
+    CommentLikesModule,
   ],
   controllers: [AppController],
   providers: [

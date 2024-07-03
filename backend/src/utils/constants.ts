@@ -11,16 +11,25 @@ export const userSelectOptions = {
   createdAt: true,
 };
 
+export const commentLikeSelectOptions = {
+  commentId: true,
+  userId: true,
+};
+
 export const commentSelectOptions = {
   id: true,
   content: true,
   kudosId: true,
   parentId: true,
+  likes: true,
   user: {
     select: userSelectOptions,
   },
   createdAt: true,
   comments: true,
+  commentLikes: {
+    select: commentLikeSelectOptions,
+  },
 };
 
 export const singleCommentSelectOptions = {
@@ -28,6 +37,7 @@ export const singleCommentSelectOptions = {
   content: true,
   kudosId: true,
   parentId: true,
+  likes: true,
   user: {
     select: userSelectOptions,
   },
@@ -46,6 +56,8 @@ export const userNotificationSelectOptions = {
   actionType: true,
   isRead: true,
   createdAt: true,
+  message: true,
+  referenceId: true,
 };
 
 export const kudoSelectOptions = {

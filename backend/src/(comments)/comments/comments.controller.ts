@@ -11,7 +11,7 @@ import {
 } from '@nestjs/common';
 import { SkipThrottle } from '@nestjs/throttler';
 import { CommentsService } from './comments.service';
-import { CreateCommentDTO } from './dto/createComment.dto';
+import { CreateCommentDTO, UpdateCommentDTO } from './dto/createComment.dto';
 import { FilterCommentDTO } from './dto/filterCommentDTO';
 import { CompanyGuard } from 'src/core-guards/company.guard';
 import { JwtGuard } from 'src/auth/guards/jwt.guard';
@@ -47,7 +47,7 @@ export class CommentsController {
   @Patch(':commentId')
   async updateComment(
     @Param('commentId') commentId: string,
-    @Body() comment: CreateCommentDTO,
+    @Body() comment: UpdateCommentDTO,
   ) {
     return this.commentsService.updateCommentById(commentId, comment);
   }

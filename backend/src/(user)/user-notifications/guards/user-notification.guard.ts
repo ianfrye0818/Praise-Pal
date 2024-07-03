@@ -24,9 +24,9 @@ export class UserNotificationsGuard implements CanActivate {
     }
 
     const notificaiton =
-      await this.userNotificationService.getSingleNotification({
-        id: notificationId,
-      });
+      await this.userNotificationService.getSingleNotificationById(
+        notificationId,
+      );
 
     if (!notificaiton) {
       throw new NotFoundException('Notification not found');

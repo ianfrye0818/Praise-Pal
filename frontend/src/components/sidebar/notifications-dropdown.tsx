@@ -17,35 +17,35 @@ export default function NotificationsDropDown({
 
   const { mutateAsync: markAllAsRead } = useMarkAllNotificationsAsRead();
 
-  if (!notifications || notifications.length === 0) {
-    return null;
-  }
-
   return (
     <Popover
       open={open}
-      onOpenChange={(open) => setOpen(open)}
+      onOpenChange={(open) => {
+        notifications && notifications?.length > 0 && setOpen(open);
+      }}
     >
       <PopoverTrigger onClick={async () => markAllAsRead()}>
-        <div className='relative'>{children} </div>
+        <div className='relative'>{children}</div>
       </PopoverTrigger>
-      <PopoverContent
-        side='bottom'
-        sideOffset={15}
-        className=' bg-white flex flex-col gap-4'
-      >
-        <ScrollArea>
-          <div className='flex flex-col gap-2 h-[250px]'>
-            {notifications.map((notification) => (
-              <NotificationCard
-                key={notification.id}
-                notification={notification}
-                setOpen={setOpen}
-              />
-            ))}
-          </div>
-        </ScrollArea>
-      </PopoverContent>
+      {notifications && (
+        <PopoverContent
+          side='bottom'
+          sideOffset={15}
+          className=' bg-white flex flex-col gap-4'
+        >
+          <ScrollArea>
+            <div className='flex flex-col gap-2 h-[250px]'>
+              {notifications.map((notification) => (
+                <NotificationCard
+                  key={notification.id}
+                  notification={notification}
+                  setOpen={setOpen}
+                />
+              ))}
+            </div>
+          </ScrollArea>
+        </PopoverContent>
+      )}
     </Popover>
   );
 }
@@ -62,7 +62,7 @@ function NotificationCard({
       <Link
         onClick={() => setOpen(false)}
         to='/kudos/$kudosId'
-        params={{ kudosId: notification.referenceId }}
+        params={{ kudosId: notification.kudosId }}
         className=''
       >
         <div className='flex gap-2'>

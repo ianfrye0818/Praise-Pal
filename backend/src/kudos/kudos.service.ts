@@ -13,8 +13,6 @@ import { UserNotificationsService } from '../(user)/user-notifications/user-noti
 import {
   commentSelectOptions,
   kudoSelectOptions,
-  singleCommentSelectOptions,
-  singleKudoSelectOptions,
   userSelectOptions,
 } from 'src/utils/constants';
 
@@ -141,13 +139,12 @@ export class KudosService {
             kudo.sender.displayName;
 
         if (kudo.sender.userId !== kudo.receiver.userId) {
-          await prisma.userNotifications.create({
-            data: {
-              userId: kudo.receiver.userId,
-              actionType: ActionType.KUDOS,
-              referenceId: kudo.id,
-              message: `${displayName} sent you a kudos`,
-            },
+          await this.userNotificationsService.createNotification({
+            userId: kudo.receiver.userId,
+            actionType: ActionType.KUDOS,
+            referenceId: [kudo.id],
+            kudosId: kudo.id,
+            message: `${displayName} sent you a kudos`,
           });
         }
 
@@ -210,13 +207,12 @@ export class KudosService {
               `${likingUser.firstName} ${likingUser.lastName[0]}` ||
               likingUser.displayName;
 
-            await prisma.userNotifications.create({
-              data: {
-                userId: updatedKudo.sender.userId,
-                actionType: ActionType.KUDOS_LIKE,
-                referenceId: updatedKudo.id,
-                message: `${displayName} liked your kudos`,
-              },
+            await this.userNotificationsService.createNotification({
+              userId: updatedKudo.sender.userId,
+              actionType: ActionType.KUDOS_LIKE,
+              referenceId: [updatedKudo.id],
+              kudosId: updatedKudo.id,
+              message: `${displayName} liked your kudos`,
             });
           }
         }
@@ -256,16 +252,9 @@ export class KudosService {
           });
 
           if (unlikingUser) {
-            const deltedNotification =
-              await prisma.userNotifications.deleteMany({
-                where: {
-                  AND: [
-                    { userId: updatedKudo.sender.userId },
-                    { referenceId: updatedKudo.id },
-                  ],
-                },
-              });
-            console.log({ unlikingUser, deltedNotification, updatedKudo });
+            await this.userNotificationsService.deleteNotificationByReferrenceId(
+              [updatedKudo.id],
+            );
           }
         }
       });
@@ -280,9 +269,9 @@ export class KudosService {
       const kudo = await this.updateKudoById(id, { deletedAt: new Date() });
       if (!kudo)
         throw new NotFoundException('Could not find kudo with id ' + id);
-      await this.userNotificationsService.hardDeleteNotification({
-        referenceId: kudo.id,
-      });
+      await this.userNotificationsService.deleteNotificationByReferrenceId([
+        id,
+      ]);
       return kudo;
     } catch (error) {
       console.error(error);

@@ -4,7 +4,6 @@ import { CreateUserNotificationDTO } from './dto/createUserNotification.dto';
 import { Cron } from '@nestjs/schedule';
 import { EmailService } from 'src/core-services/email.service';
 import { FilterUserNotificationsDTO } from './dto/filterUserNotifications.dto';
-import { UserNotifications } from '@prisma/client';
 import { userNotificationSelectOptions } from 'src/utils/constants';
 
 @Injectable()
@@ -31,9 +30,9 @@ export class UserNotificationsService {
     });
   }
 
-  async getSingleNotification(filter: Partial<UserNotifications>) {
+  async getSingleNotificationById(id: string) {
     return this.prismaservice.userNotifications.findFirst({
-      where: filter,
+      where: { id },
     });
   }
 
@@ -54,11 +53,23 @@ export class UserNotificationsService {
     });
   }
 
-  async hardDeleteNotification(filter: Partial<UserNotifications>) {
-    return this.prismaservice.userNotifications.deleteMany({
-      where: filter,
+  async deleteNotificationByReferrenceId(referenceIds: string[]) {
+    return await this.prismaservice.userNotifications.deleteMany({
+      where: {
+        referenceId: {
+          hasSome: referenceIds,
+        },
+      },
     });
   }
+
+  // async hardDeleteNotification(filter: Partial<UserNotifications>) {
+  //   const {referenceId, ...otherFilters} = filter
+
+  //   return this.prismaservice.userNotifications.deleteMany({
+  //     where: filter,
+  //   });
+  // }
 
   async softDeleteNotification(id: string) {
     return this.prismaservice.userNotifications.update({

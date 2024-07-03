@@ -146,7 +146,8 @@ export interface UserNotification {
   createdAt: string;
   actionType: ActionTypes;
   message: string;
-  referenceId: string;
+  referenceId: string[];
+  kudosId: string;
 }
 
 export type HTTPClients = 'AUTH' | 'API';

@@ -68,6 +68,7 @@ export default function SingleKudosCard({ kudo }: { kudo: TKudos }) {
       >
         <CommentInputComponent
           placeholder='Add a comment to this kudo'
+          value={newComment}
           onChange={(e) => setNewComment(e.target.value)}
         />
       </form>

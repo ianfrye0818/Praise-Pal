@@ -80,14 +80,16 @@ export class CommentsService {
 
           await this.userNotificationsService.createNotification({
             actionType: ActionType.KUDOS_COMMENT,
-            referenceId: comment.id,
+            referenceId: [comment.id],
+            kudosId: payload.kudosId,
             userId: comment.kudos.senderId,
             message: `${displayName} commented on a Kudo you sent`,
           });
 
           await this.userNotificationsService.createNotification({
             actionType: ActionType.KUDOS_COMMENT,
-            referenceId: comment.id,
+            referenceId: [comment.id],
+            kudosId: payload.kudosId,
             userId: comment.kudos.receiverId,
             message: `${displayName} commented on Kudo you received`,
           });
@@ -134,7 +136,8 @@ export class CommentsService {
 
           await this.userNotificationsService.createNotification({
             actionType: ActionType.COMMENT_COMMENT,
-            referenceId: childComment.id,
+            referenceId: [parentComment.id, childComment.id],
+            kudosId: payload.kudosId,
             userId: parentComment.user.userId,
             message: `${displayName} replied to your comment`,
           });
@@ -190,7 +193,8 @@ export class CommentsService {
               data: {
                 userId: updatedComment.user.userId,
                 actionType: ActionType.COMMENT_LIKE,
-                referenceId: updatedComment.id,
+                referenceId: [updatedComment.id],
+                kudosId: updatedComment.kudosId,
                 message: `${displayName} liked your comment`,
               },
             });
@@ -221,15 +225,9 @@ export class CommentsService {
           });
 
           if (unlikingUser) {
-            await prisma.userNotifications.deleteMany({
-              where: {
-                AND: [
-                  { userId: updatedComment.user.userId },
-                  { referenceId: updatedComment.id },
-                  { actionType: ActionType.COMMENT_LIKE },
-                ],
-              },
-            });
+            await this.userNotificationsService.deleteNotificationByReferrenceId(
+              [updatedComment.id],
+            );
           }
         }
       });
@@ -241,20 +239,15 @@ export class CommentsService {
 
   async deleteCommentsById(commentId: string) {
     try {
-      const deletedComment = await this.prismaService.$transaction(
-        async (prisma) => {
-          await prisma.comment.deleteMany({
-            where: { OR: [{ id: commentId }, { parentId: commentId }] },
-          });
+      await this.prismaService.$transaction(async (prisma) => {
+        await prisma.comment.delete({
+          where: { id: commentId },
+        });
 
-          await prisma.userNotifications.deleteMany({
-            where: {
-              referenceId: commentId,
-            },
-          });
-        },
-      );
-      return deletedComment;
+        await this.userNotificationsService.deleteNotificationByReferrenceId([
+          commentId,
+        ]);
+      });
     } catch (error) {
       console.error(error);
       throw new InternalServerErrorException('Could not delete comment');

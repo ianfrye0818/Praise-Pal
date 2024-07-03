@@ -121,9 +121,11 @@ export type UpdateCompanyProps = Partial<
 export interface Comment {
   id: string;
   content: string;
-  parentId?: string | null | undefined;
+  parentId?: string;
   user: User;
   kudosId: string;
+  createdAt: string;
+  comments?: Comment[];
 }
 
 export interface UserNotification {
@@ -173,7 +175,7 @@ export interface CommentQueryParams extends QueryParams {
   commentId?: string;
   kudosId?: string;
   parentId?: string;
-  userId?: string;
+  user: User;
   content?: string;
 }
 

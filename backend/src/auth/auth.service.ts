@@ -1,6 +1,5 @@
 import {
   HttpException,
-  HttpStatus,
   Injectable,
   InternalServerErrorException,
   UnauthorizedException,

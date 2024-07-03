@@ -1,4 +1,4 @@
-import { ActionType, Role } from '@prisma/client';
+import { ActionType, Role, User } from '@prisma/client';
 
 export interface ClientUser {
   email: string;
@@ -14,8 +14,10 @@ export interface ClientComment {
   id: string;
   content: string;
   kudosId: string;
-  parentId: string;
+  parentId?: string;
   user: ClientUser;
+  createdAt: Date;
+  comments: ClientComment[];
 }
 
 export interface ClientUserNotification {
@@ -26,6 +28,18 @@ export interface ClientUserNotification {
   createAt: string;
 }
 
+export interface ClientKudos {
+  id: string;
+  message: string;
+  title: string;
+  createdAt: Date;
+  likes: number;
+  isAnonymous: boolean;
+  sender: ClientUser;
+  receiver: ClientUser;
+  comments: ClientComment[];
+  userLikes: { uerId: string; kudosId: string }[];
+}
 export interface JWTPayload extends ClientUser {
   iat: number;
   exp: number;

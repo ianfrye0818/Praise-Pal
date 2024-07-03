@@ -10,70 +10,39 @@ import { EmailService } from '../core-services/email.service';
 import { ActionType, Kudos } from '@prisma/client';
 import { KudosFilterDTO } from './dto/kudosFilter.dto';
 import { UserNotificationsService } from '../(user)/user-notifications/user-notifications.service';
+import {
+  kudoSelectOptions,
+  singleKudoSelectOptions,
+} from 'src/utils/constants';
 
 @Injectable()
 export class KudosService {
-  private readonly userSelectProps = {
-    select: {
-      userId: true,
-      displayName: true,
-      firstName: true,
-      lastName: true,
-      email: true,
-      companyId: true,
-      role: true,
-      createdAt: true,
-    },
-  };
-  private readonly commentSelectProps = {
-    select: {
-      id: true,
-      content: true,
-      kudosId: true,
-      parentId: true,
-      user: this.userSelectProps,
-    },
-  };
-
-  private readonly userLikeSelectProps = {
-    select: {
-      userId: true,
-      kudosId: true,
-    },
-  };
-
-  private readonly kudosSelectOptions = {
-    include: {
-      sender: this.userSelectProps,
-      receiver: this.userSelectProps,
-      comments: this.commentSelectProps,
-      userLikes: this.userLikeSelectProps,
-    },
-  };
-
   constructor(
     private prismaService: PrismaService,
     private emailService: EmailService,
     private userNotificationsService: UserNotificationsService,
   ) {}
 
-  async getAllKudos(filter: KudosFilterDTO): Promise<Kudos[]> {
+  async getAllKudos(filter: KudosFilterDTO) {
     const { limit, offset, sort, ...otherFilters } = filter;
     try {
-      return await this.prismaService.kudos.findMany({
-        where: { deletedAt: null, ...otherFilters },
+      const kudos = await this.prismaService.kudos.findMany({
+        where: { deletedAt: filter.deletedAt || null, ...otherFilters },
         orderBy: { createdAt: sort || 'desc' },
         take: limit,
         skip: offset,
-        ...this.kudosSelectOptions,
+        select: kudoSelectOptions,
       });
+      if (!kudos) throw new NotFoundException('No Kudos found');
+      console.log('all kudos', kudos);
+      return kudos;
     } catch (error) {
       console.error(error);
       throw new InternalServerErrorException('Could not retrieve Kudos');
     }
   }
 
-  async getKudosByCompanyId(companyId: string): Promise<Kudos[]> {
+  async getKudosByCompanyId(companyId: string) {
     try {
       return await this.getAllKudos({ companyId });
     } catch (error) {
@@ -82,7 +51,7 @@ export class KudosService {
     }
   }
 
-  async getKudosBySenderId(senderId: string): Promise<Kudos[]> {
+  async getKudosBySenderId(senderId: string) {
     try {
       return await this.getAllKudos({ senderId });
     } catch (error) {
@@ -91,7 +60,7 @@ export class KudosService {
     }
   }
 
-  async getKudosByreceiverId(receiverId: string): Promise<Kudos[]> {
+  async getKudosByreceiverId(receiverId: string) {
     try {
       return this.getAllKudos({ receiverId });
     } catch (error) {
@@ -100,14 +69,15 @@ export class KudosService {
     }
   }
 
-  async getKudoById(id: string): Promise<Kudos> {
+  async getKudoById(id: string) {
     try {
       const kudo = await this.prismaService.kudos.findUnique({
         where: { id },
-        ...this.kudosSelectOptions,
+        select: singleKudoSelectOptions,
       });
 
       if (!kudo) throw new NotFoundException('Unable to locate Kudo ' + id);
+      console.log('single kudo', kudo);
       return kudo;
     } catch (error) {
       console.error(error);
@@ -116,12 +86,12 @@ export class KudosService {
     }
   }
 
-  async createKudo(data: createKudosDTO): Promise<Kudos> {
+  async createKudo(data: createKudosDTO) {
     try {
       const newKudos = await this.prismaService.$transaction(async (prisma) => {
         const kudo = await prisma.kudos.create({
           data,
-          include: this.kudosSelectOptions.include,
+          select: kudoSelectOptions,
         });
 
         const displayName = kudo.isAnonymous
@@ -129,10 +99,10 @@ export class KudosService {
           : `${kudo.sender.firstName} ${kudo.sender.lastName[0]}` ||
             kudo.sender.displayName;
 
-        if (kudo.senderId !== kudo.receiverId) {
+        if (kudo.sender.userId !== kudo.receiver.userId) {
           await prisma.userNotifications.create({
             data: {
-              userId: kudo.receiverId,
+              userId: kudo.receiver.userId,
               actionType: ActionType.KUDOS,
               referenceId: kudo.id,
               message: `${displayName} sent you a kudos`,
@@ -175,10 +145,10 @@ export class KudosService {
               increment: 1,
             },
           },
-          include: this.kudosSelectOptions.include,
+          select: kudoSelectOptions,
         });
 
-        if (updatedKudo.senderId !== userId) {
+        if (updatedKudo.sender.userId !== userId) {
           const likingUser = await prisma.user.findUnique({
             where: { userId },
           });
@@ -190,7 +160,7 @@ export class KudosService {
 
             await prisma.userNotifications.create({
               data: {
-                userId: updatedKudo.senderId,
+                userId: updatedKudo.sender.userId,
                 actionType: ActionType.LIKE,
                 referenceId: updatedKudo.id,
                 message: `${displayName} liked your kudos`,
@@ -214,10 +184,10 @@ export class KudosService {
               decrement: 1,
             },
           },
-          include: this.kudosSelectOptions.include,
+          select: kudoSelectOptions,
         });
 
-        if (updatedKudo.senderId !== userId) {
+        if (updatedKudo.sender.userId !== userId) {
           const unlikingUser = await prisma.user.findUnique({
             where: { userId },
           });
@@ -238,7 +208,7 @@ export class KudosService {
     }
   }
 
-  async softDeleteKudoById(id: string): Promise<Kudos> {
+  async softDeleteKudoById(id: string) {
     try {
       const kudo = await this.updateKudoById(id, { deletedAt: new Date() });
       if (!kudo)

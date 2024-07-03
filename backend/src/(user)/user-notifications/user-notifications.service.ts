@@ -4,8 +4,8 @@ import { CreateUserNotificationDTO } from './dto/createUserNotification.dto';
 import { Cron } from '@nestjs/schedule';
 import { EmailService } from 'src/core-services/email.service';
 import { FilterUserNotificationsDTO } from './dto/filterUserNotifications.dto';
-import { UserNotificationQueryParams } from 'src/routes';
 import { UserNotifications } from '@prisma/client';
+import { userNotificationSelectOptions } from 'src/utils/constants';
 
 @Injectable()
 export class UserNotificationsService {
@@ -27,15 +27,7 @@ export class UserNotificationsService {
       orderBy: { createdAt: sort || 'desc' },
       take: limit,
       skip: offset,
-      select: {
-        id: true,
-        userId: true,
-        referenceId: true,
-        actionType: true,
-        isRead: true,
-        createdAt: true,
-        message: true,
-      },
+      select: userNotificationSelectOptions,
     });
   }
 

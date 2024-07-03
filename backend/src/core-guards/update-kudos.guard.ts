@@ -26,7 +26,7 @@ export class EditKudosGuard implements CanActivate {
 
     const kudo = await this.kudosService.getKudoById(kudoId);
 
-    if (kudo.senderId === jwtUser.userId) return true;
+    if (kudo.sender.userId === jwtUser.userId) return true;
 
     throw new ForbiddenException('You are not allowed to update this kudos');
   }

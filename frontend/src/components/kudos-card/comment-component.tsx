@@ -1,8 +1,8 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { Avatar, AvatarFallback } from '../ui/avatar';
 import { Button } from '../ui/button';
 import { Comment, User } from '@/types';
-import { formatDate, getUserDisplayName } from '@/lib/utils';
+import { timeAgo, getUserDisplayName } from '@/lib/utils';
 import CommentInput from './comment-input';
 import CommentLikeButton from './comment-like-button';
 import { useAuth } from '@/hooks/useAuth';
@@ -27,8 +27,6 @@ export default function CommentComponent(comment: Comment) {
     (commentLike) => commentLike.userId === currentUser?.userId
   );
 
-  console.log({ commentLikes: comment.commentLikes, currentUserId: currentUser?.userId });
-
   return (
     <div className='flex items-start space-x-4'>
       <Avatar className='w-8 h-8'>
@@ -37,7 +35,7 @@ export default function CommentComponent(comment: Comment) {
       <div className='flex-1 space-y-2'>
         <div className='flex items-center justify-between'>
           <div className='font-medium'>{senderDisplayName}</div>
-          <div className='text-xs text-muted-foreground'>{formatDate(comment.createdAt)}</div>
+          <div className='text-xs text-muted-foreground'>{timeAgo(comment.createdAt)}</div>
         </div>
         <div className='flex gap-4'>
           {!editMode ? (
@@ -70,7 +68,9 @@ export default function CommentComponent(comment: Comment) {
           <Button
             variant='link'
             size='sm'
-            onClick={() => setReplyVisible(!replyVisible)}
+            onClick={() => {
+              setReplyVisible(!replyVisible);
+            }}
           >
             Reply
           </Button>
@@ -100,7 +100,7 @@ export default function CommentComponent(comment: Comment) {
             <CommentInput
               onChange={(e) => setNewReply(e.target.value)}
               value={newReply}
-              placeholder='Add a comment...'
+              placeholder='Reply to this comment...'
             />
           </form>
         )}

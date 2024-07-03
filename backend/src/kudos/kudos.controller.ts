@@ -34,7 +34,6 @@ export class KudosController {
   @UseGuards(CompanyGuard)
   @Get(':kudoId')
   async findKudoById(@Param('kudoId') kudoId: string) {
-    console.log('finding by id');
     return await this.kudosService.getKudoById(kudoId);
   }
 

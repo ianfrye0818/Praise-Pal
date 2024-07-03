@@ -1,4 +1,4 @@
-import { formatDate, getUserDisplayName } from '@/lib/utils';
+import { formatDate, getUserDisplayName, timeAgo } from '@/lib/utils';
 import { Avatar, AvatarFallback } from '../ui/avatar';
 import { Button } from '../ui/button';
 import KudoLikeButton from './kudo-like-button';
@@ -34,7 +34,7 @@ export default function SingleKudosCard({ kudo }: { kudo: TKudos }) {
         <div className='flex-1 space-y-2'>
           <div className='flex items-center justify-between'>
             <div className='font-medium'>{receiverDisplayName}</div>
-            <div className='text-xs text-muted-foreground'>{formatDate(kudo.createdAt)}</div>
+            <div className='text-xs text-muted-foreground'>{timeAgo(kudo.createdAt)}</div>
           </div>
           <div className='text-lg font-semibold'>{kudo.title}</div>
           <p>{kudo.message}</p>

@@ -11,7 +11,8 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import useUpdateKudo from '@/hooks/api/useKudos/useUpdateKudo';
-import { formatDate } from '@/lib/utils';
+import { useAuth } from '@/hooks/useAuth';
+import { timeAgo } from '@/lib/utils';
 import { TKudos } from '@/types';
 
 interface UsersTableProps {
@@ -21,6 +22,7 @@ interface UsersTableProps {
 
 export default function KudosTable({ kudos, showKudosNumber = true }: UsersTableProps) {
   const { mutateAsync: showHideKudo } = useUpdateKudo();
+  const { user: currentUser } = useAuth().state;
 
   return (
     <>
@@ -65,18 +67,14 @@ export default function KudosTable({ kudos, showKudosNumber = true }: UsersTable
                       <span className='flex gap-2 items-center'>{reciverDisplayName}</span>
                     </div>
                   </TableCell>
+                  <TableCell>{kudo.title}</TableCell>
+                  <TableCell>{timeAgo(kudo.createdAt)}</TableCell>
                   <TableCell>
-                    {kudo.title}
-                    <p>{kudo.isHidden.toString()}</p>
-                  </TableCell>
-                  <TableCell>{formatDate(kudo.createdAt)}</TableCell>
-                  <TableCell>
-                    {/* <KudoCardDropDownMenu kudo={kudo} /> */}
                     <Switch
                       checked={kudo.isHidden}
                       onCheckedChange={async (isHidden: boolean) =>
                         await showHideKudo({
-                          companyId: kudo.companyId,
+                          companyId: currentUser?.companyId as string,
                           payload: { isHidden, id: kudo.id },
                         })
                       }

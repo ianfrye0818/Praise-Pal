@@ -19,14 +19,6 @@ export function generateQueryString(query?: any) {
     .join('&');
 }
 
-export function formatDate(isoDate: string) {
-  const date = new Date(isoDate);
-  const year = date.getFullYear();
-  const month = ('0' + (date.getMonth() + 1)).slice(-2); // Adding 1 because getMonth() returns 0-based index
-  const day = ('0' + date.getDate()).slice(-2);
-  return `${month}-${day}-${year}`;
-}
-
 export function timeAgo(date: string) {
   const now = new Date();
   const past = new Date(date);
@@ -100,7 +92,6 @@ export function getShownKudos(kudos: TKudos[], limited: boolean) {
 }
 
 export function getUserDisplayName(user: User) {
-  // console.log(user);
   return user.firstName && user.lastName
     ? `${user.firstName} ${user.lastName[0]}.`
     : user.displayName;

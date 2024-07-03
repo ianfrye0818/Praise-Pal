@@ -76,11 +76,6 @@ export class CommentsService {
           `${commentingUser.firstName} ${commentingUser.lastName[0]}` ||
           commentingUser.displayName;
 
-        console.log('creating comment into ', {
-          newComment,
-          commentingUser,
-        });
-
         await this.userNotificationsService.createNotification({
           actionType: ActionType.KUDOS_COMMENT,
           referenceId: [newComment.id],

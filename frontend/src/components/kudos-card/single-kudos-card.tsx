@@ -6,15 +6,20 @@ import CommentSectionComponent from './comment-section';
 import { Comment, TKudos } from '@/types';
 import { useAuth } from '@/hooks/useAuth';
 import KudoCardDropDownMenu from './kudo-card-dropdown-menu';
+import CommentInputComponent from './comment-input';
+import useCreateComment from '@/hooks/api/useComments.tsx/useCreateComment';
+import { useState } from 'react';
 
 export default function SingleKudosCard({ kudo }: { kudo: TKudos }) {
-  const { user } = useAuth().state;
-  console.log(user?.userId);
+  const { user: currentUser } = useAuth().state;
+  const { mutateAsync: createComment } = useCreateComment(currentUser?.companyId as string);
+  const [newComment, setNewComment] = useState('');
   const { sender, receiver } = kudo;
-  const isLiked = kudo.userLikes.some((userLike) => userLike.userId === user?.userId);
+  const isLiked = kudo.userLikes.some((userLike) => userLike.userId === currentUser?.userId);
   const senderDisplayName = getUserDisplayName(sender);
   const receiverDisplayName = getUserDisplayName(receiver);
-  const usersKudo = kudo.sender.userId === user?.userId;
+  const usersKudo = kudo.sender.userId === currentUser?.userId;
+
   return (
     <div className='bg-background text-foreground rounded-lg md:shadow-md p-6 space-y-6 container mx-auto md:mt-12'>
       <div className='flex items-start space-x-4'>
@@ -39,8 +44,8 @@ export default function SingleKudosCard({ kudo }: { kudo: TKudos }) {
               <KudoLikeButton
                 isLiked={isLiked}
                 kudoId={kudo.id}
-                userId={user?.userId as string}
-                companyId={user?.companyId as string}
+                userId={currentUser?.userId as string}
+                companyId={currentUser?.companyId as string}
               />
 
               <p className='text-sm text-gray-500'>{kudo.likes}</p>
@@ -50,6 +55,22 @@ export default function SingleKudosCard({ kudo }: { kudo: TKudos }) {
         {usersKudo && <KudoCardDropDownMenu kudo={kudo} />}
       </div>
       <CommentSectionComponent comments={kudo.comments as Comment[]} />
+      <form
+        onSubmit={async (e) => {
+          e.preventDefault();
+          await createComment({
+            content: newComment,
+            kudosId: kudo.id,
+            userId: currentUser?.userId as string,
+          });
+          setNewComment('');
+        }}
+      >
+        <CommentInputComponent
+          placeholder='Add a comment to this kudo'
+          onChange={(e) => setNewComment(e.target.value)}
+        />
+      </form>
     </div>
   );
 }

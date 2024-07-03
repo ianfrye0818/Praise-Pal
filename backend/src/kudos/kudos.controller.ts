@@ -28,13 +28,13 @@ export class KudosController {
   @UseGuards(CompanyGuard)
   @Get()
   async findAll(@Query() query: KudosFilterDTO, @Req() req: any) {
-    console.log(req);
     return await this.kudosService.getAllKudos(query);
   }
 
   @UseGuards(CompanyGuard)
   @Get(':kudoId')
   async findKudoById(@Param('kudoId') kudoId: string) {
+    console.log('finding by id');
     return await this.kudosService.getKudoById(kudoId);
   }
 

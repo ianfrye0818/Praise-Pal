@@ -1,13 +1,10 @@
 import { useState } from 'react';
 import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
 import { ScrollArea } from '../ui/scroll-area';
-import { ActionTypes, UserNotification } from '@/types';
 import { Link } from '@tanstack/react-router';
 import useMarkAllNotificationsAsRead from '@/hooks/api/userNotifications/useMarkAllNotificationAsRead';
-import { FcLike } from 'react-icons/fc';
-
-import { FaComments } from 'react-icons/fa';
-import { MdCelebration } from 'react-icons/md';
+import { UserNotification } from '@/types';
+import { getNotificationIcon } from '@/lib/getNotificationIcons';
 
 export default function NotificationsDropDown({
   children,
@@ -74,16 +71,4 @@ function NotificationCard({
       </Link>
     </div>
   );
-}
-
-function getNotificationIcon(type: ActionTypes) {
-  const classNames = 'w-6 h-6';
-  switch (type) {
-    case ActionTypes.KUDOS:
-      return <MdCelebration className={`text-yellow-600 ${classNames}`} />;
-    case ActionTypes.COMMENT:
-      return <FaComments className={` text-green-500 ${classNames}`} />;
-    case ActionTypes.LIKE:
-      return <FcLike className={`${classNames}`} />;
-  }
 }

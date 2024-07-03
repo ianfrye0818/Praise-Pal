@@ -5,39 +5,22 @@ import { Comment } from '@/types';
 import { formatDate, getUserDisplayName } from '@/lib/utils';
 import CommentInput from './comment-input';
 import CommentLikeButton from './comment-like-button';
-import { CommandEmpty } from 'cmdk';
 import { useAuth } from '@/hooks/useAuth';
+import useCreateComment from '@/hooks/api/useComments.tsx/useCreateComment';
+import { MenuIcon } from 'lucide-react';
+import { DropdownMenuContent, DropdownMenuTrigger, DropdownMenu } from '../ui/dropdown-menu';
+import useDeleteCompanyUser from '@/hooks/api/useCompayUsers/useDeleteCompanyUser';
+import UseDeleteComment from '@/hooks/api/useComments.tsx/useDeleteComment';
+import { DropdownMenuItem } from '@radix-ui/react-dropdown-menu';
 
-export default function CommentComponent({
-  content,
-  user,
-  createdAt,
-  comments,
-  id,
-  commentLikes,
-  likes,
-}: Comment) {
+export default function CommentComponent(comment: Comment) {
   const { user: currentUser } = useAuth().state;
   const [replyVisible, setReplyVisible] = useState(false);
   const [newReply, setNewReply] = useState('');
-  // const [replyList, setReplyList] = useState(replies);
-
-  // const handleAddReply = () => {
-  //   const newReplyObj: Comment = {
-  //     id: replyList.length.toString(),
-  //     author: 'Current User', // Replace with actual current user
-  //     date: new Date().toLocaleDateString(),
-  //     content: newReply,
-  //     isLiked: false,
-  //     replies: [],
-  //   };
-  //   setReplyList([...replyList, newReplyObj]);
-  //   setNewReply('');
-  //   setReplyVisible(false);
-  // };
-  const senderDisplayName = getUserDisplayName(user);
-  const isLiked = commentLikes.some((commentLike) => commentLike.userId === currentUser?.userId);
-  console.log(commentLikes, isLiked, currentUser?.userId);
+  const { mutateAsync: createComment } = useCreateComment(currentUser?.companyId as string);
+  const { mutateAsync: deleteComment } = UseDeleteComment(currentUser?.companyId as string);
+  const senderDisplayName = getUserDisplayName(comment.user);
+  const isLiked = true;
 
   return (
     <div className='flex items-start space-x-4'>
@@ -47,9 +30,34 @@ export default function CommentComponent({
       <div className='flex-1 space-y-2'>
         <div className='flex items-center justify-between'>
           <div className='font-medium'>{senderDisplayName}</div>
-          <div className='text-xs text-muted-foreground'>{formatDate(createdAt)}</div>
+          <div className='text-xs text-muted-foreground'>{formatDate(comment.createdAt)}</div>
         </div>
-        <p>{content}</p>
+        <div className='flex gap-4'>
+          <p>{comment.content}</p>
+          <DropdownMenu>
+            <DropdownMenuTrigger>
+              <MenuIcon
+                className='cursor-pointer'
+                size={16}
+              />
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuItem>
+                <Button variant={'link'}>Edit</Button>
+              </DropdownMenuItem>
+              <DropdownMenuItem>
+                <Button
+                  variant={'link'}
+                  onClick={() =>
+                    deleteComment({ commentId: comment.id, parentId: comment.parentId })
+                  }
+                >
+                  Delete
+                </Button>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
         <div className='flex items-center'>
           <Button
             variant='link'
@@ -60,35 +68,40 @@ export default function CommentComponent({
           </Button>
 
           <CommentLikeButton
-            commentId={id}
+            commentId={comment.id}
             isLiked={isLiked}
-            userId={user.userId}
+            userId={comment.user.userId}
           />
 
-          <div className='text-xs text-muted-foreground'>{likes}</div>
+          <div className='text-xs text-muted-foreground'>{comment.likes}</div>
         </div>
         {replyVisible && (
-          <CommentInput
-            onChange={(e) => setNewReply(e.target.value)}
-            value={newReply}
-            placeholder='Add a comment...'
-            // onClick={handleAddReply}
-          />
-          // <div className='mt-2'>
-          //   <Input
-          //     placeholder='Add a comment...'
-          //     value={newReply}
-          //     onChange={(e) => setNewReply(e.target.value)}
-          //   />
-          //   <Button onClick={handleAddReply}>Submit</Button>
-          // </div>
+          <form
+            onSubmit={async (e) => {
+              e.preventDefault();
+              await createComment({
+                content: newReply,
+                parentId: comment.id,
+                userId: currentUser?.userId as string,
+                kudosId: comment.kudosId,
+              });
+              setNewReply('');
+              setReplyVisible(false);
+            }}
+          >
+            <CommentInput
+              onChange={(e) => setNewReply(e.target.value)}
+              value={newReply}
+              placeholder='Add a comment...'
+            />
+          </form>
         )}
-        {comments && comments?.length > 0 && (
-          <div className='pl-6'>
-            {comments.map((reply, index) => (
+        {comment && comment.comments && comment.comments.length > 0 && (
+          <div>
+            {comment.comments.map((reply) => (
               <CommentComponent
-                key={index}
                 {...reply}
+                key={reply.id}
               />
             ))}
           </div>

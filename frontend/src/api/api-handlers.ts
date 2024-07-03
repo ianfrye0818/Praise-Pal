@@ -138,14 +138,10 @@ export const deleteComment = async (companyId: string, commentId: string) => {
   await deleter<void>({ url: ApiRoutes.comments.deleteCommentById(companyId, commentId) });
 };
 
-export const patchUpdateComment = async (
-  companyId: string,
-  commentId: string,
-  payload: Partial<CreateCommentFormProps>
-) => {
+export const patchUpdateComment = async (companyId: string, commentId: string, content: string) => {
   await patcher<Partial<CreateCommentFormProps>, void>({
     url: ApiRoutes.comments.updateCommentById(companyId, commentId),
-    data: payload,
+    data: { content },
   });
 };
 

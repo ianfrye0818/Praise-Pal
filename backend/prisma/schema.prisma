@@ -84,7 +84,7 @@ model Comment {
   deletedAt     DateTime?
   kudos         Kudos          @relation(fields: [kudosId], references: [id], onDelete: Cascade)
   user          User           @relation(fields: [userId], references: [userId], onDelete: Cascade)
-  parentComment Comment?       @relation("CommentToComment", fields: [parentId], references: [id])
+  parentComment Comment?       @relation("CommentToComment", fields: [parentId], references: [id], onDelete: Cascade)
   comments      Comment[]      @relation("CommentToComment")
   commentLikes  Comment_Like[]
 }
@@ -143,7 +143,9 @@ model RefreshToken {
 }
 
 enum ActionType {
-  LIKE
-  COMMENT
+  COMMENT_LIKE
+  KUDOS_LIKE
+  COMMENT_COMMENT
+  KUDOS_COMMENT
   KUDOS
 }

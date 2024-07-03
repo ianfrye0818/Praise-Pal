@@ -1,7 +1,8 @@
 import useGetUserNotifications from '@/hooks/api/userNotifications/useGetUserNotifications';
 import { useAuth } from '@/hooks/useAuth';
+import { getNotificationIcon } from '@/lib/getNotificationIcons';
 import { getUserDisplayName } from '@/lib/utils';
-import { ActionTypes, UserNotification } from '@/types';
+import { UserNotification } from '@/types';
 import { createLazyFileRoute } from '@tanstack/react-router';
 
 export const Route = createLazyFileRoute('/_rootLayout/notifications')({
@@ -48,15 +49,4 @@ function NotificationCard(notification: UserNotification) {
       </p>
     </div>
   );
-}
-
-function getNotificationIcon(type: ActionTypes) {
-  switch (type) {
-    case ActionTypes.KUDOS:
-      return '👏';
-    case ActionTypes.COMMENT:
-      return '💬';
-    case ActionTypes.LIKE:
-      return '👍';
-  }
 }

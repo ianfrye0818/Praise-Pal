@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { DefaultArgs } from '@prisma/client/runtime/library';
 
 export const userSelectOptions = {
   userId: true,
@@ -73,9 +74,6 @@ export const kudoSelectOptions = {
   receiver: {
     select: userSelectOptions,
   },
-  comments: {
-    select: { _count: true },
-  },
   userLikes: {
     select: userLikeSelectOptions,
   },
@@ -93,9 +91,6 @@ export const singleKudoSelectOptions = {
   },
   receiver: {
     select: userSelectOptions,
-  },
-  comments: {
-    select: commentSelectOptions,
   },
   userLikes: {
     select: userLikeSelectOptions,

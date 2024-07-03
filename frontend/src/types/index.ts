@@ -240,7 +240,9 @@ export interface APIProps<D> {
 }
 
 export enum ActionTypes {
-  COMMENT = 'COMMENT',
-  LIKE = 'LIKE',
+  COMMENT_COMMENT = 'COMMENT',
+  COMMENT_LIKE = 'COMMENT_LIKE',
+  KUDOS_COMMENT = 'KUDOS_COMMENT',
+  KUDOS_LIKE = 'KUDOS_LIKE',
   KUDOS = 'KUDOS',
 }

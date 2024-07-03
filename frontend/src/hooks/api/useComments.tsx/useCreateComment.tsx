@@ -52,6 +52,7 @@ export default function useCreateComment(companyId: string) {
             firstName: 'Test',
             lastName: 'User',
           },
+          commentLikes: [],
           createdAt: new Date().toISOString(),
         };
 

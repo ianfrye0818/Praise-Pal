@@ -23,7 +23,7 @@ function SingleKudosPage() {
   if (isLoading) return <div>Loading...</div>;
   if (error) return <div>Error: {error.message}</div>;
   if (!kudo) return <div>Not Found</div>;
-  console.log(kudo);
+  console.log({ kudo });
   return (
     <div>
       <SingleKudosCard kudo={kudo} />

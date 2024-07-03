@@ -25,13 +25,12 @@ export class CommentsService {
     try {
       const comments = await this.prismaService.comment.findMany({
         where: { deletedAt: filter.deletedAt || null, ...otherFilters },
-        orderBy: { createdAt: sort || 'desc' },
+        orderBy: { createdAt: sort || 'asc' },
         select: commentSelectOptions,
         take: limit,
         skip: offset,
       });
       if (!comments) throw new NotFoundException('No comments found');
-      console.log(comments);
       return comments;
     } catch (error) {
       console.error(error);
@@ -54,12 +53,16 @@ export class CommentsService {
   }
 
   async createKudoComment(payload: CreateCommentDTO) {
+    if (payload.parentId) return this.createChildComment(payload);
     try {
       const newComment = await this.prismaService.$transaction(
         async (prisma) => {
           const comment = await prisma.comment.create({
             data: payload,
-            select: commentSelectOptions,
+            select: {
+              kudos: true,
+              id: true,
+            },
           });
 
           const commentingUser = await prisma.user.findUnique({
@@ -76,10 +79,17 @@ export class CommentsService {
             commentingUser.displayName;
 
           await this.userNotificationsService.createNotification({
-            actionType: ActionType.COMMENT,
-            referenceId: comment.kudosId,
-            userId: comment.user.userId,
-            message: `${displayName} commented on your kudos`,
+            actionType: ActionType.KUDOS_COMMENT,
+            referenceId: comment.id,
+            userId: comment.kudos.senderId,
+            message: `${displayName} commented on a Kudo you sent`,
+          });
+
+          await this.userNotificationsService.createNotification({
+            actionType: ActionType.KUDOS_COMMENT,
+            referenceId: comment.id,
+            userId: comment.kudos.receiverId,
+            message: `${displayName} commented on Kudo you received`,
           });
 
           return comment;
@@ -106,7 +116,7 @@ export class CommentsService {
 
           const childComment = await prisma.comment.create({
             data: payload,
-            select: commentSelectOptions,
+            select: { id: true },
           });
 
           const commentingUser = await prisma.user.findUnique({
@@ -123,8 +133,8 @@ export class CommentsService {
             commentingUser.displayName;
 
           await this.userNotificationsService.createNotification({
-            actionType: ActionType.COMMENT,
-            referenceId: parentComment.id,
+            actionType: ActionType.COMMENT_COMMENT,
+            referenceId: childComment.id,
             userId: parentComment.user.userId,
             message: `${displayName} replied to your comment`,
           });
@@ -179,7 +189,7 @@ export class CommentsService {
             await prisma.userNotifications.create({
               data: {
                 userId: updatedComment.user.userId,
-                actionType: ActionType.LIKE,
+                actionType: ActionType.COMMENT_LIKE,
                 referenceId: updatedComment.id,
                 message: `${displayName} liked your comment`,
               },
@@ -213,8 +223,11 @@ export class CommentsService {
           if (unlikingUser) {
             await prisma.userNotifications.deleteMany({
               where: {
-                userId,
-                referenceId: updatedComment.id,
+                AND: [
+                  { userId: updatedComment.user.userId },
+                  { referenceId: updatedComment.id },
+                  { actionType: ActionType.COMMENT_LIKE },
+                ],
               },
             });
           }
@@ -226,29 +239,19 @@ export class CommentsService {
     }
   }
 
-  async softDeleteCommentById(commentId: string) {
+  async deleteCommentsById(commentId: string) {
     try {
       const deletedComment = await this.prismaService.$transaction(
         async (prisma) => {
-          const comment = await prisma.comment.findUnique({
-            where: { id: commentId },
-            select: commentSelectOptions,
+          await prisma.comment.deleteMany({
+            where: { OR: [{ id: commentId }, { parentId: commentId }] },
           });
 
-          if (!comment) throw new NotFoundException('Comment not found');
-
-          const updatedComment = await prisma.comment.update({
-            where: { id: commentId },
-            data: { deletedAt: new Date() },
-            select: commentSelectOptions,
+          await prisma.userNotifications.deleteMany({
+            where: {
+              referenceId: commentId,
+            },
           });
-
-          await this.userNotificationsService.hardDeleteNotification({
-            referenceId: comment.id,
-            userId: comment.user.userId,
-          });
-
-          return updatedComment;
         },
       );
       return deletedComment;

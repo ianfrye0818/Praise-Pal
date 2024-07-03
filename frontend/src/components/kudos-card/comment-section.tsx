@@ -1,6 +1,5 @@
 import { Comment } from '@/types';
 import CommentComponent from './comment-component';
-import CommentInputComponent from './comment-input';
 
 export default function CommentSectionComponent({ comments }: { comments: Comment[] }) {
   return (
@@ -14,7 +13,6 @@ export default function CommentSectionComponent({ comments }: { comments: Commen
           />
         ))}
       </div>
-      <CommentInputComponent placeholder='Add a comment to this kudo' />
     </div>
   );
 }

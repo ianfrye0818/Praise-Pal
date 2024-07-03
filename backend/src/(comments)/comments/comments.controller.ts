@@ -54,6 +54,6 @@ export class CommentsController {
 
   @Delete(':commentId')
   async deleteComment(@Param('commentId') commentId: string) {
-    return this.commentsService.softDeleteCommentById(commentId);
+    return this.commentsService.deleteCommentsById(commentId);
   }
 }

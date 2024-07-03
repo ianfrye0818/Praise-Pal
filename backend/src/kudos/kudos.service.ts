@@ -11,8 +11,11 @@ import { ActionType, Kudos } from '@prisma/client';
 import { KudosFilterDTO } from './dto/kudosFilter.dto';
 import { UserNotificationsService } from '../(user)/user-notifications/user-notifications.service';
 import {
+  commentSelectOptions,
   kudoSelectOptions,
+  singleCommentSelectOptions,
   singleKudoSelectOptions,
+  userSelectOptions,
 } from 'src/utils/constants';
 
 @Injectable()
@@ -31,10 +34,20 @@ export class KudosService {
         orderBy: { createdAt: sort || 'desc' },
         take: limit,
         skip: offset,
-        select: kudoSelectOptions,
+        select: {
+          ...kudoSelectOptions,
+          comments: {
+            where: { parentId: null },
+            select: {
+              ...commentSelectOptions,
+            },
+            orderBy: {
+              createdAt: 'asc',
+            },
+          },
+        },
       });
       if (!kudos) throw new NotFoundException('No Kudos found');
-      console.log('all kudos', kudos);
       return kudos;
     } catch (error) {
       console.error(error);
@@ -42,42 +55,59 @@ export class KudosService {
     }
   }
 
-  async getKudosByCompanyId(companyId: string) {
-    try {
-      return await this.getAllKudos({ companyId });
-    } catch (error) {
-      console.error(error);
-      throw new InternalServerErrorException('Could not retreive Kudos');
-    }
-  }
+  // async getKudosByCompanyId(companyId: string) {
+  //   try {
+  //     return await this.getAllKudos({ companyId });
+  //   } catch (error) {
+  //     console.error(error);
+  //     throw new InternalServerErrorException('Could not retreive Kudos');
+  //   }
+  // }
 
-  async getKudosBySenderId(senderId: string) {
-    try {
-      return await this.getAllKudos({ senderId });
-    } catch (error) {
-      console.error(error);
-      throw new InternalServerErrorException('Could not retreive Kudos');
-    }
-  }
+  // async getKudosBySenderId(senderId: string) {
+  //   try {
+  //     return await this.getAllKudos({ senderId });
+  //   } catch (error) {
+  //     console.error(error);
+  //     throw new InternalServerErrorException('Could not retreive Kudos');
+  //   }
+  // }
 
-  async getKudosByreceiverId(receiverId: string) {
-    try {
-      return this.getAllKudos({ receiverId });
-    } catch (error) {
-      console.error(error);
-      throw new InternalServerErrorException('Could not retreive Kudos');
-    }
-  }
+  // async getKudosByreceiverId(receiverId: string) {
+  //   try {
+  //     return this.getAllKudos({ receiverId });
+  //   } catch (error) {
+  //     console.error(error);
+  //     throw new InternalServerErrorException('Could not retreive Kudos');
+  //   }
+  // }
 
   async getKudoById(id: string) {
     try {
       const kudo = await this.prismaService.kudos.findUnique({
         where: { id },
-        select: singleKudoSelectOptions,
+        select: {
+          ...kudoSelectOptions,
+          comments: {
+            where: { parentId: null },
+            include: {
+              user: true,
+              comments: {
+                include: {
+                  user: { select: userSelectOptions },
+                  comments: {
+                    include: { user: { select: userSelectOptions } },
+                  },
+                },
+              },
+            },
+            orderBy: { createdAt: 'asc' },
+          },
+        },
       });
 
       if (!kudo) throw new NotFoundException('Unable to locate Kudo ' + id);
-      console.log('single kudo', kudo);
+      console.log({ kudoComments: kudo.comments });
       return kudo;
     } catch (error) {
       console.error(error);
@@ -91,7 +121,18 @@ export class KudosService {
       const newKudos = await this.prismaService.$transaction(async (prisma) => {
         const kudo = await prisma.kudos.create({
           data,
-          select: kudoSelectOptions,
+          select: {
+            ...kudoSelectOptions,
+            comments: {
+              where: { parentId: null },
+              select: {
+                ...commentSelectOptions,
+              },
+              orderBy: {
+                createdAt: 'asc',
+              },
+            },
+          },
         });
 
         const displayName = kudo.isAnonymous
@@ -145,7 +186,18 @@ export class KudosService {
               increment: 1,
             },
           },
-          select: kudoSelectOptions,
+          select: {
+            ...kudoSelectOptions,
+            comments: {
+              where: { parentId: null },
+              select: {
+                ...commentSelectOptions,
+              },
+              orderBy: {
+                createdAt: 'asc',
+              },
+            },
+          },
         });
 
         if (updatedKudo.sender.userId !== userId) {
@@ -161,7 +213,7 @@ export class KudosService {
             await prisma.userNotifications.create({
               data: {
                 userId: updatedKudo.sender.userId,
-                actionType: ActionType.LIKE,
+                actionType: ActionType.KUDOS_LIKE,
                 referenceId: updatedKudo.id,
                 message: `${displayName} liked your kudos`,
               },
@@ -184,7 +236,18 @@ export class KudosService {
               decrement: 1,
             },
           },
-          select: kudoSelectOptions,
+          select: {
+            ...kudoSelectOptions,
+            comments: {
+              where: { parentId: null },
+              select: {
+                ...commentSelectOptions,
+              },
+              orderBy: {
+                createdAt: 'asc',
+              },
+            },
+          },
         });
 
         if (updatedKudo.sender.userId !== userId) {
@@ -193,12 +256,16 @@ export class KudosService {
           });
 
           if (unlikingUser) {
-            await prisma.userNotifications.deleteMany({
-              where: {
-                userId,
-                referenceId: updatedKudo.id,
-              },
-            });
+            const deltedNotification =
+              await prisma.userNotifications.deleteMany({
+                where: {
+                  AND: [
+                    { userId: updatedKudo.sender.userId },
+                    { referenceId: updatedKudo.id },
+                  ],
+                },
+              });
+            console.log({ unlikingUser, deltedNotification, updatedKudo });
           }
         }
       });

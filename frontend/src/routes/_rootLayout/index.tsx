@@ -23,8 +23,6 @@ function HomePage() {
   //TODO: replace with no kudos component
   if (!kudos || !kudos.length) return <div>No Kudos</div>;
 
-  console.log({ kudos });
-
   return (
     <div>
       {kudos.map((kudo) => (

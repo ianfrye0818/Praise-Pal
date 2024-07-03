@@ -11,6 +11,7 @@ import { Button } from '@/components/ui/button';
 import { useState } from 'react';
 import useDeleteKudo from '@/hooks/api/useKudos/useDeleteKudo';
 import { TKudos } from '@/types';
+import { useAuth } from '@/hooks/useAuth';
 
 interface DialogDemoProps {
   setMenuOpen?: React.Dispatch<React.SetStateAction<boolean>>;
@@ -19,6 +20,7 @@ interface DialogDemoProps {
 }
 
 export function DeleteKudoDialog({ setMenuOpen, kudo, children }: DialogDemoProps) {
+  const { user: currentUser } = useAuth().state;
   const [open, setOpen] = useState(false);
   function handleCloseMenu() {
     setOpen(false);
@@ -72,7 +74,7 @@ export function DeleteKudoDialog({ setMenuOpen, kudo, children }: DialogDemoProp
             <Button
               className='bg-red-500 hover:bg-red-600'
               onClick={() => {
-                deleteKudo({ kudoId: kudo.id, companyId: kudo.companyId });
+                deleteKudo({ kudoId: kudo.id, companyId: currentUser?.companyId as string });
                 handleCloseMenu();
               }}
             >

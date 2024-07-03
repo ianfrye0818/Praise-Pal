@@ -11,7 +11,6 @@ import {
 } from '@nestjs/common';
 import { UserNotificationsService } from './user-notifications.service';
 import { JwtGuard } from '../../auth/guards/jwt.guard';
-import { UserNotificationsGuard } from './guards/user-notification.guard';
 import { FilterUserNotificationsDTO } from './dto/filterUserNotifications.dto';
 // @UseGuards(UserNotificationsGuard)
 @UseGuards(JwtGuard)
@@ -26,7 +25,6 @@ export class UserNotificationsController {
     @Query() query: FilterUserNotificationsDTO,
     @Req() req: any,
   ) {
-    console.log(['data'], { query, reqQuery: req.query, user: req.user });
     return await this.userNotificationService.getNotifications(
       req.user.userId,
       query,

@@ -5,9 +5,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 interface LikeKudoProps {
   kudoId: string;
-  companyId: string;
   isLiked: boolean;
-  userId: string;
 }
 
 export default function useLikeKudos() {
@@ -27,9 +25,6 @@ export default function useLikeKudos() {
 
       try {
         queryClient.setQueriesData(KUDOS_QUERY_OPTIONS, (old: any) => {
-          console.log('old: ', old);
-          console.log(typeof old);
-
           // Check if old is an array
           if (Array.isArray(old)) {
             return old.map((kudo: TKudos) => {

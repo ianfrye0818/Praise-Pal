@@ -10,10 +10,11 @@ import {
   Delete,
 } from '@nestjs/common';
 import { SkipThrottle } from '@nestjs/throttler';
-import { JwtGuard } from '../auth/guards/jwt.guard';
-import { CompanyGuard } from '../core-guards/company.guard';
 import { CommentsService } from './comments.service';
-import { CreateCommentDTO } from './dto/createComment.dto';
+import { CreateCommentDTO, UpdateCommentDTO } from './dto/createComment.dto';
+import { FilterCommentDTO } from './dto/filterCommentDTO';
+import { CompanyGuard } from 'src/core-guards/company.guard';
+import { JwtGuard } from 'src/auth/guards/jwt.guard';
 
 @UseGuards(CompanyGuard)
 @UseGuards(JwtGuard)
@@ -23,11 +24,8 @@ export class CommentsController {
 
   @SkipThrottle()
   @Get()
-  async findCommentsByKudoId(
-    @Query('kudosId') kudosId: string,
-    @Query('companyId') companyId: string,
-  ) {
-    return this.commentsService.findAllComments({ kudosId });
+  async findAllComments(@Query() filter: FilterCommentDTO) {
+    return this.commentsService.findAllComments(filter);
   }
 
   @SkipThrottle()
@@ -49,13 +47,13 @@ export class CommentsController {
   @Patch(':commentId')
   async updateComment(
     @Param('commentId') commentId: string,
-    @Body() comment: CreateCommentDTO,
+    @Body() comment: UpdateCommentDTO,
   ) {
     return this.commentsService.updateCommentById(commentId, comment);
   }
 
   @Delete(':commentId')
   async deleteComment(@Param('commentId') commentId: string) {
-    return this.commentsService.softDeleteCommentById(commentId);
+    return this.commentsService.deleteCommentsById(commentId);
   }
 }

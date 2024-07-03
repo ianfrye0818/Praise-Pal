@@ -19,14 +19,6 @@ export function generateQueryString(query?: any) {
     .join('&');
 }
 
-export function formatDate(isoDate: string) {
-  const date = new Date(isoDate);
-  const year = date.getFullYear();
-  const month = ('0' + (date.getMonth() + 1)).slice(-2); // Adding 1 because getMonth() returns 0-based index
-  const day = ('0' + date.getDate()).slice(-2);
-  return `${month}-${day}-${year}`;
-}
-
 export function timeAgo(date: string) {
   const now = new Date();
   const past = new Date(date);
@@ -37,8 +29,8 @@ export function timeAgo(date: string) {
   const hours = Math.floor(minutes / 60);
   const days = Math.floor(hours / 24);
   const weeks = Math.floor(days / 7);
-  const months = Math.floor(days / 30); // Approximation
-  const years = Math.floor(days / 365); // Approximation
+  const months = Math.floor(days / 30);
+  const years = Math.floor(days / 365);
 
   if (seconds < 60) {
     return 'just now';

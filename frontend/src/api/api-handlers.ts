@@ -12,6 +12,7 @@ import {
   UserQueryParams,
   UserNotification,
   UserNotificationQueryParams,
+  CreateCommentFormProps,
 } from '@/types';
 import { ApiRoutes } from './api-routes';
 import { deleter, fetcher, patcher, poster } from './axios';
@@ -115,3 +116,37 @@ export const patchMarkAllNotificationAsRead = async () => {
 export const deleteNotificationById = async (notificationId: string) => {
   await deleter<void>({ url: ApiRoutes.userNotifications.deleteNotificationById(notificationId) });
 };
+
+//comments like actions
+export const postAddLikeComment = async (commentId: string) => {
+  await poster<void, void>({ url: ApiRoutes.commentLikes.createLike(commentId) });
+};
+
+export const deleteLikeComment = async (commentId: string) => {
+  await deleter<void>({ url: ApiRoutes.commentLikes.deleteLike(commentId) });
+};
+
+//comment actions
+export const postCreateComment = async (companyId: string, payload: CreateCommentFormProps) => {
+  await poster<CreateCommentFormProps, void>({
+    url: ApiRoutes.comments.createComment(companyId),
+    data: payload,
+  });
+};
+
+export const deleteComment = async (companyId: string, commentId: string) => {
+  await deleter<void>({ url: ApiRoutes.comments.deleteCommentById(companyId, commentId) });
+};
+
+export const patchUpdateComment = async (companyId: string, commentId: string, content: string) => {
+  await patcher<Partial<CreateCommentFormProps>, void>({
+    url: ApiRoutes.comments.updateCommentById(companyId, commentId),
+    data: { content },
+  });
+};
+
+// export const postCreateKudo = async (payload: CreateKudoFormProps) =>
+//   await poster<CreateKudoFormProps, void>({
+//     url: ApiRoutes.kudos.createKudo(payload.companyId),
+//     data: payload,
+//   });

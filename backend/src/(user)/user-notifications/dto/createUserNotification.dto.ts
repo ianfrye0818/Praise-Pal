@@ -1,6 +1,6 @@
 import { ActionType } from '@prisma/client';
 import { Transform } from 'class-transformer';
-import { IsEnum, IsString } from 'class-validator';
+import { IsEnum, IsOptional, IsString } from 'class-validator';
 
 export class CreateUserNotificationDTO {
   @IsString()
@@ -9,14 +9,25 @@ export class CreateUserNotificationDTO {
   @IsString()
   message: string;
 
-  @IsEnum(['LIKE', 'COMMENT', 'KUDOS'], {
-    message: 'Action Type Must Be LIKE, COMMENT, or KUDOS',
-  })
+  @IsOptional()
+  @IsString()
+  commentId?: string;
+
+  @IsEnum(
+    ['COMMENT_LIKE', 'KUDOS_LIKE', 'COMMENT_COMMENT', 'KUDOS_COMMENT', 'KUDOS'],
+    {
+      message: 'Action Type Must Be LIKE, COMMENT, or KUDOS',
+    },
+  )
   @Transform(({ value }: { value: string }) => value.toUpperCase())
   actionType: ActionType;
 
   @IsString()
-  referenceId: string;
+  referenceId: string[];
+
+  @IsOptional()
+  @IsString()
+  kudosId?: string;
 }
 
 // export class UpdateUserNotificationDTO extends PartialType(

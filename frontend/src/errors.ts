@@ -2,10 +2,10 @@ import { isAxiosError } from 'axios';
 
 class CustomError extends Error {
   statusCode: number;
-  constructor(message: string, statusCode: number) {
+  constructor(message: string, statusCode?: number) {
     super(message);
     this.name = this.constructor.name;
-    this.statusCode = statusCode;
+    this.statusCode = statusCode || 500;
     Error.captureStackTrace(this, this.constructor);
   }
 

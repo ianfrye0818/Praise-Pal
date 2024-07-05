@@ -7,7 +7,7 @@ import { PrismaService } from '../core-services/prisma.service';
 import { createKudosDTO, UpdateKudosDTO } from './dto/createKudos.dto';
 import { Cron } from '@nestjs/schedule';
 import { EmailService } from '../core-services/email.service';
-import { ActionType, Kudos } from '@prisma/client';
+import { ActionType, Kudos, Prisma } from '@prisma/client';
 import { KudosFilterDTO } from './dto/kudosFilter.dto';
 import { UserNotificationsService } from '../(user)/user-notifications/user-notifications.service';
 import {
@@ -15,6 +15,9 @@ import {
   kudoSelectOptions,
   userSelectOptions,
 } from 'src/utils/constants';
+import { CommentsService } from 'src/(comments)/comments/comments.service';
+import { getDisplayName } from 'src/utils';
+import { UserService } from 'src/(user)/user/user.service';
 
 @Injectable()
 export class KudosService {
@@ -22,9 +25,11 @@ export class KudosService {
     private prismaService: PrismaService,
     private emailService: EmailService,
     private userNotificationsService: UserNotificationsService,
+    private commentService: CommentsService,
+    private userService: UserService,
   ) {}
 
-  async getAllKudos(filter: KudosFilterDTO) {
+  async getAllKudos(filter: KudosFilterDTO, select?: Prisma.KudosSelect) {
     const { limit, offset, sort, ...otherFilters } = filter;
     try {
       const kudos = await this.prismaService.kudos.findMany({
@@ -32,7 +37,7 @@ export class KudosService {
         orderBy: { createdAt: sort || 'desc' },
         take: limit,
         skip: offset,
-        select: {
+        select: select || {
           ...kudoSelectOptions,
           comments: {
             where: { parentId: null },
@@ -53,40 +58,11 @@ export class KudosService {
     }
   }
 
-  // async getKudosByCompanyId(companyId: string) {
-  //   try {
-  //     return await this.getAllKudos({ companyId });
-  //   } catch (error) {
-  //     console.error(error);
-  //     throw new InternalServerErrorException('Could not retreive Kudos');
-  //   }
-  // }
-
-  // async getKudosBySenderId(senderId: string) {
-  //   try {
-  //     return await this.getAllKudos({ senderId });
-  //   } catch (error) {
-  //     console.error(error);
-  //     throw new InternalServerErrorException('Could not retreive Kudos');
-  //   }
-  // }
-
-  // async getKudosByreceiverId(receiverId: string) {
-  //   try {
-  //     return this.getAllKudos({ receiverId });
-  //   } catch (error) {
-  //     console.error(error);
-  //     throw new InternalServerErrorException('Could not retreive Kudos');
-  //   }
-  // }
-
-  //
-
-  async getKudoById(id: string) {
+  async getKudoById(id: string, select?: Prisma.KudosSelect) {
     try {
       const kudo = await this.prismaService.kudos.findUnique({
         where: { id },
-        select: {
+        select: select || {
           ...kudoSelectOptions,
           comments: {
             where: { parentId: null },
@@ -102,7 +78,7 @@ export class KudosService {
       if (!kudo) throw new NotFoundException('Unable to locate Kudo ' + id);
 
       for (const comment of kudo.comments) {
-        await this.fetchNestedComments(comment);
+        await this.commentService.findNestedComments(comment);
       }
       return kudo;
     } catch (error) {
@@ -112,68 +88,41 @@ export class KudosService {
     }
   }
 
-  async fetchNestedComments(comment: any) {
-    const stack = [comment];
-
-    while (stack.length > 0) {
-      const currentComment = stack.pop();
-      currentComment.comments = await this.prismaService.comment.findMany({
-        where: { parentId: currentComment.id },
-        include: {
-          commentLikes: true,
-          user: { select: userSelectOptions },
-        },
-        orderBy: { createdAt: 'asc' },
-      });
-
-      for (const childComment of currentComment.comments) {
-        stack.push(childComment);
-      }
-    }
-  }
-
-  async createKudo(data: createKudosDTO) {
+  async createKudo(data: createKudosDTO, select?: Prisma.KudosSelect) {
     try {
-      const newKudos = await this.prismaService.$transaction(async (prisma) => {
-        const kudo = await prisma.kudos.create({
-          data,
-          select: {
-            ...kudoSelectOptions,
-            comments: {
-              where: { parentId: null },
-              select: {
-                ...commentSelectOptions,
-              },
-              orderBy: {
-                createdAt: 'asc',
-              },
-            },
-          },
-        });
-
-        const displayName = kudo.isAnonymous
-          ? 'Someone Special'
-          : `${kudo.sender.firstName} ${kudo.sender.lastName[0]}` ||
-            kudo.sender.displayName;
-
-        if (kudo.sender.userId !== kudo.receiver.userId) {
-          await this.userNotificationsService.createNotification({
-            userId: kudo.receiver.userId,
-            actionType: ActionType.KUDOS,
-            referenceId: [kudo.id],
-            kudosId: kudo.id,
-            message: `${displayName} sent you a kudos`,
-          });
-        }
-
-        return kudo;
+      const kudo = await this.prismaService.kudos.create({
+        data,
+        select: select || {
+          sender: true,
+          receiverId: true,
+          id: true,
+          isAnonymous: true,
+        },
       });
-      return newKudos;
+
+      const displayName = getDisplayName(kudo.sender, kudo.isAnonymous);
+
+      if (kudo.sender.userId !== kudo.receiverId) {
+        await this.userNotificationsService.createNotification({
+          userId: kudo.receiverId,
+          actionType: ActionType.KUDOS,
+          referenceId: [kudo.id],
+          kudosId: kudo.id,
+          message: `${displayName} sent you a kudos`,
+        });
+      }
+
+      return kudo;
     } catch (error) {
       console.error(['Create Kudo Error'], error);
       throw new InternalServerErrorException('Could not create Kudo');
     }
   }
+
+  kudoIncludeOptions = {
+    comments: true,
+    sender: true,
+  };
 
   async updateKudoById(id: string, data: UpdateKudosDTO): Promise<Kudos> {
     try {
@@ -191,134 +140,81 @@ export class KudosService {
     }
   }
 
-  async increaseLikes(id: string, userId: string): Promise<void> {
+  async increaseLikes(id: string, userId: string) {
     try {
-      await this.prismaService.$transaction(async (prisma) => {
-        const updatedKudo = await prisma.kudos.update({
-          where: { id },
-          data: {
-            likes: {
-              increment: 1,
-            },
+      const updatedKudo = await this.prismaService.kudos.update({
+        where: { id },
+        data: {
+          likes: {
+            increment: 1,
           },
-          select: {
-            ...kudoSelectOptions,
-            comments: {
-              where: { parentId: null },
-              select: {
-                ...commentSelectOptions,
-              },
-              orderBy: {
-                createdAt: 'asc',
-              },
-            },
-          },
-        });
-
-        if (updatedKudo.sender.userId !== userId) {
-          const likingUser = await prisma.user.findUnique({
-            where: { userId },
-          });
-
-          if (likingUser) {
-            const displayName =
-              `${likingUser.firstName} ${likingUser.lastName[0]}` ||
-              likingUser.displayName;
-
-            await this.userNotificationsService.createNotification({
-              userId: updatedKudo.sender.userId,
-              actionType: ActionType.KUDOS_LIKE,
-              referenceId: [updatedKudo.id],
-              kudosId: updatedKudo.id,
-              message: `${displayName} liked your kudos`,
-            });
-          }
-        }
+        },
+        select: {
+          senderId: true,
+          isAnonymous: true,
+          id: true,
+        },
       });
+
+      if (updatedKudo.senderId !== userId) {
+        const likingUser = await this.userService.findOneById(userId);
+
+        if (likingUser) {
+          const displayName = getDisplayName(likingUser);
+
+          await this.userNotificationsService.createNotification({
+            userId: updatedKudo.senderId,
+            actionType: ActionType.KUDOS_LIKE,
+            referenceId: [updatedKudo.id],
+            kudosId: updatedKudo.id,
+            message: `${displayName} liked your kudos`,
+          });
+        }
+      }
     } catch (error) {
       console.error(['Increase Likes Error'], error);
       throw new InternalServerErrorException('Could not like Kudo');
     }
   }
-  async decreaseLikes(id: string, userId: string): Promise<void> {
+  async decreaseLikes(id: string, userId: string) {
     try {
-      await this.prismaService.$transaction(async (prisma) => {
-        const updatedKudo = await prisma.kudos.update({
-          where: { id },
-          data: {
-            likes: {
-              decrement: 1,
-            },
+      const updatedKudo = await this.prismaService.kudos.update({
+        where: { id },
+        data: {
+          likes: {
+            decrement: 1,
           },
-          select: {
-            ...kudoSelectOptions,
-            comments: {
-              where: { parentId: null },
-              select: {
-                ...commentSelectOptions,
-              },
-              orderBy: {
-                createdAt: 'asc',
-              },
-            },
-          },
-        });
-
-        if (updatedKudo.sender.userId !== userId) {
-          const unlikingUser = await prisma.user.findUnique({
-            where: { userId },
-          });
-
-          if (unlikingUser) {
-            await this.userNotificationsService.deleteNotificationByReferrenceId(
-              [updatedKudo.id],
-            );
-          }
-        }
+        },
+        select: {
+          id: true,
+          senderId: true,
+          userNotifications: { select: { id: true } },
+        },
       });
+
+      if (updatedKudo.senderId !== userId) {
+        const unlikingUser = await this.userService.findOneById(userId);
+
+        if (unlikingUser) {
+          await this.userNotificationsService.deleteNotificationsByOptions({
+            actionType: ActionType.KUDOS_LIKE,
+            userId: updatedKudo.senderId,
+            kudosId: updatedKudo.id,
+          });
+        }
+      }
     } catch (error) {
       console.error(['Decrease Likes Error'], error);
       throw error;
     }
   }
 
-  async softDeleteKudoById(id: string) {
+  async deleteKudosById(id: string) {
     try {
-      const kudo = await this.updateKudoById(id, { deletedAt: new Date() });
-      if (!kudo)
-        throw new NotFoundException('Could not find kudo with id ' + id);
-      await this.userNotificationsService.deleteNotificationByReferrenceId([
-        id,
-      ]);
-      return kudo;
+      await this.prismaService.kudos.delete({ where: { id } });
     } catch (error) {
-      console.error(error);
-      if (error instanceof NotFoundException) throw error;
-      throw new InternalServerErrorException(
-        'Something went wrong deleting Kudo',
-      );
-    }
-  }
-
-  @Cron('0 0 * * *') // Run every night at midnight
-  async permanentlyDeleteOldUsers() {
-    const dateThreshold = new Date();
-    dateThreshold.setDate(dateThreshold.getDate() - 30);
-
-    try {
-      await this.prismaService.kudos.deleteMany({
-        where: {
-          deletedAt: {
-            lte: dateThreshold,
-          },
-        },
-      });
-    } catch (error) {
-      console.error(error);
-      this.emailService.sendCronErrorNotification(
-        'Kudos cleanup failed' + error.message,
-        'Delete Kudos',
-      );
+      console.error(['Delete Kudo Error'], error);
+      throw new InternalServerErrorException('Could not delete Kudo');
     }
   }
 }

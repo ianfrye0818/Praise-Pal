@@ -5,6 +5,7 @@ import { Cron } from '@nestjs/schedule';
 import { EmailService } from 'src/core-services/email.service';
 import { FilterUserNotificationsDTO } from './dto/filterUserNotifications.dto';
 import { userNotificationSelectOptions } from 'src/utils/constants';
+import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class UserNotificationsService {
@@ -53,70 +54,27 @@ export class UserNotificationsService {
     });
   }
 
-  async deleteNotificationByReferrenceId(referenceIds: string[]) {
-    return await this.prismaservice.userNotifications.deleteMany({
-      where: {
-        referenceId: {
-          hasSome: referenceIds,
-        },
-      },
+  async deleteNotificationById(id: string) {
+    return await this.prismaservice.userNotifications.delete({
+      where: { id },
     });
   }
 
-  // async hardDeleteNotification(filter: Partial<UserNotifications>) {
-  //   const {referenceId, ...otherFilters} = filter
+  async deleteNotificationsByOptions(
+    where: Prisma.UserNotificationsWhereInput,
+  ) {
+    return await this.prismaservice.userNotifications.deleteMany({
+      where,
+    });
+  }
 
-  //   return this.prismaservice.userNotifications.deleteMany({
-  //     where: filter,
+  // async deleteNotificationByReferrenceId(referenceIds: string[]) {
+  //   return await this.prismaservice.userNotifications.deleteMany({
+  //     where: {
+  //       referenceId: {
+  //         hasSome: referenceIds,
+  //       },
+  //     },
   //   });
   // }
-
-  async softDeleteNotification(id: string) {
-    return this.prismaservice.userNotifications.update({
-      where: {
-        id,
-      },
-      data: {
-        deletedAt: new Date(),
-      },
-    });
-  }
-
-  @Cron('0 0 * * *') // Run every night at midnight
-  async permDeleteOldNotificaitons() {
-    const dateThreshold = new Date();
-    dateThreshold.setDate(dateThreshold.getDate() - 30);
-
-    try {
-      await this.prismaservice.userNotifications.deleteMany({
-        where: {
-          OR: [
-            {
-              AND: [
-                {
-                  isRead: true,
-                },
-                {
-                  updatedAt: {
-                    lt: dateThreshold,
-                  },
-                },
-              ],
-            },
-            {
-              deletedAt: {
-                lt: dateThreshold,
-              },
-            },
-          ],
-        },
-      });
-    } catch (error) {
-      console.error(error);
-      this.emailService.sendCronErrorNotification(
-        'User Notification deletion failed' + error.message,
-        'Delete User Notifications',
-      );
-    }
-  }
 }

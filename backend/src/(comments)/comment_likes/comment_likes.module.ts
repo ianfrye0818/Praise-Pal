@@ -5,6 +5,7 @@ import { CommentsService } from '../comments/comments.service';
 import { PrismaService } from 'src/core-services/prisma.service';
 import { UserNotificationsService } from 'src/(user)/user-notifications/user-notifications.service';
 import { EmailService } from 'src/core-services/email.service';
+import { UserService } from 'src/(user)/user/user.service';
 
 @Module({
   controllers: [CommentLikesController],
@@ -14,6 +15,7 @@ import { EmailService } from 'src/core-services/email.service';
     PrismaService,
     UserNotificationsService,
     EmailService,
+    UserService,
   ],
   exports: [CommentLikesService],
 })

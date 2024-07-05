@@ -27,7 +27,7 @@ export class KudosController {
   // @UseGuards(SuperAdminGuard)
   @UseGuards(CompanyGuard)
   @Get()
-  async findAll(@Query() query: KudosFilterDTO, @Req() req: any) {
+  async findAll(@Query() query: KudosFilterDTO) {
     return await this.kudosService.getAllKudos(query);
   }
 
@@ -55,6 +55,6 @@ export class KudosController {
   @UseGuards(EditKudosGuard)
   @Delete(':kudosId')
   async deleteKudo(@Param('kudosId') kudosId: string) {
-    return await this.kudosService.softDeleteKudoById(kudosId);
+    return await this.kudosService.deleteKudosById(kudosId);
   }
 }

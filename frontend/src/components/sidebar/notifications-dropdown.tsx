@@ -21,7 +21,7 @@ export default function NotificationsDropDown({
     <Popover
       open={open}
       onOpenChange={(open) => {
-        notifications && notifications?.length > 0 && setOpen(open);
+        notifications && notifications?.length > 0 ? setOpen(open) : setOpen(false);
       }}
     >
       <PopoverTrigger onClick={async () => markAllAsRead()}>

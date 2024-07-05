@@ -1,13 +1,18 @@
-import SingleKudosCard from '@/components/kudos-card/single-kudos-card';
+import SingleKudosPage from '@/components/comments/singleKudosPage';
+import { CustomError } from '@/errors';
 import useGetSingleKudo from '@/hooks/api/useKudos/useGetSingleKudo';
 import { useAuth } from '@/hooks/useAuth';
+import { TKudos } from '@/types';
 import { createLazyFileRoute } from '@tanstack/react-router';
+import { createContext, useContext } from 'react';
+
+const KudoContext = createContext<TKudos | null>(null);
 
 export const Route = createLazyFileRoute('/_rootLayout/kudos/$kudosId')({
-  component: () => <SingleKudosPage />,
+  component: () => <Component />,
 });
 
-function SingleKudosPage() {
+function Component() {
   const { kudosId } = Route.useParams();
   const { user: currentUser } = useAuth().state;
 
@@ -27,7 +32,16 @@ function SingleKudosPage() {
 
   return (
     <div>
-      <SingleKudosCard kudo={kudo} />
+      <KudoContext.Provider value={kudo}>
+        <SingleKudosPage />
+      </KudoContext.Provider>
     </div>
   );
 }
+
+export const useKudoContext = () => {
+  const context = useContext(KudoContext);
+  if (!context)
+    throw new CustomError('useKudoContext must be used within a KudoContext.Provider', 400);
+  return context;
+};

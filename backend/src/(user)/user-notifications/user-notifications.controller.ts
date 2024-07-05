@@ -49,6 +49,6 @@ export class UserNotificationsController {
 
   @Delete(':id')
   async deleteNotificaiton(@Param('id') id: string) {
-    return await this.userNotificationService.softDeleteNotification(id);
+    return await this.userNotificationService.deleteNotificationById(id);
   }
 }

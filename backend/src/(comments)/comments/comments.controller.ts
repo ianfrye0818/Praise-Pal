@@ -15,6 +15,7 @@ import { CreateCommentDTO, UpdateCommentDTO } from './dto/createComment.dto';
 import { FilterCommentDTO } from './dto/filterCommentDTO';
 import { CompanyGuard } from 'src/core-guards/company.guard';
 import { JwtGuard } from 'src/auth/guards/jwt.guard';
+import { EditCommentGuard } from 'src/core-guards/update-delete-comment.guard';
 
 @UseGuards(CompanyGuard)
 @UseGuards(JwtGuard)
@@ -44,6 +45,7 @@ export class CommentsController {
     return this.commentsService.createChildComment(comment);
   }
 
+  @UseGuards(EditCommentGuard)
   @Patch(':commentId')
   async updateComment(
     @Param('commentId') commentId: string,
@@ -52,6 +54,7 @@ export class CommentsController {
     return this.commentsService.updateCommentById(commentId, comment);
   }
 
+  @UseGuards(EditCommentGuard)
   @Delete(':commentId')
   async deleteComment(@Param('commentId') commentId: string) {
     return this.commentsService.deleteCommentsById(commentId);

@@ -1,4 +1,5 @@
 import { User } from '@prisma/client';
+import { ClientUser } from 'src/types';
 
 export function capitalizeWords(str: string) {
   const words = str.split(' ');
@@ -15,4 +16,12 @@ export function generateCompanyCode() {
 export function generateClientSideUserProperties(user: User) {
   const { password, createdAt, deletedAt, updatedAt, ...rest } = user;
   return rest;
+}
+
+export function getDisplayName(user: ClientUser, isAnonymous?: boolean) {
+  return isAnonymous
+    ? 'Someone Special'
+    : user.firstName && user.lastName
+      ? `${user.firstName} ${user.lastName[0]}`
+      : user.displayName;
 }

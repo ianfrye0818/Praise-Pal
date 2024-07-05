@@ -46,7 +46,6 @@ export class CommentLikesService {
           await this.userNotificationsService.createNotification({
             userId: updatedComment.user.userId,
             actionType: ActionType.COMMENT_LIKE,
-            referenceId: [updatedComment.id],
             kudosId: updatedComment.kudosId,
             commentId: updatedComment.id,
             message: `${displayName} liked your comment`,

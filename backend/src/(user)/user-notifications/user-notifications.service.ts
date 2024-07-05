@@ -27,7 +27,12 @@ export class UserNotificationsService {
       orderBy: { createdAt: sort || 'desc' },
       take: limit,
       skip: offset,
-      select: userNotificationSelectOptions,
+      select: {
+        kudosId: true,
+        actionType: true,
+        isRead: true,
+        message: true,
+      },
     });
   }
 

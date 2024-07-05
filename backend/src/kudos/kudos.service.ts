@@ -106,7 +106,6 @@ export class KudosService {
         await this.userNotificationsService.createNotification({
           userId: kudo.receiverId,
           actionType: ActionType.KUDOS,
-          referenceId: [kudo.id],
           kudosId: kudo.id,
           message: `${displayName} sent you a kudos`,
         });
@@ -165,7 +164,6 @@ export class KudosService {
           await this.userNotificationsService.createNotification({
             userId: updatedKudo.senderId,
             actionType: ActionType.KUDOS_LIKE,
-            referenceId: [updatedKudo.id],
             kudosId: updatedKudo.id,
             message: `${displayName} liked your kudos`,
           });

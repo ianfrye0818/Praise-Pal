@@ -7,6 +7,7 @@ import NewCommentForm from './new-comment-form';
 import UserAvitar from '../UserAvitar';
 import CommentDropDownMenu from './comment-drop-down-menu';
 import EditCommentForm from './edit-comment-form';
+import { SelectSeparator } from '../ui/select';
 
 export default function CommentComponent(comment: Comment) {
   const { user: currentUser } = useAuth().state;
@@ -14,9 +15,10 @@ export default function CommentComponent(comment: Comment) {
   const [replyVisible, setReplyVisible] = useState(false);
   const senderDisplayName = getUserDisplayName(comment.user);
   const commentOwner = comment.user.userId === currentUser?.userId;
+  const showSeperator = comment.parentId;
 
   return (
-    <div className='flex items-start space-x-4'>
+    <div className='flex items-start space-x-4 p-2'>
       <UserAvitar displayName={senderDisplayName} />
       <div className='flex-1 space-y-2'>
         <div className='flex items-center justify-between'>
@@ -52,6 +54,11 @@ export default function CommentComponent(comment: Comment) {
             type='child'
             commentId={comment.id}
           />
+        )}
+        {showSeperator && (
+          <>
+            <SelectSeparator className='bg-midnightGreen opacity-25' />
+          </>
         )}
         <CommentList comments={comment.comments} />
       </div>

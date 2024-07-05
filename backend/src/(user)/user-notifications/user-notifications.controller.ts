@@ -31,15 +31,6 @@ export class UserNotificationsController {
     );
   }
 
-  // @Post()
-  // async createNotification(
-  //   @Body() notificationData: CreateUserNotificationDTO,
-  // ) {
-  //   return await this.userNotificationService.createNotification(
-  //     notificationData,
-  //   );
-  // }
-
   @Patch('mark-all-as-read')
   async markAllNotificationAsRead(@Req() req: any) {
     return await this.userNotificationService.markAllNotificationAsRead(

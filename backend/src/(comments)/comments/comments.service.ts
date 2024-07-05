@@ -77,37 +77,38 @@ export class CommentsService {
 
   async createKudoComment(payload: CreateCommentDTO) {
     if (payload.parentId) return this.createChildComment(payload);
-    const newComment = await this.prismaService.comment.create({
-      data: payload,
-      select: {
-        kudos: true,
-        id: true,
-      },
-    });
-
-    const commentingUser = await this.userService.findOneById(payload.userId);
-    const displayName = getDisplayName(commentingUser);
-
     try {
-      await Promise.all([
-        await this.userNotificationsService.createNotification({
-          actionType: ActionType.KUDOS_COMMENT,
-          referenceId: [newComment.id],
-          kudosId: payload.kudosId,
-          commentId: newComment.id,
-          userId: newComment.kudos.senderId,
-          message: `${displayName} commented on a Kudo you sent`,
-        }),
+      const newComment = await this.prismaService.comment.create({
+        data: payload,
+        select: {
+          kudos: true,
+          id: true,
+        },
+      });
 
+      const commentingUser = await this.userService.findOneById(payload.userId);
+      const displayName = getDisplayName(commentingUser);
+      const { senderId, receiverId } = newComment.kudos;
+
+      if (commentingUser.userId !== senderId) {
         await this.userNotificationsService.createNotification({
           actionType: ActionType.KUDOS_COMMENT,
-          referenceId: [newComment.id],
           kudosId: payload.kudosId,
           commentId: newComment.id,
-          userId: newComment.kudos.receiverId,
-          message: `${displayName} commented on Kudo you received`,
-        }),
-      ]);
+          userId: senderId,
+          message: `${displayName} commented on a Kudo you sent`,
+        });
+      }
+
+      if (commentingUser.userId !== receiverId) {
+        await this.userNotificationsService.createNotification({
+          actionType: ActionType.KUDOS_COMMENT,
+          kudosId: payload.kudosId,
+          commentId: newComment.id,
+          userId: receiverId,
+          message: `${displayName} commented on a Kudo you received`,
+        });
+      }
 
       return newComment;
     } catch (error) {
@@ -125,20 +126,21 @@ export class CommentsService {
 
       const childComment = await this.prismaService.comment.create({
         data: payload,
-        select: { id: true },
+        select: { id: true, userId: true },
       });
 
       const commentingUser = await this.userService.findOneById(payload.userId);
       const displayName = getDisplayName(commentingUser);
 
-      await this.userNotificationsService.createNotification({
-        actionType: ActionType.COMMENT_COMMENT,
-        referenceId: [parentComment.id, childComment.id],
-        kudosId: payload.kudosId,
-        commentId: childComment.id,
-        userId: parentComment.user.userId,
-        message: `${displayName} replied to your comment`,
-      });
+      if (parentComment.user.userId !== childComment.userId) {
+        await this.userNotificationsService.createNotification({
+          actionType: ActionType.COMMENT_COMMENT,
+          kudosId: payload.kudosId,
+          commentId: childComment.id,
+          userId: parentComment.user.userId,
+          message: `${displayName} replied to your comment`,
+        });
+      }
 
       return childComment;
     } catch (error) {

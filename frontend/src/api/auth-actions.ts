@@ -123,5 +123,6 @@ export async function refreshTokens() {
     await AuthActions.refreshTokens();
   } catch (error) {
     console.error('Error refreshing tokens', error);
+    errorLogout();
   }
 }

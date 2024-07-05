@@ -1,8 +1,14 @@
 import useCreateComment from '@/hooks/api/useComments.tsx/useCreateComment';
 import { useAuth } from '@/hooks/useAuth';
 import { useKudoContext } from '@/routes/_rootLayout/kudos/$kudosId.lazy';
-import { useState } from 'react';
-import CommentInputComponent from './comment-input';
+import * as z from 'zod';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { FormInputItem } from '../forms/form-input-item';
+import { Form } from '../ui/form';
+import { Button } from '../ui/button';
+import { Send } from 'lucide-react';
+import { NewCommentSchema } from '@/zodSchemas';
 
 export default function NewCommentForm({
   type,
@@ -17,26 +23,41 @@ export default function NewCommentForm({
   const kudo = useKudoContext();
 
   const { mutateAsync: createComment } = useCreateComment(currentUser?.companyId as string);
-  const [newComment, setNewComment] = useState('');
+
+  const form = useForm<z.infer<typeof NewCommentSchema>>({
+    defaultValues: {
+      content: '',
+      parentId: type === 'child' && commentId ? commentId : undefined,
+      kudosId: kudo.id,
+      userId: currentUser?.userId as string,
+    },
+    resolver: zodResolver(NewCommentSchema),
+  });
+
+  const onSubmit = async (data: z.infer<typeof NewCommentSchema>) => {
+    await createComment(data);
+    type === 'child' && setReplyVisible!(false);
+    form.reset();
+  };
+
   return (
-    <form
-      onSubmit={async (e) => {
-        e.preventDefault();
-        await createComment({
-          content: newComment,
-          parentId: type === 'child' && commentId ? commentId : undefined,
-          kudosId: kudo.id,
-          userId: currentUser?.userId as string,
-        });
-        setNewComment('');
-        type === 'child' && setReplyVisible!(false);
-      }}
-    >
-      <CommentInputComponent
-        placeholder='Add a comment to this kudo'
-        value={newComment}
-        onChange={(e) => setNewComment(e.target.value)}
-      />
-    </form>
+    <Form {...form}>
+      <form
+        onSubmit={form.handleSubmit(onSubmit)}
+        className='relative'
+      >
+        <FormInputItem<typeof NewCommentSchema>
+          control={form.control}
+          name='content'
+          placeholder={type === 'child' ? 'Reply to comment' : 'Add a comment'}
+        />
+        <Button
+          className='absolute right-0 top-0 z-2 hover:bg-transparent'
+          variant={'ghost'}
+        >
+          <Send />
+        </Button>
+      </form>
+    </Form>
   );
 }

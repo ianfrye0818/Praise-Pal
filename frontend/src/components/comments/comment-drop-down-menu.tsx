@@ -1,4 +1,4 @@
-import UseDeleteComment from '@/hooks/api/useComments.tsx/useDeleteComment';
+import useDeleteComment from '@/hooks/api/useComments.tsx/useDeleteComment';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -24,7 +24,7 @@ export default function CommentDropDownMenu({
   children,
 }: CommentDropDownMenuProps) {
   const [open, setOpen] = useState(false);
-  const { mutateAsync: deleteComment } = UseDeleteComment(companyId);
+  const { mutateAsync: deleteComment } = useDeleteComment(companyId);
 
   return (
     <DropdownMenu

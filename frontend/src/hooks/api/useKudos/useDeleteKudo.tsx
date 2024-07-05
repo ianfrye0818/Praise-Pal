@@ -1,5 +1,7 @@
 import { deleteSingleKudo } from '@/api/api-handlers';
 import { KUDOS_QUERY_OPTIONS } from '@/constants';
+import useErrorToast from '@/hooks/useErrorToast';
+import useSuccessToast from '@/hooks/useSuccessToast';
 import { TKudos } from '@/types';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
@@ -10,6 +12,8 @@ interface DeleteKudoProps {
 
 export default function useDeleteKudo() {
   const queryClient = useQueryClient();
+  const { errorToast } = useErrorToast();
+  const { successToast } = useSuccessToast();
   const mutation = useMutation({
     mutationFn: async ({ companyId, kudoId }: DeleteKudoProps) =>
       await deleteSingleKudo(companyId, kudoId),
@@ -22,11 +26,13 @@ export default function useDeleteKudo() {
       });
       return { previousData };
     },
-    onError: (_, __, context) => {
+    onError: (err, __, context) => {
       queryClient.setQueriesData(KUDOS_QUERY_OPTIONS, context?.previousData);
+      errorToast({ message: err.message });
     },
     onSuccess: () => {
       queryClient.invalidateQueries(KUDOS_QUERY_OPTIONS);
+      successToast({ message: 'Kudo deleted successfully' });
     },
   });
 

@@ -1,8 +1,6 @@
 import { getUserDisplayName } from '@/lib/utils';
 import { Comment } from '@/types';
-
-import { Avatar, AvatarFallback } from '../ui/avatar';
-import KudoLikeButton from './kudo-like-button';
+import UserAvitar from '../UserAvitar';
 
 interface KudoCommentListProps {
   comments: Comment[];
@@ -18,12 +16,9 @@ export default function KudoCommentList({ comments }: KudoCommentListProps) {
             key={comment.id}
             className='flex gap-2 place-items-start'
           >
-            <Avatar>
-              <AvatarFallback>{displayName[0]}</AvatarFallback>
-            </Avatar>
+            <UserAvitar displayName={displayName} />
             <div>
               <p key={comment.id}>{comment.content}</p>
-              {/* <KudoLikeButton /> */}
             </div>
           </div>
         );

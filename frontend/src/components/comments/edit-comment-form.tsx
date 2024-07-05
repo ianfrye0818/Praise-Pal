@@ -1,8 +1,14 @@
 import { Comment } from '@/types';
-import CommentInput from './comment-input';
 import useUpdateComment from '@/hooks/api/useComments.tsx/useUpdateComment';
 import { useAuth } from '@/hooks/useAuth';
-import { useState } from 'react';
+import * as z from 'zod';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Form } from '../ui/form';
+import { FormInputItem } from '../forms/form-input-item';
+import { Button } from '../ui/button';
+import { Send } from 'lucide-react';
+import { EditCommentSchema } from '@/zodSchemas';
 
 export default function EditCommentForm({
   setEditMode,
@@ -13,22 +19,38 @@ export default function EditCommentForm({
 }) {
   const { user: currentUser } = useAuth().state;
   const { mutateAsync: updateComment } = useUpdateComment(currentUser?.companyId as string);
-  const [editContentValue, setEditContentValue] = useState(comment.content);
+
+  const form = useForm<z.infer<typeof EditCommentSchema>>({
+    defaultValues: {
+      content: comment.content,
+      commentId: comment.id,
+    },
+    resolver: zodResolver(EditCommentSchema),
+  });
+
+  const onSubmit = async (data: z.infer<typeof EditCommentSchema>) => {
+    await updateComment({ commentId: data.commentId, content: data.content });
+    setEditMode(false);
+    form.reset();
+  };
+
   return (
-    <form
-      className='w-full max-w-[90%]'
-      onSubmit={(e) => {
-        e.preventDefault();
-        updateComment({ commentId: comment.id, content: editContentValue });
-        setEditMode(false);
-      }}
-    >
-      <CommentInput
-        className='w-full'
-        // defaultValue={comment.content}
-        value={editContentValue}
-        onChange={(e) => setEditContentValue(e.target.value)}
-      />
-    </form>
+    <Form {...form}>
+      <form
+        className='w-full max-w-[90%] relative'
+        onSubmit={form.handleSubmit(onSubmit)}
+      >
+        <FormInputItem<typeof EditCommentSchema>
+          control={form.control}
+          name='content'
+        />
+        <Button
+          className='absolute right-0 top-0 z-2 hover:bg-transparent'
+          variant={'ghost'}
+        >
+          <Send />
+        </Button>
+      </form>
+    </Form>
   );
 }

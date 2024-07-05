@@ -45,3 +45,15 @@ export const editKudosFormSchema = z.object({
   title: z.string().optional(),
   message: z.string().min(2, 'Please provide a valid message.'),
 });
+
+export const EditCommentSchema = z.object({
+  content: z.string().min(2, 'Please enter a valid comment'),
+  commentId: z.string(),
+});
+
+export const NewCommentSchema = z.object({
+  content: z.string().min(2, 'Please enter a valid comment'),
+  parentId: z.string().optional(),
+  kudosId: z.string(),
+  userId: z.string(),
+});

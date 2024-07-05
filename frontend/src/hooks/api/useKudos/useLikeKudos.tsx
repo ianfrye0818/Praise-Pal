@@ -1,5 +1,6 @@
 import { deleteRemoveLikeKudo, postAddLikeKudo } from '@/api/api-handlers';
 import { KUDOS_QUERY_OPTIONS } from '@/constants';
+import useErrorToast from '@/hooks/useErrorToast';
 import { TKudos } from '@/types';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
@@ -10,6 +11,7 @@ interface LikeKudoProps {
 
 export default function useLikeKudos() {
   const queryClient = useQueryClient();
+  const { errorToast } = useErrorToast();
 
   return useMutation({
     mutationFn: async ({ isLiked, kudoId }: LikeKudoProps) => {
@@ -56,8 +58,9 @@ export default function useLikeKudos() {
       }
       return { previousData };
     },
-    onError: (_, __, context) => {
+    onError: (err, __, context) => {
       queryClient.setQueriesData(KUDOS_QUERY_OPTIONS, context?.previousData);
+      errorToast({ message: err.message });
     },
     onSuccess: () => {
       queryClient.invalidateQueries(KUDOS_QUERY_OPTIONS);

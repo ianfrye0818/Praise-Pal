@@ -1,15 +1,9 @@
 import { getUserDisplayName, timeAgo } from '@/lib/utils';
-import { Button } from '../ui/button';
-import KudoLikeButton from '../kudos-card/kudo-like-button';
 import CommentSectionComponent from './comment-section';
-import { Comment, TKudos } from '@/types';
+import { Comment } from '@/types';
 import { useAuth } from '@/hooks/useAuth';
 import KudoCardDropDownMenu from '../kudos-card/kudo-card-dropdown-menu';
-import CommentInputComponent from './comment-input';
-import useCreateComment from '@/hooks/api/useComments.tsx/useCreateComment';
-import { useState } from 'react';
 import { useKudoContext } from '@/routes/_rootLayout/kudos/$kudosId.lazy';
-import CommentLikeButton from './comment-like-button';
 import UserAvitar from '../UserAvitar';
 import LikeReplyButtons from './like-reply-buttons';
 import NewCommentForm from './new-comment-form';

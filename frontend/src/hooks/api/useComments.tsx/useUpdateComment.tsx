@@ -1,5 +1,6 @@
 import { patchUpdateComment } from '@/api/api-handlers';
 import { COMMENT_QUERY_OPTIONS, KUDOS_QUERY_OPTIONS } from '@/constants';
+import useErrorToast from '@/hooks/useErrorToast';
 import { Comment } from '@/types';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
@@ -11,6 +12,7 @@ interface UpdateCommentProps {
 
 export default function useUpdateComment(companyId: string) {
   const queryClient = useQueryClient();
+  const { errorToast } = useErrorToast();
 
   const updateCommentInTree = (
     comments: Comment[],
@@ -52,8 +54,9 @@ export default function useUpdateComment(companyId: string) {
 
       return { previousData };
     },
-    onError: (_, __, context) => {
+    onError: (err, __, context) => {
       queryClient.setQueriesData(COMMENT_QUERY_OPTIONS, context?.previousData);
+      errorToast({ message: err.message });
     },
     onSuccess: () => {
       queryClient.invalidateQueries(COMMENT_QUERY_OPTIONS);

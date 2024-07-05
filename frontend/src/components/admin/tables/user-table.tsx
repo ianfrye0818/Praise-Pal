@@ -27,7 +27,7 @@ export default function UsersTable({ users, showUserNumber = true }: UsersTableP
   const { user: currentUser } = useAuth().state;
 
   return (
-    <>
+    <div className=''>
       {showUserNumber && <p className=' p-2 text-lg'>Total Users: {users.length}</p>}
       <div className='border shadow-sm rounded-lg'>
         <Table>
@@ -75,6 +75,6 @@ export default function UsersTable({ users, showUserNumber = true }: UsersTableP
           </TableBody>
         </Table>
       </div>
-    </>
+    </div>
   );
 }

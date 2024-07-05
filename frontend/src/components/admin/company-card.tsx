@@ -13,7 +13,7 @@ export default function CompanyCard({ company }: { company: Company }) {
 
   return (
     <>
-      <Card>
+      <Card className='w-full'>
         <CardHeader>
           <CardTitle className='flex justify-between items-center'>
             <div className='flex flex-col gap-3'>

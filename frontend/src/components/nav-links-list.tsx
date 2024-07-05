@@ -7,13 +7,15 @@ import { Button } from './ui/button';
 import { ShieldCheck } from 'lucide-react';
 import logo from '@/assets/logo.png';
 import useGetUserNotifications from '@/hooks/api/userNotifications/useGetUserNotifications';
-import NotificationsDropDown from './sidebar/notifications-dropdown';
 
-export default function NavLinksList() {
+export default function NavLinksList({
+  setMenuOpen,
+}: {
+  setMenuOpen: React.Dispatch<React.SetStateAction<boolean>>;
+}) {
   const { isAdmin } = useAuth().state;
   const { setAdminMode } = useAdminMode();
   const navigate = useNavigate();
-  const { data: userNotifications } = useGetUserNotifications();
   return (
     <nav className='flex flex-col gap-4'>
       <Link
@@ -28,20 +30,18 @@ export default function NavLinksList() {
       </Link>
       {sidebarLinks.map((link) => (
         <NavBarLink
-          notificationAmount={
-            link.label === 'Notifications' ? userNotifications?.length : undefined
-          }
+          onClick={() => setMenuOpen(false)}
           key={link.label}
           link={link}
         />
       ))}
-      <NotificationsDropDown />
       {isAdmin && (
         <Button
           variant={'link'}
           className='flex gap-3 items-center p-3 justify-start rounded-md hover:no-underline text-lg'
           onClick={async () => {
             setAdminMode(true);
+            setMenuOpen(false);
             await navigate({ to: '/admin/dashboard' });
           }}
         >

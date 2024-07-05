@@ -10,7 +10,7 @@ export default function NotificationsDropDown({
   children,
   notifications,
 }: {
-  children: React.ReactNode;
+  children?: React.ReactNode;
   notifications?: UserNotification[];
 }) {
   const [open, setOpen] = useState(false);

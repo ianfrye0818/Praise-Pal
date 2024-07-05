@@ -6,17 +6,10 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import useGetUserNotifications from '@/hooks/api/userNotifications/useGetUserNotifications';
 import useAdminMode from '@/hooks/useAdminMode';
 import { useAuth } from '@/hooks/useAuth';
-
-import { createFileRoute, Outlet, redirect, Navigate } from '@tanstack/react-router';
+import { createFileRoute, Outlet, Navigate } from '@tanstack/react-router';
 import { BellIcon } from 'lucide-react';
 
 export const Route = createFileRoute('/_rootLayout')({
-  // beforeLoad: async ({ context }) => {
-  //   const { isAuthenticated, loading } = context.state;
-  //   if (!isAuthenticated && !loading) {
-  //     throw redirect({ to: '/sign-in' });
-  //   }
-  // },
   component: () => <RootLayout />,
 });
 
@@ -36,14 +29,11 @@ export function RootLayout() {
     <main className='flex gap-2 h-full'>
       <Sidebar />
 
-      <div className='lg:ml-[300px] p-4 flex-1 flex flex-col'>
-        {!adminMode && (
-          //
-          <Header />
-        )}
+      <div className='lg:ml-[300px] md:p-4 flex-1 flex flex-col'>
+        {!adminMode && <Header />}
         <Outlet />
       </div>
-      <div className='absolute lg:hidden top-2 left-2'>
+      <div className='lg:hidden'>
         <MobileNavSheet />
       </div>
     </main>

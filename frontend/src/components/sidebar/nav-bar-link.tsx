@@ -6,10 +6,7 @@ type Props = {
   notificationAmount?: number;
 } & React.ComponentProps<typeof Link>;
 
-export default function NavBarLink({ link, notificationAmount, ...props }: Props) {
-  const notificationLink = link.label === 'Notifications';
-  const showNotificationNumber = notificationLink && notificationAmount && notificationAmount > 0;
-
+export default function NavBarLink({ link, ...props }: Props) {
   return (
     <Link
       {...props}
@@ -24,11 +21,6 @@ export default function NavBarLink({ link, notificationAmount, ...props }: Props
         <link.icon />
       </div>
       <p>{link.label}</p>
-      {showNotificationNumber ? (
-        <div className='absolute right-3 w-4 h-4 p-3 bg-red-500 rounded-full flex justify-center items-center text-white'>
-          {notificationAmount}
-        </div>
-      ) : null}
     </Link>
   );
 }

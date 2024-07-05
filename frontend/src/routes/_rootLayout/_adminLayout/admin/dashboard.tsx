@@ -12,7 +12,7 @@ export function AdminDashboard() {
   const { users, kudos, company } = useGetAdminDashBoardData();
 
   return (
-    <main className='flex flex-1 flex-col p-5 md:gap-8 md:p-6'>
+    <main className='flex flex-1 flex-col p-2 md:gap-8 md:p-6 items-center '>
       {company && <CompanyCard company={company} />}
       {users && <UsersDashboardCard users={users} />}
       {kudos && <KudosDashboardCard kudos={kudos} />}

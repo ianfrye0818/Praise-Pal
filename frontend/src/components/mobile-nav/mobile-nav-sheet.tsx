@@ -16,13 +16,20 @@ export default function MobileNavSheet() {
         open={open}
         onOpenChange={setOpen}
       >
-        <SheetTrigger>
-          <MenuIcon />
+        <SheetTrigger className='absolute top-2 left-2'>
+          <MenuIcon className='w-8 h-8' />
         </SheetTrigger>
-        <SheetContent side={'left'}>
-          <h1 className='text-26 font-ibm-plex-serif font-bold text-black-1'>Praise Pal</h1>
+        <SheetContent
+          side={'left'}
+          className='bg-white w-[350px] h-full flex flex-col gap-4 p-4'
+        >
+          {/* <h1 className='text-26 font-ibm-plex-serif font-bold text-black-1'>Praise Pal</h1> */}
           <div className='flex h-[calc(100vh-72px)] flex-col justify-between overflow-y-auto;'>
-            <SheetClose asChild>{adminMode ? <AdminNavLinkList /> : <NavLinksList />}</SheetClose>
+            {adminMode ? (
+              <AdminNavLinkList setMenuOpen={setOpen} />
+            ) : (
+              <NavLinksList setMenuOpen={setOpen} />
+            )}
             <SideBarFooter />
           </div>
         </SheetContent>

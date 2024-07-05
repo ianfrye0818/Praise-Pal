@@ -18,12 +18,14 @@ export default function CommentComponent(comment: Comment) {
   const showSeperator = comment.parentId;
 
   return (
-    <div className='flex items-start space-x-4 p-2'>
+    <div className='flex items-start space-x-4 p-2 min-w-[300px] overflow-x-auto'>
       <UserAvitar displayName={senderDisplayName} />
       <div className='flex-1 space-y-2'>
         <div className='flex items-center justify-between'>
           <div className='font-medium'>{senderDisplayName}</div>
-          <div className='text-xs text-muted-foreground'>{timeAgo(comment.createdAt)}</div>
+          <div className='text-xs text-muted-foreground hidden md:block'>
+            {timeAgo(comment.createdAt)}
+          </div>
         </div>
         <div className='flex gap-4'>
           {!editMode ? (
@@ -68,13 +70,13 @@ export default function CommentComponent(comment: Comment) {
 
 function CommentList({ comments }: { comments?: Comment[] }) {
   return comments && comments.length > 0 ? (
-    <div>
+    <>
       {comments.map((reply) => (
         <CommentComponent
           {...reply}
           key={reply.id}
         />
       ))}
-    </div>
+    </>
   ) : null;
 }

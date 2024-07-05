@@ -1,6 +1,6 @@
 import useCreateComment from '@/hooks/api/useComments.tsx/useCreateComment';
 import { useAuth } from '@/hooks/useAuth';
-import { useKudoContext } from '@/routes/_rootLayout/kudos/$kudosId.lazy';
+
 import * as z from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -9,6 +9,7 @@ import { Form } from '../ui/form';
 import { Button } from '../ui/button';
 import { Send } from 'lucide-react';
 import { NewCommentSchema } from '@/zodSchemas';
+import { useSingleKudoContext } from '@/hooks/useSingleKudoContext';
 
 export default function NewCommentForm({
   type,
@@ -20,7 +21,7 @@ export default function NewCommentForm({
   setReplyVisible?: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
   const { user: currentUser } = useAuth().state;
-  const kudo = useKudoContext();
+  const kudo = useSingleKudoContext();
 
   const { mutateAsync: createComment } = useCreateComment(currentUser?.companyId as string);
 
@@ -44,7 +45,7 @@ export default function NewCommentForm({
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className='relative'
+        className='relative min-w-[300px]'
       >
         <FormInputItem<typeof NewCommentSchema>
           control={form.control}

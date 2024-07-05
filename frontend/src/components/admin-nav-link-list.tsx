@@ -7,7 +7,11 @@ import { ArrowLeft } from 'lucide-react';
 
 import logo from '@/assets/logo.png';
 
-export default function AdminNavLinkList() {
+export default function AdminNavLinkList({
+  setMenuOpen,
+}: {
+  setMenuOpen: React.Dispatch<React.SetStateAction<boolean>>;
+}) {
   const { setAdminMode } = useAdminMode();
   return (
     <nav className='flex flex-col gap-4'>
@@ -24,6 +28,7 @@ export default function AdminNavLinkList() {
 
       {adminSidebarLinks.map((link) => (
         <NavBarLink
+          onClick={() => setMenuOpen(false)}
           key={link.label}
           link={link}
         />
@@ -33,6 +38,7 @@ export default function AdminNavLinkList() {
         className='justify-start p-2 '
         onClick={async () => {
           setAdminMode(false);
+          setMenuOpen(false);
         }}
         asChild
       >

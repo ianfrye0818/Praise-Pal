@@ -3,7 +3,7 @@ import KudoCardDropDownMenu from './kudo-card-dropdown-menu';
 import KudoLikeButton from './kudo-like-button';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import { useAuth } from '@/hooks/useAuth';
-import { capitalizeString, formatDate, getUserDisplayName, timeAgo } from '@/lib/utils';
+import { capitalizeString, getUserDisplayName, timeAgo } from '@/lib/utils';
 import { MessageCircle } from 'lucide-react';
 import { Link } from '@tanstack/react-router';
 
@@ -32,7 +32,7 @@ export default function KudosCard({ kudo, commenting = false }: Props) {
             {kudo.isAnonymous ? 'Someone Special' : capitalizeString(senderDisplayName)} sent kudos
             to {capitalizeString(receiverDisplayName)}
           </p>
-          <p className='text-sm text-gray-500'>{timeAgo(kudo.createdAt)}</p>
+          <p className='text-sm text-gray-500 hidden md:block'>{timeAgo(kudo.createdAt)}</p>
         </div>
         {kudo.title && <h3 className='font-bold text-lg my-2'>{capitalizeString(kudo.title)}</h3>}
         <p>{kudo.message}</p>

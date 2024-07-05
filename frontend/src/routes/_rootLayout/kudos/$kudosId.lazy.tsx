@@ -6,7 +6,7 @@ import { TKudos } from '@/types';
 import { createLazyFileRoute } from '@tanstack/react-router';
 import { createContext, useContext } from 'react';
 
-const KudoContext = createContext<TKudos | null>(null);
+export const KudoContext = createContext<TKudos | null>(null);
 
 export const Route = createLazyFileRoute('/_rootLayout/kudos/$kudosId')({
   component: () => <Component />,
@@ -38,10 +38,3 @@ function Component() {
     </div>
   );
 }
-
-export const useKudoContext = () => {
-  const context = useContext(KudoContext);
-  if (!context)
-    throw new CustomError('useKudoContext must be used within a KudoContext.Provider', 400);
-  return context;
-};

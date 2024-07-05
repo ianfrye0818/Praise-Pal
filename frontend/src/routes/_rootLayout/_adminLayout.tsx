@@ -13,5 +13,9 @@ function AdminLayout() {
   if (!isAuthenticated) return <Navigate to='/sign-in' />;
 
   if (!isAdmin) return <Navigate to='/' />;
-  return <Outlet />;
+  return (
+    <div className='w-screen mt-12'>
+      <Outlet />
+    </div>
+  );
 }

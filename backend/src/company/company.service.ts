@@ -19,7 +19,7 @@ export class CompanyService {
     private emailService: EmailService,
   ) {}
 
-  async findAll(filter?: CompanyFilterDTO): Promise<Company[]> {
+  async findAll(filter?: CompanyFilterDTO) {
     try {
       return await this.prismaService.company.findMany({ where: filter });
     } catch (error) {
@@ -28,7 +28,7 @@ export class CompanyService {
     }
   }
 
-  async findOneById(id: string): Promise<Company> {
+  async findOneById(id: string) {
     try {
       const company = await this.prismaService.company.findUnique({
         where: { id },
@@ -43,7 +43,7 @@ export class CompanyService {
     }
   }
 
-  async findOneByCompanyCode(companyCode: string): Promise<Company> {
+  async findOneByCompanyCode(companyCode: string) {
     try {
       const company = await this.prismaService.company.findUnique({
         where: { companyCode },
@@ -57,10 +57,7 @@ export class CompanyService {
     }
   }
 
-  async createCompanyRecursive(
-    data: CreateCompanyDTO,
-    retries: number,
-  ): Promise<Company> {
+  async createCompanyRecursive(data: CreateCompanyDTO, retries: number) {
     try {
       const companyCode = generateCompanyCode();
       let company = await this.prismaService.company.findUnique({
@@ -86,7 +83,7 @@ export class CompanyService {
     }
   }
 
-  async create(data: CreateCompanyDTO): Promise<Company> {
+  async create(data: CreateCompanyDTO) {
     const retries = 0;
     return this.createCompanyRecursive(data, retries);
   }
@@ -107,7 +104,7 @@ export class CompanyService {
     }
   }
 
-  async softDeleteUserById(id: string): Promise<Company> {
+  async softDeleteCompany(id: string) {
     try {
       return await this.prismaService.company.update({
         where: { id },
@@ -121,7 +118,7 @@ export class CompanyService {
     }
   }
 
-  @Cron('0 0 * * *') // Run every night at midnight
+  @Cron('0 0 * * *')
   async permanentlyDeleteOldUsers() {
     const dateThreshold = new Date();
     dateThreshold.setDate(dateThreshold.getDate() - 30);

@@ -7,6 +7,7 @@ import { EmailService } from '../../core-services/email.service';
 import { UserService } from '../user/user.service';
 import { SkipThrottle } from '@nestjs/throttler';
 import { UserNotificationsModule } from '../user-notifications/user-notifications.module';
+import { CommentsService } from 'src/(comments)/comments/comments.service';
 @SkipThrottle()
 @Module({
   imports: [UserNotificationsModule],
@@ -17,6 +18,7 @@ import { UserNotificationsModule } from '../user-notifications/user-notification
     PrismaService,
     EmailService,
     UserService,
+    CommentsService,
   ],
   exports: [UserLikesService],
 })

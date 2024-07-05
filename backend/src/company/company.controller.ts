@@ -53,6 +53,6 @@ export class CompanyController {
   @UseGuards(SuperAdminGuard)
   @Delete(':companyId')
   async deleteCompanyById(@Param('companyId') companyId: string) {
-    return await this.companyService.softDeleteUserById(companyId);
+    return await this.companyService.softDeleteCompany(companyId);
   }
 }

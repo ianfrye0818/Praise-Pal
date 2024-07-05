@@ -1,5 +1,7 @@
 import { deleteSingleUser } from '@/api/api-handlers';
 import { USER_QUERY_OPTIONS } from '@/constants';
+import useErrorToast from '@/hooks/useErrorToast';
+import useSuccessToast from '@/hooks/useSuccessToast';
 import { User } from '@/types';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
@@ -10,6 +12,8 @@ interface UseGetUserProps {
 
 export default function useDeleteCompanyUser() {
   const queryClient = useQueryClient();
+  const { errorToast } = useErrorToast();
+  const { successToast } = useSuccessToast();
   const mutation = useMutation({
     mutationFn: async ({ companyId, userId }: UseGetUserProps) =>
       await deleteSingleUser(companyId, userId),
@@ -26,12 +30,14 @@ export default function useDeleteCompanyUser() {
       });
       return { previousData };
     },
-    onError: (_, __, context) => {
+    onError: (err, __, context) => {
       queryClient.setQueriesData(USER_QUERY_OPTIONS, context?.previousData);
+      errorToast({ message: err.message });
     },
 
-    onSettled: () => {
+    onSuccess: () => {
       queryClient.invalidateQueries(USER_QUERY_OPTIONS);
+      successToast({ message: 'User deleted successfully' });
     },
   });
   return mutation;

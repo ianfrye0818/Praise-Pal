@@ -6,6 +6,7 @@ import { PrismaService } from '../core-services/prisma.service';
 import { JwtStrategy } from '../auth/stratagies/jwt-stratagy';
 import { UserService } from '../(user)/user/user.service';
 import { UserNotificationsService } from '../(user)/user-notifications/user-notifications.service';
+import { CommentsService } from 'src/(comments)/comments/comments.service';
 
 @Module({
   controllers: [KudosController],
@@ -16,6 +17,7 @@ import { UserNotificationsService } from '../(user)/user-notifications/user-noti
     JwtStrategy,
     UserService,
     UserNotificationsService,
+    CommentsService,
   ],
   exports: [KudosService],
 })

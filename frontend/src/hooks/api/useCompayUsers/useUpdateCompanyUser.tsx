@@ -2,6 +2,8 @@ import { patchUpdateUser } from '@/api/api-handlers';
 import { updateCurrentUser } from '@/api/auth-actions';
 import { USER_QUERY_OPTIONS } from '@/constants';
 import { useAuth } from '@/hooks/useAuth';
+import useErrorToast from '@/hooks/useErrorToast';
+import useSuccessToast from '@/hooks/useSuccessToast';
 import { User } from '@/types';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
@@ -15,6 +17,8 @@ interface UseGetUserProps {
 export default function useUpdateCompanyUser() {
   const { dispatch } = useAuth();
   const queryClient = useQueryClient();
+  const { errorToast } = useErrorToast();
+  const { successToast } = useSuccessToast();
   const mutation = useMutation({
     mutationFn: async ({ companyId, userToUpdateId, payload, currentUser }: UseGetUserProps) => {
       if (userToUpdateId === currentUser.userId) {
@@ -41,12 +45,14 @@ export default function useUpdateCompanyUser() {
       });
       return { previousData };
     },
-    onError: (_, __, context) => {
+    onError: (err, __, context) => {
       queryClient.setQueriesData(USER_QUERY_OPTIONS, context?.previousData);
+      errorToast({ message: err.message });
     },
 
-    onSettled: () => {
+    onSuccess: () => {
       queryClient.invalidateQueries(USER_QUERY_OPTIONS);
+      successToast({ message: 'User updated successfully' });
     },
   });
   return mutation;

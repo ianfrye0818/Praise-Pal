@@ -22,9 +22,6 @@ export class CreateUserNotificationDTO {
   @Transform(({ value }: { value: string }) => value.toUpperCase())
   actionType: ActionType;
 
-  @IsString()
-  referenceId: string[];
-
   @IsOptional()
   @IsString()
   kudosId?: string;

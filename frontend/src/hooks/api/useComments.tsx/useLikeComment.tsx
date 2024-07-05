@@ -1,5 +1,6 @@
 import { deleteLikeComment, postAddLikeComment } from '@/api/api-handlers';
 import { COMMENT_QUERY_OPTIONS, KUDOS_QUERY_OPTIONS } from '@/constants';
+import useErrorToast from '@/hooks/useErrorToast';
 import { Comment } from '@/types';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
@@ -10,6 +11,7 @@ interface LikeCommentProps {
 
 export default function useLikeComments() {
   const queryClient = useQueryClient();
+  const { errorToast } = useErrorToast();
 
   const updateLikesInTree = (
     comments: Comment[],
@@ -60,8 +62,9 @@ export default function useLikeComments() {
       }
       return { previousData };
     },
-    onError: (_, __, context) => {
+    onError: (err, __, context) => {
       queryClient.setQueriesData(COMMENT_QUERY_OPTIONS, context?.previousData);
+      errorToast({ message: err.message });
     },
     onSuccess: () => {
       queryClient.invalidateQueries(COMMENT_QUERY_OPTIONS);

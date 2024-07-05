@@ -1,10 +1,14 @@
 import { deleteComment } from '@/api/api-handlers';
 import { COMMENT_QUERY_OPTIONS, KUDOS_QUERY_OPTIONS } from '@/constants';
+import useErrorToast from '@/hooks/useErrorToast';
+import useSuccessToast from '@/hooks/useSuccessToast';
 import { Comment } from '@/types';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
-export default function UseDeleteComment(companyId: string) {
+export default function useDeleteComment(companyId: string) {
   const queryClient = useQueryClient();
+  const { errorToast } = useErrorToast();
+  const { successToast } = useSuccessToast();
 
   const removeCommentFromTree = (
     comments: Comment[],
@@ -48,12 +52,14 @@ export default function UseDeleteComment(companyId: string) {
       });
       return { previousData };
     },
-    onError: (_, __, context) => {
+    onError: (err, __, context) => {
       queryClient.setQueriesData(COMMENT_QUERY_OPTIONS, context?.previousData);
+      errorToast({ message: err.message });
     },
     onSuccess: () => {
       queryClient.invalidateQueries(COMMENT_QUERY_OPTIONS);
       queryClient.invalidateQueries(KUDOS_QUERY_OPTIONS);
+      successToast({ message: 'Comment deleted successfully' });
     },
   });
 

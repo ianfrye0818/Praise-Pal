@@ -6,6 +6,8 @@ import {
 import { PrismaService } from '../../core-services/prisma.service';
 import { UserNotificationsService } from 'src/(user)/user-notifications/user-notifications.service';
 import { CommentsService } from '../comments/comments.service';
+import { UserService } from 'src/(user)/user/user.service';
+import { ActionType } from '@prisma/client';
 
 @Injectable()
 export class CommentLikesService {
@@ -13,6 +15,7 @@ export class CommentLikesService {
     private prismaService: PrismaService,
     private commentService: CommentsService,
     private userNotificationsService: UserNotificationsService,
+    private usersService: UserService,
   ) {}
 
   async createLike({
@@ -30,7 +33,25 @@ export class CommentLikesService {
         },
       });
 
-      await this.commentService.increaseLikes(commentId, userId);
+      const updatedComment = await this.commentService.increaseLikes(commentId);
+
+      if (updatedComment.user.userId !== userId) {
+        const likingUser = await this.usersService.findOneById(userId);
+
+        if (likingUser) {
+          const displayName =
+            `${likingUser.firstName} ${likingUser.lastName[0]}` ||
+            likingUser.displayName;
+
+          await this.userNotificationsService.createNotification({
+            userId: updatedComment.user.userId,
+            actionType: ActionType.COMMENT_LIKE,
+            kudosId: updatedComment.kudosId,
+            commentId: updatedComment.id,
+            message: `${displayName} liked your comment`,
+          });
+        }
+      }
     } catch (error) {
       console.error(error);
       if (error.code === 'P2002') {
@@ -48,7 +69,7 @@ export class CommentLikesService {
     userId: string;
   }) {
     try {
-      const deletedLike = await this.prismaService.comment_Like.delete({
+      await this.prismaService.comment_Like.delete({
         where: {
           userId_commentId: {
             commentId,
@@ -57,7 +78,21 @@ export class CommentLikesService {
         },
       });
 
-      await this.commentService.decreaseLikes(commentId, userId);
+      const updatedComment = await this.commentService.decreaseLikes(commentId);
+
+      if (updatedComment.user.userId !== userId) {
+        const unlikingUser = await this.usersService.findOneById(userId);
+
+        if (unlikingUser) {
+          await Promise.all(
+            updatedComment.usernotifications.map(async (notification) => {
+              await this.userNotificationsService.deleteNotificationById(
+                notification.id,
+              );
+            }),
+          );
+        }
+      }
     } catch (error) {
       console.error(error);
       if (error.code === 'P2025')

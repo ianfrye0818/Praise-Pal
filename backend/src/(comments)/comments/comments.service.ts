@@ -11,6 +11,8 @@ import { commentSelectOptions, userSelectOptions } from 'src/utils/constants';
 import { FilterCommentDTO } from './dto/filterCommentDTO';
 import { PrismaService } from 'src/core-services/prisma.service';
 import { EmailService } from 'src/core-services/email.service';
+import { UserService } from 'src/(user)/user/user.service';
+import { getDisplayName } from 'src/utils';
 
 @Injectable()
 export class CommentsService {
@@ -18,6 +20,7 @@ export class CommentsService {
     private readonly prismaService: PrismaService,
     private readonly emailService: EmailService,
     private readonly userNotificationsService: UserNotificationsService,
+    private readonly userService: UserService,
   ) {}
 
   async findAllComments(filter?: FilterCommentDTO) {
@@ -52,99 +55,94 @@ export class CommentsService {
     }
   }
 
+  async findNestedComments(comment: any) {
+    const stack = [comment];
+
+    while (stack.length > 0) {
+      const currentComment = stack.pop();
+      currentComment.comments = await this.prismaService.comment.findMany({
+        where: { parentId: currentComment.id },
+        include: {
+          commentLikes: true,
+          user: { select: userSelectOptions },
+        },
+        orderBy: { createdAt: 'asc' },
+      });
+
+      for (const childComment of currentComment.comments) {
+        stack.push(childComment);
+      }
+    }
+  }
+
   async createKudoComment(payload: CreateCommentDTO) {
     if (payload.parentId) return this.createChildComment(payload);
-    const newComment = await this.prismaService.comment.create({
-      data: payload,
-      select: {
-        kudos: true,
-        id: true,
-      },
-    });
     try {
-      await this.prismaService.$transaction(async (prisma) => {
-        const commentingUser = await prisma.user.findUnique({
-          where: { userId: payload.userId },
-          select: {
-            displayName: true,
-            firstName: true,
-            lastName: true,
-          },
-        });
+      const newComment = await this.prismaService.comment.create({
+        data: payload,
+        select: {
+          kudos: true,
+          id: true,
+        },
+      });
 
-        const displayName =
-          `${commentingUser.firstName} ${commentingUser.lastName[0]}` ||
-          commentingUser.displayName;
+      const commentingUser = await this.userService.findOneById(payload.userId);
+      const displayName = getDisplayName(commentingUser);
+      const { senderId, receiverId } = newComment.kudos;
 
+      if (commentingUser.userId !== senderId) {
         await this.userNotificationsService.createNotification({
           actionType: ActionType.KUDOS_COMMENT,
-          referenceId: [newComment.id],
           kudosId: payload.kudosId,
           commentId: newComment.id,
-          userId: newComment.kudos.senderId,
+          userId: senderId,
           message: `${displayName} commented on a Kudo you sent`,
         });
+      }
 
+      if (commentingUser.userId !== receiverId) {
         await this.userNotificationsService.createNotification({
           actionType: ActionType.KUDOS_COMMENT,
-          referenceId: [newComment.id],
           kudosId: payload.kudosId,
           commentId: newComment.id,
-          userId: newComment.kudos.receiverId,
-          message: `${displayName} commented on Kudo you received`,
+          userId: receiverId,
+          message: `${displayName} commented on a Kudo you received`,
         });
+      }
 
-        return newComment;
-      });
       return newComment;
     } catch (error) {
-      console.error(error);
+      console.error(['Create Kudo Comment Error'], error);
       throw new InternalServerErrorException('Could not create comment');
     }
   }
 
   async createChildComment(payload: CreateCommentDTO) {
     try {
-      const parentComment = await this.prismaService.comment.findUnique({
-        where: { id: payload.parentId },
-        select: commentSelectOptions,
-      });
+      const parentComment = await this.findCommentById(payload.parentId);
 
       if (!parentComment)
         throw new NotFoundException('Parent comment not found');
 
       const childComment = await this.prismaService.comment.create({
         data: payload,
-        select: { id: true },
+        select: { id: true, userId: true },
       });
-      const newComment = await this.prismaService.$transaction(
-        async (prisma) => {
-          const commentingUser = await prisma.user.findUnique({
-            where: { userId: payload.userId },
-            select: {
-              displayName: true,
-              firstName: true,
-              lastName: true,
-            },
-          });
 
-          const displayName =
-            `${commentingUser.firstName} ${commentingUser.lastName[0]}` ||
-            commentingUser.displayName;
+      const commentingUser = await this.userService.findOneById(payload.userId);
+      const displayName = getDisplayName(commentingUser);
 
-          await this.userNotificationsService.createNotification({
-            actionType: ActionType.COMMENT_COMMENT,
-            referenceId: [parentComment.id, childComment.id],
-            kudosId: payload.kudosId,
-            commentId: childComment.id,
-            userId: parentComment.user.userId,
-            message: `${displayName} replied to your comment`,
-          });
+      if (parentComment.user.userId !== childComment.userId) {
+        await this.userNotificationsService.createNotification({
+          actionType: ActionType.COMMENT_COMMENT,
+          kudosId: payload.kudosId,
+          commentId: childComment.id,
+          userId: parentComment.user.userId,
+          message: `${displayName} replied to your comment`,
+        });
+      }
 
-          return childComment;
-        },
-      );
-      return newComment;
+      return childComment;
     } catch (error) {
       console.error(error);
       throw new InternalServerErrorException('Could not create comment');
@@ -165,78 +163,44 @@ export class CommentsService {
     }
   }
 
-  async increaseLikes(id: string, userId: string): Promise<void> {
-    const updatedComment = await this.prismaService.comment.update({
-      where: { id },
-      data: {
-        likes: {
-          increment: 1,
-        },
-      },
-      select: {
-        id: true,
-        kudos: true,
-        user: {
-          select: {
-            userId: true,
+  async increaseLikes(id: string) {
+    try {
+      return await this.prismaService.comment.update({
+        where: { id },
+        data: {
+          likes: {
+            increment: 1,
           },
         },
-      },
-    });
-    try {
-      await this.prismaService.$transaction(async (prisma) => {
-        if (updatedComment.user.userId !== userId) {
-          const likingUser = await prisma.user.findUnique({
-            where: { userId },
-          });
-
-          if (likingUser) {
-            const displayName =
-              `${likingUser.firstName} ${likingUser.lastName[0]}` ||
-              likingUser.displayName;
-
-            await prisma.userNotifications.create({
-              data: {
-                userId: updatedComment.user.userId,
-                actionType: ActionType.COMMENT_LIKE,
-                referenceId: [updatedComment.id],
-                kudosId: updatedComment.kudos.id,
-                commentId: updatedComment.id,
-                message: `${displayName} liked your comment`,
-              },
-            });
-          }
-        }
+        select: {
+          id: true,
+          kudosId: true,
+          user: {
+            select: {
+              userId: true,
+            },
+          },
+        },
       });
     } catch (error) {
       console.error(['Increase Comment Likes Error'], error);
       throw new InternalServerErrorException('Could not like Comment');
     }
   }
-  async decreaseLikes(id: string, userId: string): Promise<void> {
+  async decreaseLikes(id: string) {
     try {
-      await this.prismaService.$transaction(async (prisma) => {
-        const updatedComment = await prisma.comment.update({
-          where: { id },
-          data: {
-            likes: {
-              decrement: 1,
-            },
+      return await this.prismaService.comment.update({
+        where: { id },
+        data: {
+          likes: {
+            decrement: 1,
           },
-          select: commentSelectOptions,
-        });
-
-        if (updatedComment.user.userId !== userId) {
-          const unlikingUser = await prisma.user.findUnique({
-            where: { userId },
-          });
-
-          if (unlikingUser) {
-            await this.userNotificationsService.deleteNotificationByReferrenceId(
-              [updatedComment.id],
-            );
-          }
-        }
+        },
+        select: {
+          usernotifications: { select: { id: true } },
+          id: true,
+          user: { select: { userId: true } },
+        },
       });
     } catch (error) {
       console.error(['Decrease comment Likes Error'], error);

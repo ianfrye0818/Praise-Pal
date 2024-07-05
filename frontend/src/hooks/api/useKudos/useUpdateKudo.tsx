@@ -1,10 +1,12 @@
 import { patchUpdateKudo } from '@/api/api-handlers';
 import { KUDOS_QUERY_OPTIONS } from '@/constants';
+import useErrorToast from '@/hooks/useErrorToast';
 import { TKudos, UpdateKudoProps } from '@/types';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 export default function useUpdateKudo() {
   const queryClient = useQueryClient();
+  const { errorToast } = useErrorToast();
 
   const mutation = useMutation({
     mutationFn: async ({ companyId, payload }: { companyId: string; payload: UpdateKudoProps }) => {
@@ -28,8 +30,9 @@ export default function useUpdateKudo() {
       return { previousData };
     },
 
-    onError: (_, __, context) => {
+    onError: (err, __, context) => {
       queryClient.setQueriesData(KUDOS_QUERY_OPTIONS, context?.previousData);
+      errorToast({ message: err.message });
     },
     onSuccess: () => {
       queryClient.invalidateQueries(KUDOS_QUERY_OPTIONS);

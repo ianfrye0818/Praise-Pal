@@ -1,3 +1,4 @@
+import { Toaster } from '@/components/ui/toaster';
 import { AuthState } from '@/providers/AuthReducerProvider';
 import GetLastPathName from '@/providers/GetLastPathname';
 import ScrollToTop from '@/providers/ScrollToTop';
@@ -15,6 +16,7 @@ export const Route = createRootRouteWithContext<RouterContext>()({
       <ScrollToTop />
       <GetLastPathName />
       <SetPathLocaiton />
+      <Toaster />
       <TanStackRouterDevtools />
     </div>
   ),

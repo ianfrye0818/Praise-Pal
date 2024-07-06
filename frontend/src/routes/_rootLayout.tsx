@@ -26,7 +26,7 @@ export function RootLayout() {
   }
 
   return (
-    <main className='flex gap-2 h-full'>
+    <main className='flex h-full'>
       <Sidebar />
 
       <div className='lg:ml-[300px] md:p-4 flex-1 flex flex-col'>

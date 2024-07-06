@@ -17,26 +17,28 @@ export default function SingleKudosPage() {
   const usersKudo = kudo.sender.userId === currentUser?.userId;
 
   return (
-    <div className='bg-background text-foreground rounded-lg md:shadow-md p-6 space-y-6 container mx-auto md:mt-12 overflow-x-auto'>
-      <div className='flex items-start space-x-4'>
-        <UserAvitar displayName={senderDisplayName} />
-        <div className='flex-1 space-y-2'>
-          <div className='flex items-center justify-between'>
-            <div className='font-medium'>{receiverDisplayName}</div>
-            <div className='text-xs text-muted-foreground hidden md:block'>
-              {timeAgo(kudo.createdAt)}
+    <div className='h-[calc(100vh-48px)]  flex flex-col justify-between  text-foreground rounded-lg md:shadow-md p-6 space-y-6 container mx-auto md:mt-12 md:h-auto md:block overflow-x-auto'>
+      <div>
+        <div className='flex items-start space-x-4'>
+          <UserAvitar displayName={senderDisplayName} />
+          <div className='flex-1 space-y-2'>
+            <div className='flex items-center justify-between'>
+              <div className='font-medium'>{receiverDisplayName}</div>
+              <div className='text-xs text-muted-foreground hidden md:block'>
+                {timeAgo(kudo.createdAt)}
+              </div>
             </div>
+            <div className='text-lg font-semibold'>{kudo.title}</div>
+            <p>{kudo.message}</p>
+            <LikeReplyButtons
+              type='kudo'
+              kudo={kudo}
+            />
           </div>
-          <div className='text-lg font-semibold'>{kudo.title}</div>
-          <p>{kudo.message}</p>
-          <LikeReplyButtons
-            type='kudo'
-            kudo={kudo}
-          />
+          {usersKudo && <KudoCardDropDownMenu kudo={kudo} />}
         </div>
-        {usersKudo && <KudoCardDropDownMenu kudo={kudo} />}
+        <CommentSectionComponent comments={kudo.comments as Comment[]} />
       </div>
-      <CommentSectionComponent comments={kudo.comments as Comment[]} />
       <NewCommentForm type='parent' />
     </div>
   );

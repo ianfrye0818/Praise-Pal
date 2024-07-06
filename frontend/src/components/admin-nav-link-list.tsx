@@ -9,8 +9,10 @@ import logo from '@/assets/logo.png';
 
 export default function AdminNavLinkList({
   setMenuOpen,
+  type = 'desktop',
 }: {
   setMenuOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  type?: 'desktop' | 'mobile';
 }) {
   const { setAdminMode } = useAdminMode();
   return (
@@ -28,7 +30,7 @@ export default function AdminNavLinkList({
 
       {adminSidebarLinks.map((link) => (
         <NavBarLink
-          onClick={() => setMenuOpen(false)}
+          onClick={type === 'mobile' ? () => setMenuOpen!(false) : undefined}
           key={link.label}
           link={link}
         />
@@ -38,7 +40,7 @@ export default function AdminNavLinkList({
         className='justify-start p-2 '
         onClick={async () => {
           setAdminMode(false);
-          setMenuOpen(false);
+          type === 'mobile' && setMenuOpen(false);
         }}
         asChild
       >

@@ -14,7 +14,7 @@ function AdminLayout() {
 
   if (!isAdmin) return <Navigate to='/' />;
   return (
-    <div className='w-screen mt-12'>
+    <div className='w-screen md:w-auto mt-12'>
       <Outlet />
     </div>
   );

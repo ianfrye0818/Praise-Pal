@@ -26,9 +26,15 @@ export default function MobileNavSheet() {
           {/* <h1 className='text-26 font-ibm-plex-serif font-bold text-black-1'>Praise Pal</h1> */}
           <div className='flex h-[calc(100vh-72px)] flex-col justify-between overflow-y-auto;'>
             {adminMode ? (
-              <AdminNavLinkList setMenuOpen={setOpen} />
+              <AdminNavLinkList
+                type={'mobile'}
+                setMenuOpen={setOpen}
+              />
             ) : (
-              <NavLinksList setMenuOpen={setOpen} />
+              <NavLinksList
+                type={'mobile'}
+                setMenuOpen={setOpen}
+              />
             )}
             <SideBarFooter />
           </div>

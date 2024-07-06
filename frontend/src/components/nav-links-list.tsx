@@ -6,12 +6,13 @@ import useAdminMode from '@/hooks/useAdminMode';
 import { Button } from './ui/button';
 import { ShieldCheck } from 'lucide-react';
 import logo from '@/assets/logo.png';
-import useGetUserNotifications from '@/hooks/api/userNotifications/useGetUserNotifications';
 
 export default function NavLinksList({
   setMenuOpen,
+  type = 'desktop',
 }: {
-  setMenuOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  setMenuOpen?: React.Dispatch<React.SetStateAction<boolean>>;
+  type?: 'desktop' | 'mobile';
 }) {
   const { isAdmin } = useAuth().state;
   const { setAdminMode } = useAdminMode();
@@ -30,7 +31,7 @@ export default function NavLinksList({
       </Link>
       {sidebarLinks.map((link) => (
         <NavBarLink
-          onClick={() => setMenuOpen(false)}
+          onClick={type === 'mobile' ? () => setMenuOpen!(false) : undefined}
           key={link.label}
           link={link}
         />
@@ -41,7 +42,7 @@ export default function NavLinksList({
           className='flex gap-3 items-center p-3 justify-start rounded-md hover:no-underline text-lg'
           onClick={async () => {
             setAdminMode(true);
-            setMenuOpen(false);
+            type === 'mobile' && setMenuOpen!(false);
             await navigate({ to: '/admin/dashboard' });
           }}
         >

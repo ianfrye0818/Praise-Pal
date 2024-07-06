@@ -7,7 +7,7 @@ export const Route = createFileRoute('/_authLayout')({
 });
 
 function AuthLayout() {
-  const { loading, isAuthenticated } = useAuth().state;
+  const { isAuthenticated } = useAuth().state;
   const lastPath = sessionStorage.getItem('lastPath') || null;
 
   if (isAuthenticated) {

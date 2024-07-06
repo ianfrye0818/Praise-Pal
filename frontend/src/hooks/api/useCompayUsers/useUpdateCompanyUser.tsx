@@ -4,7 +4,7 @@ import { USER_QUERY_OPTIONS } from '@/constants';
 import { useAuth } from '@/hooks/useAuth';
 import useErrorToast from '@/hooks/useErrorToast';
 import useSuccessToast from '@/hooks/useSuccessToast';
-import { User } from '@/types';
+import { Role, User } from '@/types';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 interface UseGetUserProps {
@@ -24,7 +24,12 @@ export default function useUpdateCompanyUser() {
       if (userToUpdateId === currentUser.userId) {
         return await updateCurrentUser(dispatch, companyId, userToUpdateId, payload);
       } else {
-        return await patchUpdateUser(companyId, userToUpdateId, payload);
+        const { role: _, ...rest } = payload;
+        return await patchUpdateUser(
+          companyId,
+          userToUpdateId,
+          currentUser.role === Role.COMPANY_OWNER ? payload : rest
+        );
       }
     },
     onMutate: async (newData: Partial<User>) => {

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Comment } from '@/types';
+import { Comment, Role } from '@/types';
 import { timeAgo, getUserDisplayName } from '@/lib/utils';
 import { useAuth } from '@/hooks/useAuth';
 import LikeReplyButtons from './like-reply-buttons';
@@ -14,7 +14,11 @@ export default function CommentComponent(comment: Comment) {
   const [editMode, setEditMode] = useState(false);
   const [replyVisible, setReplyVisible] = useState(false);
   const senderDisplayName = getUserDisplayName(comment.user);
-  const commentOwner = comment.user.userId === currentUser?.userId;
+  const canSeeDropDown =
+    comment.user.userId === currentUser?.userId ||
+    currentUser?.role === Role.ADMIN ||
+    currentUser?.role === Role.COMPANY_OWNER;
+  const canEdit = comment.user.userId === currentUser?.userId;
   const showSeperator = comment.parentId;
 
   return (
@@ -36,12 +40,13 @@ export default function CommentComponent(comment: Comment) {
               setEditMode={setEditMode}
             />
           )}
-          {commentOwner && (
+          {canSeeDropDown && (
             <CommentDropDownMenu
               commentId={comment.id}
               companyId={currentUser?.companyId as string}
               parentId={comment.parentId}
               setEditMode={setEditMode}
+              canEdit={canEdit}
             />
           )}
         </div>

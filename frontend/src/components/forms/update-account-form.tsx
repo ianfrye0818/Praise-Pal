@@ -103,7 +103,13 @@ export function UpdateAccountDialog({
                 Delete Account
               </Button>
               <div className='flex items-center gap-2'>
-                <Button variant={'outline'}>Cancel</Button>
+                <Button
+                  onClick={() => setOpen(false)}
+                  type='button'
+                  variant={'outline'}
+                >
+                  Cancel
+                </Button>
                 <Button
                   type='submit'
                   className='ml-auto'

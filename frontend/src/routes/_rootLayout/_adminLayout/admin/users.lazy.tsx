@@ -16,7 +16,7 @@ function UsersAdminPage() {
     isError,
   } = useGetCompanyUsers({
     companyId: user?.companyId as string,
-    roles: [Role.USER, Role.ADMIN],
+    roles: [Role.USER, Role.ADMIN, Role.COMPANY_OWNER],
   });
 
   //TODO: add loading and error components

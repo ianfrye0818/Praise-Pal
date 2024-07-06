@@ -101,7 +101,12 @@ export function UpdateCompanyDialogForm({
             />
           </div>
           <DialogFooter className='flex justify-end'>
-            <Button type='submit'>Update Company</Button>
+            <Button
+              disabled={!form.formState.isValid}
+              type='submit'
+            >
+              Update Company
+            </Button>
           </DialogFooter>
         </form>
       </Form>

@@ -23,8 +23,7 @@ export class EditKudosGuard implements CanActivate {
 
     if (
       (jwtUser.role === Role.ADMIN || jwtUser.role === Role.COMPANY_OWNER) &&
-      jwtUser.companyId === companyId &&
-      method === 'DELETE'
+      jwtUser.companyId === companyId
     ) {
       return true;
     }

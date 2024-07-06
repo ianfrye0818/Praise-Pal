@@ -15,7 +15,7 @@ export default function useSuccessToast() {
       title: title ? capitalizeString(title) : 'Success!',
       description: capitalizeString(message),
       variant: 'success',
-      duration,
+      duration: duration || 3000,
     });
   };
 

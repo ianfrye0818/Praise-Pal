@@ -1,11 +1,4 @@
-import {
-  Controller,
-  Request,
-  UseGuards,
-  Post,
-  Body,
-  Response,
-} from '@nestjs/common';
+import { Controller, Request, UseGuards, Post, Body } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { UserService } from '../(user)/user/user.service';
 import { LocalAuthGuard } from './guards/local.guard';
@@ -49,9 +42,9 @@ export class AuthController {
 
   @Post('update-password')
   async updatePassword(
-    @Body() data: { email: string; oldPassword; newPassword: string },
+    @Body() data: { email: string; oldPassword: string; newPassword: string },
   ) {
-    //TODO: add validation
+    await this.authService.updatePassword(data);
   }
 
   //TODO secure this by verifying email with link

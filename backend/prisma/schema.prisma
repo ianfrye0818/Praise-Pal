@@ -35,6 +35,8 @@ model User {
   refreshTokens RefreshToken[]
   comments      Comment[]
   commentLkes   Comment_Like[]
+  passwordResetToken PasswordResetToken?
+  emailVerificationToken EmailVerificationToken?
 }
 
 model Company {
@@ -155,3 +157,25 @@ enum ActionType {
   KUDOS_COMMENT
   KUDOS
 }
+
+
+model PasswordResetToken {
+  id        String   @id @default(cuid())
+  userId    String @unique
+  user      User     @relation(fields: [userId], references: [userId], onDelete: Cascade, onUpdate: Cascade)
+  token     String
+  createdAt DateTime @default(now())
+  expiresAt DateTime
+  used Boolean @default(false)
+}
+
+model EmailVerificationToken {
+  id        String   @id @default(cuid())
+  userId    String @unique
+  user      User     @relation(fields: [userId], references: [userId], onDelete: Cascade, onUpdate: Cascade)
+  token     String
+  createdAt DateTime @default(now())
+  expiresAt DateTime
+  used Boolean @default(false)
+}
+

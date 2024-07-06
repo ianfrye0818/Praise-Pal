@@ -1,17 +1,26 @@
 import { Injectable } from '@nestjs/common';
-import * as sgMail from '@sendgrid/mail';
 import fs from 'fs';
 import path from 'path';
+import { Resend } from 'resend';
+import { env } from 'src/env';
+
+interface EmailData {
+  from?: string;
+  to: string[];
+  subject: string;
+  html: string;
+}
 
 @Injectable()
 export class EmailService {
-  private SENDGRID_API_KEY = process.env.SENDGRID_API_KEY!;
+  private RESENT_API_KEY = env.RESEND_API_KEY;
+  private resend: Resend;
 
   constructor() {
-    if (!this.SENDGRID_API_KEY) {
-      throw new Error('SENDGRID_API_KEY is not defined');
+    if (!this.RESENT_API_KEY) {
+      throw new Error('API Key is not defined');
     }
-    sgMail.setApiKey(this.SENDGRID_API_KEY);
+    this.resend = new Resend(this.RESENT_API_KEY);
   }
 
   async sendCronErrorNotification(errorDetails: string, errorTitle: string) {
@@ -28,20 +37,22 @@ export class EmailService {
       .replace('{{ errorDetails }}', errorDetails);
 
     await this.sendEmail({
-      to: 'ianfrye.dev@gmail.com',
+      to: ['ianfrye.dev@gmail.com'],
       subject: 'Error Notification',
-      from: 'ianfrye3@ianfrye.dev',
+      from: 'Ian <ian@praise-pal.com',
       html: htmlContent,
     });
   }
 
-  public async sendEmail(msg: sgMail.MailDataRequired) {
-    try {
-      await sgMail.send(msg);
-      return 'Email sent successfully';
-    } catch (error) {
-      console.error(error);
-      throw error;
+  public async sendEmail({
+    from = 'ian@email.praise-pal.com',
+    ...rest
+  }: EmailData) {
+    const { data, error } = await this.resend.emails.send({ from, ...rest });
+    if (error) {
+      return console.error(error);
     }
+
+    console.log(data);
   }
 }

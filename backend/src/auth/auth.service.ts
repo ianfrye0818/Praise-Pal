@@ -11,6 +11,7 @@ import { User } from '@prisma/client';
 import { ClientUser } from '../types';
 import { RefreshTokenService } from '../core-services/refreshToken.service';
 import { generateClientSideUserProperties } from '../utils';
+import { EmailService } from 'src/core-services/email.service';
 
 @Injectable()
 export class AuthService {
@@ -18,6 +19,7 @@ export class AuthService {
     private readonly userService: UserService,
     private jwtService: JwtService,
     private refreshTokenService: RefreshTokenService,
+    private emailService: EmailService,
   ) {}
 
   async validateUser(
@@ -104,6 +106,39 @@ export class AuthService {
       if (error instanceof UnauthorizedException) throw error;
       throw new InternalServerErrorException('Could not reset password');
     }
+  }
+
+  async updatePassword(data: {
+    email: string;
+    oldPassword: string;
+    newPassword: string;
+  }) {
+    console.log(data);
+    try {
+      await this.emailService.sendEmail({
+        html: `<h1>Hi there!</h1><p>Your password has been updated successfully</p>`,
+        subject: 'Password Updated',
+        to: [data.email],
+      });
+    } catch (error) {
+      console.error(['Email Error'], error);
+      throw new InternalServerErrorException('Could not send email');
+    }
+    // try {
+    //   const user = await this.userService.findOneByEmail(data.email);
+    //   if (!user) throw new UnauthorizedException('User not found');
+    //   if (!(await bcrypt.compare(data.oldPassword, user.password)))
+    //     throw new UnauthorizedException('Invalid password');
+    //   const updatedUser = await this.userService.updatePassword(
+    //     user.userId,
+    //     await bcrypt.hash(data.newPassword, 10),
+    //   );
+    //   return updatedUser;
+    // } catch (error) {
+    //   console.error(['Update Password Error'], error);
+    //   if (error instanceof UnauthorizedException) throw error;
+    //   throw new InternalServerErrorException('Could not update password');
+    // }
   }
 
   private generateAccessToken(payload: object) {

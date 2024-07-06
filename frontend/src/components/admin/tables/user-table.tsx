@@ -11,7 +11,6 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { useAuth } from '@/hooks/useAuth';
-import { getShownUsers } from '@/lib/utils';
 import { User } from '@/types';
 
 interface UsersTableProps {

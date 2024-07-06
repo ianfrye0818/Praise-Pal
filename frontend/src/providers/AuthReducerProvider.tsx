@@ -8,6 +8,7 @@ export interface AuthState {
   loading: boolean;
   isAuthenticated: boolean;
   isAdmin: boolean;
+  isCompanyOwner: boolean;
 }
 
 const initialState: AuthState = {
@@ -15,6 +16,7 @@ const initialState: AuthState = {
   loading: false,
   isAuthenticated: false,
   isAdmin: false,
+  isCompanyOwner: false,
 };
 
 // Define action types
@@ -116,8 +118,11 @@ const authReducer = (state: AuthState, action: AuthAction): AuthState => {
         user: action.payload.user,
         isAuthenticated: true,
         isAdmin:
-          action.payload.user.role === Role.ADMIN || action.payload.user.role === Role.SUPER_ADMIN,
+          action.payload.user.role === Role.ADMIN ||
+          action.payload.user.role === Role.SUPER_ADMIN ||
+          action.payload.user.role === Role.COMPANY_OWNER,
         loading: false,
+        isCompanyOwner: action.payload.user.role === Role.COMPANY_OWNER,
       };
     case ActionType.LOGIN_FAILURE:
     case ActionType.REGISTER_FAILURE:

@@ -16,6 +16,7 @@ import { JwtGuard } from '../auth/guards/jwt.guard';
 import { AdminGuard } from '../core-guards/admin.guard';
 import { CompanyGuard } from '../core-guards/company.guard';
 import { CompanyFilterDTO } from './dto/filterCompany.dto';
+import { CompanyOwnerGuard } from 'src/core-guards/company-owner.guard';
 
 @UseGuards(JwtGuard)
 @Controller('company')
@@ -40,7 +41,7 @@ export class CompanyController {
     return await this.companyService.create(data);
   }
 
-  @UseGuards(AdminGuard)
+  @UseGuards(CompanyOwnerGuard)
   @UseGuards(CompanyGuard)
   @Patch(':companyId')
   async updateCompanyById(

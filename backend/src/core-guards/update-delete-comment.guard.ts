@@ -12,6 +12,7 @@ import { CommentsService } from 'src/(comments)/comments/comments.service';
 @Injectable()
 export class EditCommentGuard implements CanActivate {
   constructor(private commentService: CommentsService) {}
+
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest() as Request;
     const jwtUser = request.user as ClientUser;
@@ -24,15 +25,23 @@ export class EditCommentGuard implements CanActivate {
       commentId as string,
     );
 
+    if (!comment) {
+      throw new ForbiddenException('Comment not found');
+    }
+
+    // Super admin can do anything
     if (jwtUser.role === Role.SUPER_ADMIN) return true;
 
+    // Company owner and admin can delete comments in their company
     if (
-      jwtUser.role === Role.ADMIN &&
+      (jwtUser.role === Role.ADMIN || jwtUser.role === Role.COMPANY_OWNER) &&
       jwtUser.companyId === companyId &&
       method === 'DELETE'
-    )
+    ) {
       return true;
+    }
 
+    // Users can update or delete their own comments
     if (jwtUser.userId === comment.user.userId) return true;
 
     const message = method === 'PATCH' ? 'update' : 'delete';

@@ -38,6 +38,7 @@ export enum Role {
   ADMIN = 'ADMIN',
   USER = 'USER',
   SUPER_ADMIN = 'SUPER_ADMIN',
+  COMPANY_OWNER = 'COMPANY_OWNER',
 }
 
 export interface AuthTokens {

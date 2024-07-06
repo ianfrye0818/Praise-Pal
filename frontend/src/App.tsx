@@ -7,7 +7,7 @@ import AdminModeProvider from './providers/AdminModeProvider';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { InfinitySpin } from 'react-loader-spinner';
 import ErrorComponent from './components/error-component';
-import { useEffect } from 'react';
+import NotFoundComponent from './components/not-found-component';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -22,6 +22,7 @@ const queryClient = new QueryClient({
 const router = createRouter({
   routeTree,
   context: { state: undefined!, queryClient },
+  defaultNotFoundComponent: NotFoundComponent,
   defaultPendingComponent: () => (
     <div className='h-screen w-full flex justify-center items-center'>
       <InfinitySpin

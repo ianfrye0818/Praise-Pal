@@ -1,6 +1,6 @@
-import { IMAGES } from '@/constants';
 import { useAuth } from '@/hooks/useAuth';
-import { createFileRoute, Outlet, Navigate } from '@tanstack/react-router';
+import logo from '@/assets/logo.png';
+import { createFileRoute, Navigate, Outlet } from '@tanstack/react-router';
 
 export const Route = createFileRoute('/_authLayout')({
   component: () => <AuthLayout />,
@@ -22,7 +22,7 @@ function AuthLayout() {
       <header className='h-[96px]  p-1'>
         <div className='container mx-auto '>
           <img
-            src={IMAGES.logo}
+            src={logo}
             alt='logo'
             width={180}
           />

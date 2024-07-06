@@ -11,7 +11,7 @@ export default function AdminNavLinkList({
   setMenuOpen,
   type = 'desktop',
 }: {
-  setMenuOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  setMenuOpen?: React.Dispatch<React.SetStateAction<boolean>>;
   type?: 'desktop' | 'mobile';
 }) {
   const { setAdminMode } = useAdminMode();
@@ -40,7 +40,7 @@ export default function AdminNavLinkList({
         className='justify-start p-2 '
         onClick={async () => {
           setAdminMode(false);
-          type === 'mobile' && setMenuOpen(false);
+          type === 'mobile' && setMenuOpen!(false);
         }}
         asChild
       >

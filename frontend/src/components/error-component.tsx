@@ -1,11 +1,10 @@
 import { useEffect } from 'react';
 import { useQueryErrorResetBoundary } from '@tanstack/react-query';
-import { useRouter, useNavigate } from '@tanstack/react-router';
+import { useRouter } from '@tanstack/react-router';
 
 const ErrorComponent = () => {
   const router = useRouter();
   const queryErrorResetBoundry = useQueryErrorResetBoundary();
-  const navigate = useNavigate();
 
   useEffect(() => {
     queryErrorResetBoundry.reset();
@@ -20,7 +19,7 @@ const ErrorComponent = () => {
       <div className='mt-6'>
         <button
           className='px-4 py-2 mr-4 font-semibold text-white bg-blue-600 rounded hover:bg-blue-700'
-          onClick={() => navigate({ to: '/' })}
+          onClick={() => router.navigate({ to: '/' })}
         >
           Go to Homepage
         </button>

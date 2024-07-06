@@ -9,7 +9,7 @@ import { Role } from '@prisma/client';
 import { ClientUser } from '../types';
 
 @Injectable()
-export class AdminGuard implements CanActivate {
+export class CompanyOwnerGuard implements CanActivate {
   constructor() {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -28,10 +28,7 @@ export class AdminGuard implements CanActivate {
     const companyId = request.params.companyId || request.query.companyId;
 
     // Company owner || admin can do anything within these bounds
-    if (
-      (user.role === Role.ADMIN || user.role === Role.COMPANY_OWNER) &&
-      user.companyId === companyId
-    )
+    if (user.role === Role.COMPANY_OWNER && user.companyId === companyId)
       return true;
 
     throw new ForbiddenException(

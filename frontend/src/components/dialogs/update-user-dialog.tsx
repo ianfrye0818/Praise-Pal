@@ -8,10 +8,12 @@ export default function UpdateUserDialog({
   updatingUser,
   trigger,
   currentUser,
+  disabled,
 }: {
   updatingUser: User;
   trigger?: React.ReactNode | string;
   currentUser: User;
+  disabled: boolean;
 }) {
   const [open, setOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
@@ -24,7 +26,12 @@ export default function UpdateUserDialog({
         setDeleting(false);
       }}
     >
-      <DialogTrigger>{trigger}</DialogTrigger>
+      <DialogTrigger
+        disabled={disabled}
+        asChild
+      >
+        {trigger}
+      </DialogTrigger>
 
       <DialogContent>
         {deleting ? (

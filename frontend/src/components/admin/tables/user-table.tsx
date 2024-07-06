@@ -11,7 +11,6 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { useAuth } from '@/hooks/useAuth';
-import { getShownUsers } from '@/lib/utils';
 import { User } from '@/types';
 
 interface UsersTableProps {
@@ -58,10 +57,12 @@ export default function UsersTable({ users, showUserNumber = true }: UsersTableP
                 <TableCell>{user.role}</TableCell>
                 <TableCell>
                   <UpdateUserDialog
+                    disabled={user.role === 'COMPANY_OWNER'}
                     currentUser={currentUser as User}
                     updatingUser={user}
                     trigger={
                       <Button
+                        disabled={user.role === 'COMPANY_OWNER'}
                         size={'sm'}
                         variant={'secondary'}
                       >

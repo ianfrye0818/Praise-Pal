@@ -22,7 +22,7 @@ export function UpdateAccountDialog({
   setDeleting: React.Dispatch<React.SetStateAction<boolean>>;
   updatingUser: User;
 }) {
-  const { isAdmin, user: currentUser } = useAuth().state;
+  const { isCompanyOwner, user: currentUser } = useAuth().state;
 
   const form = useForm<z.infer<typeof updateUserFormSchema>>({
     resolver: zodResolver(updateUserFormSchema),
@@ -30,7 +30,7 @@ export function UpdateAccountDialog({
   });
 
   const roleOptions = getRoleDropDownOptions();
-  const canUpdateRole = isAdmin && currentUser?.userId !== updatingUser.userId;
+  const canUpdateRole = isCompanyOwner && currentUser?.userId !== updatingUser.userId;
 
   const onSubmit = useSubmitUpdateUserForm(currentUser, updatingUser);
 
@@ -103,7 +103,13 @@ export function UpdateAccountDialog({
                 Delete Account
               </Button>
               <div className='flex items-center gap-2'>
-                <Button variant={'outline'}>Cancel</Button>
+                <Button
+                  onClick={() => setOpen(false)}
+                  type='button'
+                  variant={'outline'}
+                >
+                  Cancel
+                </Button>
                 <Button
                   type='submit'
                   className='ml-auto'

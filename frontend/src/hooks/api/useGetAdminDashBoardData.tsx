@@ -10,7 +10,7 @@ export default function useGetAdminDashBoardData(limit: number = 10) {
   const { data: users } = useGetCompanyUsers({
     companyId: user?.companyId as string,
     limit: limit,
-    roles: [Role.USER, Role.ADMIN],
+    roles: [Role.USER, Role.ADMIN, Role.COMPANY_OWNER],
   });
 
   const { data: kudos } = useGetCompanyKudos({

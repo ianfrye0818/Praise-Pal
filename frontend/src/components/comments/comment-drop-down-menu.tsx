@@ -14,6 +14,7 @@ interface CommentDropDownMenuProps {
   parentId?: string;
   setEditMode: React.Dispatch<React.SetStateAction<boolean>>;
   children?: React.ReactNode;
+  canEdit: boolean;
 }
 
 export default function CommentDropDownMenu({
@@ -22,6 +23,7 @@ export default function CommentDropDownMenu({
   parentId,
   setEditMode,
   children,
+  canEdit,
 }: CommentDropDownMenuProps) {
   const [open, setOpen] = useState(false);
   const { mutateAsync: deleteComment } = useDeleteComment(companyId);
@@ -35,17 +37,19 @@ export default function CommentDropDownMenu({
         {children ? children : <EllipsisIcon size={16} />}
       </DropdownMenuTrigger>
       <DropdownMenuContent
-        side='right'
+        side='bottom'
         className='cursor-pointer p-2'
       >
-        <DropdownMenuItem
-          className='p-1 hover:bg-gray-200 outline-1 hover:outline-none border-none rounded-md'
-          onClick={() => {
-            setEditMode(true);
-          }}
-        >
-          Edit
-        </DropdownMenuItem>
+        {canEdit && (
+          <DropdownMenuItem
+            className='p-1 hover:bg-gray-200 outline-1 hover:outline-none border-none rounded-md'
+            onClick={() => {
+              setEditMode(true);
+            }}
+          >
+            Edit
+          </DropdownMenuItem>
+        )}
 
         <DropdownMenuItem
           className='p-1 hover:bg-gray-200 outline-1 hover:outline-none border-none rounded-md'

@@ -63,32 +63,11 @@ export function capitalizeString(str: string) {
 
 export function getRoleDropDownOptions() {
   return Object.values(Role)
-    .filter((role) => role !== Role.SUPER_ADMIN)
+    .filter((role) => role !== Role.SUPER_ADMIN && role !== Role.COMPANY_OWNER)
     .map((role) => ({
       label: capitalizeString(role),
       value: role,
     }));
-}
-
-export function getShownUsers(users: User[], currentUser: User | null, limited: boolean) {
-  const allowedUsers =
-    currentUser?.role === Role.SUPER_ADMIN
-      ? users
-      : users.filter((user) => user.role !== Role.SUPER_ADMIN);
-
-  const usersLength = allowedUsers.length;
-
-  const limitedUsers = usersLength < 10 ? allowedUsers : allowedUsers.slice(0, 10);
-
-  return limited ? limitedUsers : allowedUsers;
-}
-
-export function getShownKudos(kudos: TKudos[], limited: boolean) {
-  const kudosLength = kudos.length;
-
-  const limitedKudos = kudosLength < 10 ? kudos : kudos.slice(0, 10);
-
-  return limited ? limitedKudos : kudos;
 }
 
 export function getUserDisplayName(user: User) {

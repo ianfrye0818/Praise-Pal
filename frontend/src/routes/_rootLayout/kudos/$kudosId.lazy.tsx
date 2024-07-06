@@ -1,10 +1,9 @@
 import SingleKudosPage from '@/components/comments/singleKudosPage';
-import { CustomError } from '@/errors';
 import useGetSingleKudo from '@/hooks/api/useKudos/useGetSingleKudo';
 import { useAuth } from '@/hooks/useAuth';
 import { TKudos } from '@/types';
 import { createLazyFileRoute } from '@tanstack/react-router';
-import { createContext, useContext } from 'react';
+import { createContext } from 'react';
 
 export const KudoContext = createContext<TKudos | null>(null);
 
@@ -16,20 +15,13 @@ function Component() {
   const { kudosId } = Route.useParams();
   const { user: currentUser } = useAuth().state;
 
-  const {
-    data: kudo,
-    error,
-    isLoading,
-  } = useGetSingleKudo({
+  const { data: kudo } = useGetSingleKudo({
     kudoId: kudosId,
     companyId: currentUser?.companyId as string,
   });
 
-  //TODO: replace with loading and error componetns
-  if (isLoading) return <div>Loading...</div>;
-  if (error) return <div>Error: {error.message}</div>;
-  if (!kudo) return <div>Not Found</div>;
-
+  //TODO: no kudo component
+  if (!kudo) return <div>No Kudo Found</div>;
   return (
     <div>
       <KudoContext.Provider value={kudo}>

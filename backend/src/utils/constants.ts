@@ -69,6 +69,7 @@ export const kudoSelectOptions = {
   likes: true,
   isAnonymous: true,
   isHidden: true,
+  companyId: true,
   sender: {
     select: userSelectOptions,
   },

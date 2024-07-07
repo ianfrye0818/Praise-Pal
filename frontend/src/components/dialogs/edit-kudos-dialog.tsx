@@ -25,7 +25,6 @@ import { FormTextAreaItem } from '../forms/form-text-area-item';
 
 export default function EditKudosDialog({ kudo, setMenuOpen }: EditKudosDialogProps) {
   const [open, setOpen] = useState(false);
-  const { user } = useAuth().state;
 
   const form = useForm<z.infer<typeof editKudosFormSchema>>({
     resolver: zodResolver(editKudosFormSchema),
@@ -37,7 +36,11 @@ export default function EditKudosDialog({ kudo, setMenuOpen }: EditKudosDialogPr
     setMenuOpen(false);
   }
 
-  const onSubmit = useSubmitEditKudosForm(user!, kudo.id);
+  console.log(kudo);
+
+  const onSubmit = useSubmitEditKudosForm();
+
+  console.log(form.getValues());
 
   return (
     <Dialog

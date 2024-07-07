@@ -67,7 +67,10 @@ export default function SendPassWordResetLinkDialog({ children }: { children: Re
               <AlertDialogFooter>
                 <AlertDialogCancel
                   type='button'
-                  onClick={() => setOpen(false)}
+                  onClick={() => {
+                    setOpen(false);
+                    form.reset();
+                  }}
                 >
                   Cancel
                 </AlertDialogCancel>

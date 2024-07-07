@@ -33,7 +33,10 @@ export default function AddKudosDialog() {
 
   const form = useForm<z.infer<typeof addKudoFormSchema>>({
     resolver: zodResolver(addKudoFormSchema),
-    defaultValues: ADD_KUDOS_DIALOG_FORM_DEFAULT_VALUES,
+    defaultValues: ADD_KUDOS_DIALOG_FORM_DEFAULT_VALUES(
+      user?.userId as string,
+      user?.companyId as string
+    ),
   });
 
   const onSubmit = useSubmitAddKudosForm(user!, setOpen);

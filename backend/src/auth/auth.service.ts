@@ -94,11 +94,7 @@ export class AuthService {
   }
 
   async login(payload: ClientUser) {
-    console.log(payload);
-    const refreshToken = this.generateRefreshToken({
-      userId: payload.userId,
-      email: payload.email,
-    });
+    const refreshToken = this.generateRefreshToken(payload);
     await this.refreshTokenService.updateUserRefreshToken({
       newToken: refreshToken,
       userId: payload.userId,

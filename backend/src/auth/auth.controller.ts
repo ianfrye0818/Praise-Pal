@@ -8,6 +8,7 @@ import {
   Get,
   Query,
   Req,
+  NotFoundException,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { UserService } from '../(user)/user/user.service';
@@ -60,6 +61,7 @@ export class AuthController {
 
   @Post('verify-email')
   async verifyEmail(@Body() data: { email: string }) {
+    console.log('data from client: ', data);
     return await this.authService.sendVerifyEmail(data);
   }
 

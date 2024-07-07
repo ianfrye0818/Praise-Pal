@@ -17,6 +17,7 @@ import {
 import { FormInputItem } from './form-input-item';
 import { SIGN_UP_FORM_DEFAULT_VALUES } from '@/constants';
 import useSubmitSignUpForm from '@/hooks/forms/useSubmitSignUpForm';
+import SendPassWordResetLinkDialog from '../dialogs/send-password-reset-link-dialog';
 
 export default function SignUpForm() {
   const form = useForm<z.infer<typeof signUpFormSchema>>({
@@ -73,13 +74,23 @@ export default function SignUpForm() {
               maxLength={4}
               minLength={4}
             />
-            <FormInputItem<typeof signUpFormSchema>
-              control={form.control}
-              name='displayName'
-              label='Display Name'
-              placeholder='Enter your display name'
-              type='text'
-            />
+            <div className='flex justify-between'>
+              <FormInputItem<typeof signUpFormSchema>
+                control={form.control}
+                name='firstName'
+                label='First Name'
+                placeholder='Enter your first name'
+                type='text'
+              />
+
+              <FormInputItem<typeof signUpFormSchema>
+                control={form.control}
+                name='lastName'
+                label='Last Name'
+                placeholder='Enter your last name'
+                type='text'
+              />
+            </div>
             {globalError && <p className='italic text-lg text-red-500'>{globalError?.message}</p>}
             <Button
               disabled={isSubmitting}
@@ -90,8 +101,8 @@ export default function SignUpForm() {
           </form>
         </Form>
       </CardContent>
-      <CardFooter>
-        <p>
+      <CardFooter className='flex flex-col gap-2'>
+        <p className='w-full text-left'>
           Already have an account?{' '}
           <Link
             to='/sign-in'
@@ -100,6 +111,11 @@ export default function SignUpForm() {
             {' '}
             Sign In
           </Link>
+        </p>
+        <p className='w-full text-left'>
+          <SendPassWordResetLinkDialog>
+            <span className='text-blue-600'>Forgot Password?</span>
+          </SendPassWordResetLinkDialog>
         </p>
       </CardFooter>
     </Card>

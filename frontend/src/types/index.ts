@@ -3,17 +3,30 @@ import { LucideProps } from 'lucide-react';
 import { ForwardRefExoticComponent, RefAttributes } from 'react';
 import { Control, FieldPath } from 'react-hook-form';
 import { AxiosRequestConfig } from 'axios';
+import {
+  addKudoFormSchema,
+  editKudosFormSchema,
+  NewCommentSchema,
+  signInFormSchema,
+  signUpFormSchema,
+  updateUserFormSchema,
+} from '@/zodSchemas';
 
-export interface SignInFormProps {
-  email: string;
-  password: string;
-}
+// export interface SignInFormProps {
+//   email: string;
+//   password: string;
+// }
 
-export interface SignUpFormProps extends SignInFormProps {
-  confirmPassword: string;
-  displayName: string;
-  companyCode: string;
-}
+export type SignInFormProps = z.infer<typeof signInFormSchema>;
+
+// export interface SignUpFormProps extends SignInFormProps {
+//   confirmPassword: string;
+//   firstName: string;
+//   lastName: string;
+//   companyCode: string;
+// }
+
+export type SignUpFormProps = z.infer<typeof signUpFormSchema>;
 
 export interface EditKudosDialogProps {
   kudo: TKudos;
@@ -31,7 +44,8 @@ export interface User {
   lastName?: string | null | undefined;
 }
 
-export type UpdateUserProps = Partial<Omit<User, 'companyId' | 'userId' | 'role'>>;
+// export type UpdateUserProps = Partial<Omit<User, 'companyId' | 'userId' | 'role'>>;
+export type UpdateUserProps = Omit<z.infer<typeof updateUserFormSchema>, 'role'>;
 export type AdminUpdateUserProps = Partial<Omit<User, 'companyId' | 'userId'>>;
 
 export enum Role {
@@ -67,27 +81,32 @@ export type TKudos = {
   createdAt: string;
 };
 
-export interface CreateKudoFormProps {
-  senderId: string;
-  receiverId: string;
-  companyId: string;
-  message: string;
-  title?: string | null;
-  isAnonymous: boolean;
-}
+// export interface CreateKudoFormProps {
+//   senderId: string;
+//   receiverId: string;
+//   companyId: string;
+//   message: string;
+//   title?: string | null;
+//   isAnonymous: boolean;
+// }
 
-export interface CreateCommentFormProps {
-  content: string;
-  parentId?: string;
-  kudosId: string;
-  userId: string;
-}
+export type CreateKudoFormProps = z.infer<typeof addKudoFormSchema>;
 
-export type UpdateKudoProps = Partial<Omit<CreateKudoFormProps, 'senderId' | 'companyId'>> & {
-  id: string;
-  isHidden?: boolean;
-};
+// export interface CreateCommentFormProps {
+//   content: string;
+//   parentId?: string;
+//   kudosId: string;
+//   userId: string;
+// }
 
+export type CreateCommentFormPros = z.infer<typeof NewCommentSchema>;
+
+// export type UpdateKudoProps = Partial<Omit<CreateKudoFormProps, 'senderId' | 'companyId'>> & {
+//   id: string;
+//   isHidden?: boolean;
+// };
+
+export type UpdateKudoProps = z.infer<typeof editKudosFormSchema>;
 export interface UserLike {
   kudoId: string;
   userId: string;

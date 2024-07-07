@@ -1,10 +1,23 @@
-import { Controller, Request, UseGuards, Post, Body } from '@nestjs/common';
+import {
+  Controller,
+  Request,
+  UseGuards,
+  Post,
+  Body,
+  Param,
+  Get,
+  Query,
+  Req,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { UserService } from '../(user)/user/user.service';
 import { LocalAuthGuard } from './guards/local.guard';
 import { createUserDTO } from '../(user)/user/dto/createUser.dto';
 import { RefreshJwtGuard } from './guards/refresh.guard';
 import { SkipThrottle } from '@nestjs/throttler';
+import { EmailVerificationGuard } from './guards/email-verification.guard';
+import { TokenType } from 'src/types';
+import { PasswordResetGuard } from './guards/password-reset.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -40,20 +53,46 @@ export class AuthController {
     return this.authService.logout(refreshToken);
   }
 
-  @Post('update-password')
-  async updatePassword(
-    @Body() data: { email: string; oldPassword: string; newPassword: string },
-  ) {
-    await this.authService.updatePassword(data);
+  @Post('reset-password')
+  async updatePassword(@Body() data: { email: string }) {
+    return await this.authService.sendUpdatePasswordEmail(data);
   }
 
-  //TODO secure this by verifying email with link
-  @Post('forgot-password')
-  async resetPassword(@Body() data: { email: string; newPassword: string }) {
-    const updatedUser = await this.authService.resetPassword(
-      data.email,
-      data.newPassword,
+  // @Post('forgot-password')
+  // async resetPassword(@Body() data: { email: string }) {
+  //   return await this.authService.sendUpdatePasswordEmail(data);
+  // }
+
+  @Post('verify-email')
+  async verifyEmail(@Body() data: { email: string }) {
+    return await this.authService.sendVerifyEmail(data);
+  }
+
+  @Get('verify-token/:token')
+  async verifyToken(
+    @Param('token') token: string,
+    @Query('type') type: TokenType,
+  ) {
+    return await this.authService.verifyToken(type, token);
+  }
+
+  @UseGuards(PasswordResetGuard)
+  @Post('update-password/:token')
+  async verifyPasswordResetToken(
+    @Body() data: { password: string },
+    @Req() req: any,
+  ) {
+    return await this.authService.updatedVerifiedPassword(
+      req.email,
+      data.password,
     );
-    if (updatedUser) return { message: 'Password reset successfully' };
+  }
+
+  // $2a$10$TTZXCr6BOF2Gjk4UxMfMxuFOFHDXeA31WB7mg6xRt9fHIiuVyVWXa
+
+  @UseGuards(EmailVerificationGuard)
+  @Post('verify-email/:token')
+  async verifyEmailToken(@Req() req: any) {
+    return await this.authService.verifyEmailToken(req.email);
   }
 }

@@ -3,7 +3,7 @@ import { UserController } from './user.controller';
 import { UserService } from './user.service';
 import { PrismaService } from '../../core-services/prisma.service';
 import { EmailService } from '../../core-services/email.service';
-import { JwtStrategy } from '../../auth/stratagies/jwt-stratagy';
+import { JwtStrategy } from '../../auth/strategies/jwt-strategy';
 
 @Module({
   imports: [],

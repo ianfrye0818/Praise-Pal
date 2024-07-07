@@ -43,3 +43,5 @@ export interface JWTPayload extends ClientUser {
   iat: number;
   exp: number;
 }
+
+export type TokenType = 'EMAIL' | 'PASSWORD';

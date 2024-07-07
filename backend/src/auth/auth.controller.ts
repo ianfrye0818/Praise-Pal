@@ -58,11 +58,6 @@ export class AuthController {
     return await this.authService.sendUpdatePasswordEmail(data);
   }
 
-  // @Post('forgot-password')
-  // async resetPassword(@Body() data: { email: string }) {
-  //   return await this.authService.sendUpdatePasswordEmail(data);
-  // }
-
   @Post('verify-email')
   async verifyEmail(@Body() data: { email: string }) {
     return await this.authService.sendVerifyEmail(data);
@@ -87,8 +82,6 @@ export class AuthController {
       data.password,
     );
   }
-
-  // $2a$10$TTZXCr6BOF2Gjk4UxMfMxuFOFHDXeA31WB7mg6xRt9fHIiuVyVWXa
 
   @UseGuards(EmailVerificationGuard)
   @Post('verify-email/:token')

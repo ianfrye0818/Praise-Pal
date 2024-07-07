@@ -11,8 +11,6 @@ import { ThrottlerGuard } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
 import { RefreshStrategy } from './strategies/refresh-strategy';
 import { RefreshTokenService } from '../core-services/refreshToken.service';
-import { EmailVerificationStrategy } from './strategies/email-verfication-strategy';
-import { PasswordResetStrategy } from './strategies/password-reset-strategy';
 
 @Module({
   imports: [
@@ -28,8 +26,6 @@ import { PasswordResetStrategy } from './strategies/password-reset-strategy';
     LocalStrategy,
     JwtStrategy,
     RefreshStrategy,
-    EmailVerificationStrategy,
-    PasswordResetStrategy,
     PrismaService,
     EmailService,
     RefreshTokenService,

@@ -77,10 +77,8 @@ export class AuthController {
     @Body() data: { password: string },
     @Req() req: any,
   ) {
-    return await this.authService.updatedVerifiedPassword(
-      req.email,
-      data.password,
-    );
+    console.log({ data, email: req.email });
+    await this.authService.updatedVerifiedPassword(req.email, data.password);
   }
 
   @UseGuards(EmailVerificationGuard)

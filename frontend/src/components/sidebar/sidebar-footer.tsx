@@ -18,7 +18,7 @@ export default function SideBarFooter() {
         />
         <div className='flex-1'>
           <p className='font-medium'>{user.firstName || user.displayName}</p>
-          <p className='text-sm text-gray-500 dark:text-gray-400'>{user?.email}</p>
+          <p className='text-xs 2xl:text-sm text-gray-500 dark:text-gray-400'>{user?.email}</p>
         </div>
 
         <LogoutButton />

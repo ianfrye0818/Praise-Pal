@@ -13,6 +13,7 @@ import {
   UserNotification,
   UserNotificationQueryParams,
   CreateCommentFormProps,
+  VerifyTokenAndResetPasswordProps,
 } from '@/types';
 import { ApiRoutes } from './api-routes';
 import { deleter, fetcher, patcher, poster } from './axios';
@@ -45,6 +46,40 @@ export const postLogout = async (refreshToken: string) =>
     client: 'AUTH',
     url: ApiRoutes.auth.logout,
     config: { headers: createRefreshHeader(refreshToken) },
+  });
+
+export const getVerifyToken = async (token: string) =>
+  await fetcher<VerifyTokenAndResetPasswordProps>({
+    client: 'AUTH',
+    url: ApiRoutes.auth.verifyToken(token),
+  });
+
+export const postSendResetPasswordEmail = async (email: string) =>
+  await poster<{ email: string }, VerifyTokenAndResetPasswordProps>({
+    client: 'AUTH',
+    url: ApiRoutes.auth.sendResetPasswordEmail,
+    data: { email },
+  });
+
+export const postSendVerifyEmail = async (email: string) =>
+  await poster<{ email: string }, VerifyTokenAndResetPasswordProps>({
+    client: 'AUTH',
+    url: ApiRoutes.auth.sendVerifyEmailEmail,
+    data: { email },
+  });
+
+export const postVerifyAndUpdatePasswordWithToken = async (token: string, password: string) =>
+  poster<{ password: string }, VerifyTokenAndResetPasswordProps>({
+    client: 'AUTH',
+    url: ApiRoutes.auth.verifyAndUpdatePasswordWithToken(token),
+    data: { password },
+  });
+
+export const postVerifyEmailWithToken = async (token: string) =>
+  await poster<{ token: string }, VerifyTokenAndResetPasswordProps>({
+    client: 'AUTH',
+    url: ApiRoutes.auth.verifyEmailWithToken(token),
+    data: { token },
   });
 
 //users actions

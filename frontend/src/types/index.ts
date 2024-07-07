@@ -118,16 +118,6 @@ export type UpdateCompanyProps = Partial<
   Omit<Company, 'companyCode' | 'users' | 'kudos' | 'createdAt' | 'updatedAt' | 'deletedAt'>
 >;
 
-// export interface UpdateCompanyProps {
-//   id: string;
-//   name?: string | null | undefined;
-//   address?: string;
-//   city?: string;
-//   state?: string;
-//   zip?: string;
-//   phone?: string;
-// }
-
 export interface Comment {
   id: string;
   content: string;
@@ -247,4 +237,9 @@ export enum ActionTypes {
   KUDOS_COMMENT = 'KUDOS_COMMENT',
   KUDOS_LIKE = 'KUDOS_LIKE',
   KUDOS = 'KUDOS',
+}
+
+export interface VerifyTokenAndResetPasswordProps {
+  message: string;
+  status: number;
 }

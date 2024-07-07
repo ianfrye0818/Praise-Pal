@@ -13,7 +13,7 @@ export default function UpdateUserDialog({
   updatingUser: User;
   trigger?: React.ReactNode | string;
   currentUser: User;
-  disabled: boolean;
+  disabled?: boolean;
 }) {
   const [open, setOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);

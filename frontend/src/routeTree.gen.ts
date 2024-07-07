@@ -16,6 +16,7 @@ import { Route as rootRoute } from './routes/__root'
 import { Route as RootLayoutImport } from './routes/_rootLayout'
 import { Route as AuthLayoutImport } from './routes/_authLayout'
 import { Route as RootLayoutIndexImport } from './routes/_rootLayout/index'
+import { Route as ResetPasswordTokenImport } from './routes/reset-password/$token'
 import { Route as RootLayoutAdminLayoutImport } from './routes/_rootLayout/_adminLayout'
 import { Route as AuthLayoutSignUpImport } from './routes/_authLayout/sign-up'
 import { Route as AuthLayoutSignInImport } from './routes/_authLayout/sign-in'
@@ -54,6 +55,11 @@ const AuthLayoutRoute = AuthLayoutImport.update({
 const RootLayoutIndexRoute = RootLayoutIndexImport.update({
   path: '/',
   getParentRoute: () => RootLayoutRoute,
+} as any)
+
+const ResetPasswordTokenRoute = ResetPasswordTokenImport.update({
+  path: '/reset-password/$token',
+  getParentRoute: () => rootRoute,
 } as any)
 
 const RootLayoutAdminLayoutRoute = RootLayoutAdminLayoutImport.update({
@@ -160,6 +166,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof RootLayoutAdminLayoutImport
       parentRoute: typeof RootLayoutImport
     }
+    '/reset-password/$token': {
+      id: '/reset-password/$token'
+      path: '/reset-password/$token'
+      fullPath: '/reset-password/$token'
+      preLoaderRoute: typeof ResetPasswordTokenImport
+      parentRoute: typeof rootRoute
+    }
     '/_rootLayout/': {
       id: '/_rootLayout/'
       path: '/'
@@ -230,6 +243,7 @@ export const routeTree = rootRoute.addChildren({
     RootLayoutKudosReceivedLazyRoute,
     RootLayoutKudosSentLazyRoute,
   }),
+  ResetPasswordTokenRoute,
 })
 
 /* prettier-ignore-end */
@@ -241,7 +255,8 @@ export const routeTree = rootRoute.addChildren({
       "filePath": "__root.tsx",
       "children": [
         "/_authLayout",
-        "/_rootLayout"
+        "/_rootLayout",
+        "/reset-password/$token"
       ]
     },
     "/_authLayout": {
@@ -277,6 +292,9 @@ export const routeTree = rootRoute.addChildren({
         "/_rootLayout/_adminLayout/admin/kudos",
         "/_rootLayout/_adminLayout/admin/users"
       ]
+    },
+    "/reset-password/$token": {
+      "filePath": "reset-password/$token.tsx"
     },
     "/_rootLayout/": {
       "filePath": "_rootLayout/index.tsx",

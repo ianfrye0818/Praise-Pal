@@ -9,7 +9,6 @@ import {
 import { UserService } from '../(user)/user/user.service';
 import * as bcrypt from 'bcryptjs';
 import { JwtService } from '@nestjs/jwt';
-import { User } from '@prisma/client';
 import { ClientUser, TokenType } from '../types';
 import { RefreshTokenService } from '../core-services/refreshToken.service';
 import { generateClientSideUserProperties } from '../utils';

@@ -2,7 +2,6 @@ import * as z from 'zod';
 import { login } from '@/api/auth-actions';
 import { signInFormSchema } from '@/zodSchemas';
 import { useNavigate } from '@tanstack/react-router';
-import { isCustomError, isError } from '@/errors';
 import { useAuth } from '../useAuth';
 import { isAxiosError } from 'axios';
 import useErrorToast from '../useErrorToast';
@@ -22,8 +21,8 @@ export default function useSubmitSignInForm() {
         errorToast({
           message: error.response?.data.message || 'An error occurred. Please try again.',
         });
-      else if (isError(error) || isCustomError(error)) errorToast({ message: error.message });
-      else errorToast({ message: 'An error occurred. Please try again.' });
+      else
+        errorToast({ message: 'An error occurred. Please try again.', title: 'Error logging in' });
     }
   }
   return onSubmit;

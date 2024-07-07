@@ -9,6 +9,7 @@ import {
   LayoutDashboard,
 } from 'lucide-react';
 import { env } from '@/zodSchemas/env';
+import { isMainThread } from 'worker_threads';
 
 export const sidebarLinks: SidebarLink[] = [
   {
@@ -72,17 +73,17 @@ export const SIGN_IN_FORM_DEFAULT_VALUES = {
   password: '',
 };
 
-export const ADD_KUDOS_DIALOG_FORM_DEFAULT_VALUES = {
-  title: '',
-  message: '',
-  isAnonymous: false,
-  receiverId: '',
+export const ADD_KUDOS_DIALOG_FORM_DEFAULT_VALUES = (senderId: string, companyId: string) => {
+  return { title: '', message: '', isAnonymous: false, receiverId: '', senderId, companyId };
 };
 
 export function EDIT_KUDOS_DIALOG_FORM_DEFAULT_VALUES(kudo: TKudos) {
   return {
     title: kudo.title,
     message: kudo.message,
+    isHidden: kudo.isHidden,
+    id: kudo.id,
+    companyId: kudo.companyId,
   };
 }
 
@@ -105,6 +106,10 @@ export const UPDATE_COMPANY_DIALOG_DEFAULT_VALUES = (company: Company) => {
     zip: company.zip,
     phone: company.phone,
   };
+};
+
+export const RESET_PASSWORD_DEFAULT_VALUES = (token: string) => {
+  return { token, password: '', confirmPassword: '' };
 };
 
 export const KUDOS_QUERY_OPTIONS = {

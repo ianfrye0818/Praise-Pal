@@ -9,7 +9,8 @@ export const signUpFormSchema = z.object({
   email: z.string().email('please enter a valid email address'),
   password: z.string().min(6, 'Password must be at least 6 characters'),
   confirmPassword: z.string().min(6, 'Password must be at least 6 characters'),
-  displayName: z.string().min(2, 'Please enter a valid display name'),
+  firstName: z.string().min(2, 'Please enter a valid name'),
+  lastName: z.string().min(2, 'Please enter a valid name'),
   companyCode: z
     .string()
     .min(4, 'Company code must be 4 characters')
@@ -39,11 +40,16 @@ export const addKudoFormSchema = z.object({
   message: z.string().min(2, 'Please provide a valid message.'),
   receiverId: z.string().min(2, 'Please provide a valid recipient.'),
   isAnonymous: z.boolean(),
+  senderId: z.string(),
+  companyId: z.string(),
 });
 
 export const editKudosFormSchema = z.object({
+  id: z.string(),
   title: z.string().optional(),
   message: z.string().min(2, 'Please provide a valid message.'),
+  isHidden: z.boolean(),
+  companyId: z.string(),
 });
 
 export const EditCommentSchema = z.object({
@@ -56,4 +62,10 @@ export const NewCommentSchema = z.object({
   parentId: z.string().optional(),
   kudosId: z.string(),
   userId: z.string(),
+});
+
+export const ResetPasswordFormSchema = z.object({
+  password: z.string().min(6, 'Password must be at least 6 characters'),
+  confirmPassword: z.string().min(6, 'Password must be at least 6 characters'),
+  token: z.string(),
 });

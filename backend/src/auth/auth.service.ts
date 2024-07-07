@@ -1,17 +1,20 @@
 import {
   HttpException,
+  HttpStatus,
   Injectable,
   InternalServerErrorException,
+  NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { UserService } from '../(user)/user/user.service';
 import * as bcrypt from 'bcryptjs';
 import { JwtService } from '@nestjs/jwt';
-import { User } from '@prisma/client';
-import { ClientUser } from '../types';
+import { ClientUser, TokenType } from '../types';
 import { RefreshTokenService } from '../core-services/refreshToken.service';
 import { generateClientSideUserProperties } from '../utils';
 import { EmailService } from 'src/core-services/email.service';
+import { env } from 'src/env';
+import { resetPasswordHtml, verifyEmailHtml } from 'src/email-templates';
 
 @Injectable()
 export class AuthService {
@@ -27,27 +30,74 @@ export class AuthService {
     password: string,
   ): Promise<ClientUser | null> {
     const user = await this.userService.findOneByEmail(email.toLowerCase());
+
+    //make sure user is not deleted
     if (user && user.deletedAt !== null)
       throw new HttpException(
         'Your account has been deleted! See admin for access.',
         404,
       );
+
+    //make sure user is verified
+    if (user && user.verified === false)
+      throw new UnauthorizedException(
+        'Please verify your email before logging in',
+      );
+
+    //create client side user properties and return
     if (user && (await bcrypt.compare(password, user.password))) {
       return generateClientSideUserProperties(user);
     }
-    throw new UnauthorizedException('Invalid credentials');
+  }
+
+  async verifyToken(type: TokenType, token: string) {
+    type = type.toUpperCase() as TokenType;
+    let response: { message: string; status: number; type: TokenType };
+
+    if (type !== 'EMAIL' && type !== 'PASSWORD')
+      throw new HttpException('Invalid token type', 400);
+
+    try {
+      if (type === 'EMAIL') {
+        this.jwtService.verify(token, {
+          secret: env.EMAIL_VERIFICATION_SECRET,
+          ignoreExpiration: false,
+        });
+        response = {
+          message: 'Email token is valid',
+          status: HttpStatus.OK,
+          type: 'EMAIL',
+        };
+      }
+
+      if (type === 'PASSWORD') {
+        this.jwtService.verify(token, {
+          secret: env.PASSWORD_RESET_SECRET,
+          ignoreExpiration: false,
+        });
+        response = {
+          message: 'Password token is valid',
+          status: HttpStatus.OK,
+          type: 'PASSWORD',
+        };
+      }
+
+      return response;
+    } catch (error) {
+      console.error(['Verify Token Error'], error);
+      throw new UnauthorizedException('Invalid token');
+    }
   }
 
   async logout(token: string): Promise<void> {
     return await this.refreshTokenService.deleteToken(token);
   }
 
-  async login(user: User) {
-    const payload = generateClientSideUserProperties(user);
-    const refreshToken = await this.generateRefreshToken(payload);
+  async login(payload: ClientUser) {
+    const refreshToken = this.generateRefreshToken(payload);
     await this.refreshTokenService.updateUserRefreshToken({
       newToken: refreshToken,
-      userId: user.userId,
+      userId: payload.userId,
     });
 
     const accessToken = this.generateAccessToken(payload);
@@ -72,7 +122,7 @@ export class AuthService {
         };
       }
 
-      const newRefreshToken = await this.generateRefreshToken(user);
+      const newRefreshToken = this.generateRefreshToken(user);
       const newAccessToken = this.generateAccessToken(user);
 
       await this.refreshTokenService.updateUserRefreshToken({
@@ -92,53 +142,78 @@ export class AuthService {
     }
   }
 
-  async resetPassword(email: string, newPassword: string) {
+  async sendUpdatePasswordEmail(data: { email: string }) {
     try {
-      const user = await this.userService.findOneByEmail(email);
-      if (!user) throw new UnauthorizedException('User not found');
-      const updatedUser = await this.userService.updatePassword(
-        user.userId,
-        await bcrypt.hash(newPassword, 10),
-      );
-      return updatedUser;
+      const user = await this.userService.findOneByEmail(data.email);
+      if (!user) throw new NotFoundException('User not found');
+
+      const token = this.generatePasswordResetToken(user.email);
+
+      const url = `${env.CLIENT_URL}/reset-password/${token}`;
+
+      this.emailService.sendEmail({
+        html: resetPasswordHtml(url),
+        subject: 'Reset your password',
+        to: [user.email],
+      });
+      return {
+        message: 'Check email for password reset link',
+        status: HttpStatus.OK,
+      };
     } catch (error) {
-      console.error(['Reset Password Error'], error);
-      if (error instanceof UnauthorizedException) throw error;
-      throw new InternalServerErrorException('Could not reset password');
+      console.error(['Update Password Error'], error);
+      if (error instanceof NotFoundException) throw error;
+      throw new InternalServerErrorException('Could not update password');
     }
   }
 
-  async updatePassword(data: {
-    email: string;
-    oldPassword: string;
-    newPassword: string;
-  }) {
-    console.log(data);
+  async updatedVerifiedPassword(email: string, newPassword: string) {
     try {
-      await this.emailService.sendEmail({
-        html: `<h1>Hi there!</h1><p>Your password has been updated successfully</p>`,
-        subject: 'Password Updated',
-        to: [data.email],
+      await this.userService.updateByEmail(email, {
+        password: newPassword,
+        firstName: 'Ian',
       });
+      return { message: 'Password updated', status: HttpStatus.OK };
     } catch (error) {
-      console.error(['Email Error'], error);
-      throw new InternalServerErrorException('Could not send email');
+      console.error(['Verify Password Reset Token Error'], error);
+      if (error instanceof UnauthorizedException) throw error;
+      throw new InternalServerErrorException('Could not verify token');
     }
-    // try {
-    //   const user = await this.userService.findOneByEmail(data.email);
-    //   if (!user) throw new UnauthorizedException('User not found');
-    //   if (!(await bcrypt.compare(data.oldPassword, user.password)))
-    //     throw new UnauthorizedException('Invalid password');
-    //   const updatedUser = await this.userService.updatePassword(
-    //     user.userId,
-    //     await bcrypt.hash(data.newPassword, 10),
-    //   );
-    //   return updatedUser;
-    // } catch (error) {
-    //   console.error(['Update Password Error'], error);
-    //   if (error instanceof UnauthorizedException) throw error;
-    //   throw new InternalServerErrorException('Could not update password');
-    // }
+  }
+
+  async sendVerifyEmail(data: { email: string }) {
+    try {
+      const user = await this.userService.findOneByEmail(data.email);
+      if (!user) throw new UnauthorizedException('User not found');
+
+      const token = this.generateEmailVerificationToken(user.email);
+
+      const url = `${env.CLIENT_URL}/verify-email/${token}`;
+
+      await this.emailService.sendEmail({
+        html: verifyEmailHtml(url),
+        subject: 'Verify your email',
+        to: [user.email],
+      });
+      return {
+        message: 'Check your email for a verification link',
+        status: HttpStatus.OK,
+      };
+    } catch (error) {
+      console.error(['Verify Email Error'], error);
+      if (error instanceof UnauthorizedException) throw error;
+      throw new InternalServerErrorException('Could not verify email');
+    }
+  }
+
+  async verifyEmailToken(email: string) {
+    try {
+      await this.userService.updateByEmail(email, { verified: true });
+      return { message: 'Email verified', status: HttpStatus.OK };
+    } catch (error) {
+      console.error(['Verify Email Token Error'], error);
+      throw new InternalServerErrorException('Could not verify token');
+    }
   }
 
   private generateAccessToken(payload: object) {
@@ -148,10 +223,24 @@ export class AuthService {
     });
   }
 
-  private async generateRefreshToken(payload: object) {
+  private generateRefreshToken(payload: object) {
     return this.jwtService.sign(payload, {
       expiresIn: '7d',
       secret: process.env.JWT_REFRESH_SECRET,
     });
+  }
+
+  private generateEmailVerificationToken(email: string) {
+    return this.jwtService.sign(
+      { email },
+      { secret: env.EMAIL_VERIFICATION_SECRET },
+    );
+  }
+
+  private generatePasswordResetToken(email: string) {
+    return this.jwtService.sign(
+      { email },
+      { secret: env.PASSWORD_RESET_SECRET },
+    );
   }
 }

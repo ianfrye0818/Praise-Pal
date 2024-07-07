@@ -8,7 +8,7 @@ import { PrismaService } from '../../core-services/prisma.service';
 import { createUserDTO, updateUserDTO } from './dto/createUser.dto';
 import * as bcrypt from 'bcryptjs';
 import { Cron } from '@nestjs/schedule';
-import { User } from '@prisma/client';
+import { Prisma, User } from '@prisma/client';
 import { EmailService } from '../../core-services/email.service';
 import { generateClientSideUserProperties } from '../../utils';
 import { ClientUser } from '../../types';
@@ -142,13 +142,17 @@ export class UserService {
     }
   }
 
-  async updatePassword(
-    userId: string,
-    newPassword: string,
+  async updateByEmail(
+    email: string,
+    data: Prisma.UserUpdateInput,
   ): Promise<ClientUser> {
+    if (data.password) {
+      data.password = await bcrypt.hash(data.password as string, 10);
+    }
+
     const updatedUser = await this.prismaService.user.update({
-      where: { userId },
-      data: { password: newPassword },
+      where: { email },
+      data,
     });
 
     return generateClientSideUserProperties(updatedUser);

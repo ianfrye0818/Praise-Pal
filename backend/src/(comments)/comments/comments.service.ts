@@ -5,7 +5,6 @@ import {
 } from '@nestjs/common';
 import { ActionType } from '@prisma/client';
 import { CreateCommentDTO, UpdateCommentDTO } from './dto/createComment.dto';
-import { Cron } from '@nestjs/schedule';
 import { UserNotificationsService } from 'src/(user)/user-notifications/user-notifications.service';
 import { commentSelectOptions, userSelectOptions } from 'src/utils/constants';
 import { FilterCommentDTO } from './dto/filterCommentDTO';
@@ -216,28 +215,6 @@ export class CommentsService {
     } catch (error) {
       console.error(error);
       throw new InternalServerErrorException('Could not delete comment');
-    }
-  }
-
-  @Cron('0 0 * * *') // Run every night at midnight
-  async permanentlyDeleteOldComments() {
-    const dateThreshold = new Date();
-    dateThreshold.setDate(dateThreshold.getDate() - 30);
-
-    try {
-      await this.prismaService.user.deleteMany({
-        where: {
-          deletedAt: {
-            lte: dateThreshold,
-          },
-        },
-      });
-    } catch (error) {
-      console.error(error);
-      this.emailService.sendCronErrorNotification(
-        error.message,
-        'Delete Comments',
-      );
     }
   }
 }

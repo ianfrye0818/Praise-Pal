@@ -57,7 +57,6 @@ function NotificationCard({
   notification: UserNotification;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
-  console.log(notification);
   return (
     <div className='px-2 py-4 flex flex-col justify-center border shadow-sm rounded-md'>
       <Link

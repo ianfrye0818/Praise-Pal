@@ -2,10 +2,10 @@ import * as z from 'zod';
 import { login } from '@/api/auth-actions';
 import { signInFormSchema } from '@/zodSchemas';
 import { useNavigate } from '@tanstack/react-router';
-import { isCustomError, isError } from '@/errors';
 import { useAuth } from '../useAuth';
-import { isAxiosError } from 'axios';
 import useErrorToast from '../useErrorToast';
+import { isCustomError } from '@/errors';
+import VerifyEmailAction from '@/components/dialogs/verify-email-action-toast';
 
 export default function useSubmitSignInForm() {
   const navigate = useNavigate();
@@ -18,12 +18,17 @@ export default function useSubmitSignInForm() {
       await navigate({ to: '/' });
     } catch (error) {
       console.error(['signInFormError'], error);
-      if (isAxiosError(error))
+      if (isCustomError(error))
         errorToast({
-          message: error.response?.data.message || 'An error occurred. Please try again.',
+          title: 'Error logging in',
+          message: error.message || 'An error occurred. Please try again.',
+          action:
+            error.message === 'Please verify your email before logging in' ? (
+              <VerifyEmailAction email={data.email} />
+            ) : undefined,
         });
-      else if (isError(error) || isCustomError(error)) errorToast({ message: error.message });
-      else errorToast({ message: 'An error occurred. Please try again.' });
+      else
+        errorToast({ message: 'An error occurred. Please try again.', title: 'Error logging in' });
     }
   }
   return onSubmit;

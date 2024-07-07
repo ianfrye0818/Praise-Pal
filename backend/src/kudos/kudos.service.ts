@@ -5,7 +5,6 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from '../core-services/prisma.service';
 import { createKudosDTO, UpdateKudosDTO } from './dto/createKudos.dto';
-import { Cron } from '@nestjs/schedule';
 import { EmailService } from '../core-services/email.service';
 import { ActionType, Kudos, Prisma } from '@prisma/client';
 import { KudosFilterDTO } from './dto/kudosFilter.dto';

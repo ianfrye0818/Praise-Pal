@@ -18,6 +18,7 @@ import { Form } from '../ui/form';
 
 import { SIGN_IN_FORM_DEFAULT_VALUES } from '@/constants';
 import useSubmitSignInForm from '@/hooks/forms/useSubmitSignInForm';
+import SendPassWordResetLinkDialog from '../dialogs/send-password-reset-link-dialog';
 
 export default function SignInForm() {
   const form = useForm<z.infer<typeof signInFormSchema>>({
@@ -67,8 +68,8 @@ export default function SignInForm() {
           </form>
         </Form>
       </CardContent>
-      <CardFooter>
-        <p>
+      <CardFooter className='flex flex-col gap-2'>
+        <p className='w-full text-left'>
           {"Don't have an account? "}
           <Link
             to='/sign-up'
@@ -77,6 +78,11 @@ export default function SignInForm() {
             {' '}
             Sign Up
           </Link>
+        </p>
+        <p className='w-full text-left'>
+          <SendPassWordResetLinkDialog>
+            <span className='text-blue-600'>Forgot Password?</span>
+          </SendPassWordResetLinkDialog>
         </p>
       </CardFooter>
     </Card>

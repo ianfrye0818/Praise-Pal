@@ -1,4 +1,4 @@
-import { ActionType, Role, User } from '@prisma/client';
+import { ActionType, Role } from '@prisma/client';
 
 export interface ClientUser {
   email: string;

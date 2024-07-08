@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { DefaultArgs } from '@prisma/client/runtime/library';
 
 export const userSelectOptions = {
   userId: true,

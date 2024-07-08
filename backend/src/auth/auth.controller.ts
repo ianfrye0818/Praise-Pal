@@ -8,7 +8,6 @@ import {
   Get,
   Query,
   Req,
-  NotFoundException,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { UserService } from '../(user)/user/user.service';

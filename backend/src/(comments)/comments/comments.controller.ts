@@ -15,7 +15,7 @@ import { CreateCommentDTO, UpdateCommentDTO } from './dto/createComment.dto';
 import { FilterCommentDTO } from './dto/filterCommentDTO';
 import { CompanyGuard } from 'src/core-guards/company.guard';
 import { JwtGuard } from 'src/auth/guards/jwt.guard';
-import { EditCommentGuard } from 'src/core-guards/update-delete-comment.guard';
+import { EditCommentGuard } from '../guards/update-delete-comment.guard';
 
 @UseGuards(CompanyGuard)
 @UseGuards(JwtGuard)

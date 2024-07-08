@@ -5,7 +5,6 @@ import { PrismaService } from './core-services/prisma.service';
 import { UserModule } from './(user)/user/user.module';
 import { CompanyModule } from './company/company.module';
 import { KudosModule } from './kudos/kudos.module';
-import { UserSettingsModule } from './(user)/user-settings/user-settings.module';
 import { AuthModule } from './auth/auth.module';
 import { UserLikesModule } from './(user)/user-likes/user-likes.module';
 import { UserNotificationsModule } from './(user)/user-notifications/user-notifications.module';
@@ -21,7 +20,6 @@ import { CommentsModule } from './(comments)/comments/comments.module';
     CompanyModule,
     KudosModule,
     UserLikesModule,
-    UserSettingsModule,
     AuthModule,
     UserNotificationsModule,
     ThrottlerModule.forRoot([

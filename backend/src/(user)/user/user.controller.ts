@@ -13,9 +13,8 @@ import { UserService } from './user.service';
 import { updateUserDTO } from './dto/createUser.dto';
 import { JwtGuard } from '../../auth/guards/jwt.guard';
 import { CompanyGuard } from '../../core-guards/company.guard';
-import { UpdateUserGuard } from '../../core-guards/update-user.guard';
 import { FilterUserDTO } from './dto/filterUser.dto';
-import { Request } from 'express';
+import { UpdateUserGuard } from './guards/update-user.guard';
 
 @UseGuards(JwtGuard)
 @Controller('user')
@@ -24,7 +23,7 @@ export class UserController {
 
   @UseGuards(CompanyGuard)
   @Get()
-  async findAllUsers(@Query() query: FilterUserDTO, @Req() req: Request) {
+  async findAllUsers(@Query() query: FilterUserDTO) {
     return await this.userService.findAllUsers(query);
   }
 

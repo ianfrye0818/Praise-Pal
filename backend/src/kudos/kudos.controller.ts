@@ -8,15 +8,14 @@ import {
   Patch,
   Delete,
   Query,
-  Req,
 } from '@nestjs/common';
 import { JwtGuard } from '../auth/guards/jwt.guard';
 import { KudosService } from './kudos.service';
 import { CompanyGuard } from '../core-guards/company.guard';
 import { createKudosDTO, UpdateKudosDTO } from './dto/createKudos.dto';
 import { KudosFilterDTO } from './dto/kudosFilter.dto';
-import { EditKudosGuard } from '../core-guards/update-kudos.guard';
 import { SkipThrottle } from '@nestjs/throttler';
+import { EditKudosGuard } from './guards/update-kudos.guard';
 
 @SkipThrottle()
 @UseGuards(JwtGuard)

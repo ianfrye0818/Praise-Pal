@@ -16,13 +16,6 @@ export interface SignUpFormProps extends SignInFormProps {
   companyCode: string;
 }
 
-export interface EditKudosDialogProps {
-  kudo: TKudos;
-  className?: string;
-  setMenuOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  isSingleKudo?: boolean;
-}
-
 export interface User {
   email: string;
   userId: string;
@@ -166,7 +159,7 @@ export interface UserQueryParams extends QueryParams {
 }
 
 export interface KudosQueryParams extends QueryParams {
-  kudosId?: string;
+  // kudosId?: string;
   senderId?: string;
   isHidden?: boolean;
   receiverId?: string;

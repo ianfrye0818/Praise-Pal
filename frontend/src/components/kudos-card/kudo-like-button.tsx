@@ -2,16 +2,18 @@ import { HeartIcon } from 'lucide-react';
 import { Button } from '../ui/button';
 import { cn } from '@/lib/utils';
 import useLikeKudos from '@/hooks/api/useKudos/useLikeKudos';
+import { QueryKey } from '@tanstack/react-query';
 
 interface KudoLikeButtonProps {
   isLiked: boolean;
   kudoId: string;
   userId: string;
   companyId: string;
+  queryKey?: QueryKey;
 }
 
-export default function KudoLikeButton({ isLiked, kudoId }: KudoLikeButtonProps) {
-  const { mutateAsync: toggleKudo } = useLikeKudos();
+export default function KudoLikeButton({ isLiked, kudoId, queryKey }: KudoLikeButtonProps) {
+  const { mutateAsync: toggleKudo } = useLikeKudos(queryKey);
 
   async function handleToggleKudo() {
     await toggleKudo({

@@ -1,12 +1,13 @@
 import { getCompanyKudos } from '@/api/api-handlers';
 import { KudosQueryParams } from '@/types';
-import { useQuery } from '@tanstack/react-query';
+import { QueryKey, useQuery } from '@tanstack/react-query';
 
-export default function useGetCompanyKudos(queryParams: KudosQueryParams) {
+export default function useGetCompanyKudos(queryParams: KudosQueryParams, queryKey: QueryKey) {
   const query = useQuery({
-    queryKey: ['kudos', queryParams],
+    queryKey,
     queryFn: async () => {
-      return getCompanyKudos(queryParams);
+      const kudos = await getCompanyKudos(queryParams);
+      return kudos;
     },
     enabled: !!queryParams.companyId,
   });

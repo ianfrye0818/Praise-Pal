@@ -1,5 +1,6 @@
 import SingleKudosPage from '@/components/comments/singleKudosPage';
-import useGetSingleKudo from '@/hooks/api/useKudos/useGetSingleKudo';
+import { QueryKeys } from '@/constants';
+import useGetCompanyKudos from '@/hooks/api/useKudos/useGetCompanyKudos';
 import { useAuth } from '@/hooks/useAuth';
 import { TKudos } from '@/types';
 import { createLazyFileRoute } from '@tanstack/react-router';
@@ -15,16 +16,19 @@ function Component() {
   const { kudosId } = Route.useParams();
   const { user: currentUser } = useAuth().state;
 
-  const { data: kudo } = useGetSingleKudo({
-    kudoId: kudosId,
-    companyId: currentUser?.companyId as string,
-  });
+  const { data: kudos } = useGetCompanyKudos(
+    {
+      companyId: currentUser?.companyId as string,
+      id: kudosId,
+    },
+    QueryKeys.singleKudo(kudosId)
+  );
 
-  //TODO: no kudo component
-  if (!kudo) return <div>No Kudo Found</div>;
+  if (!kudos || kudos.length === 0) return <div>No Kudo Found</div>;
+
   return (
     <div>
-      <KudoContext.Provider value={kudo}>
+      <KudoContext.Provider value={kudos[0]}>
         <SingleKudosPage />
       </KudoContext.Provider>
     </div>

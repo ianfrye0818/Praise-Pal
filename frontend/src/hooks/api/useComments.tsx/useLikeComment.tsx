@@ -1,15 +1,23 @@
 import { deleteLikeComment, postAddLikeComment } from '@/api/api-handlers';
-import { COMMENT_QUERY_OPTIONS, KUDOS_QUERY_OPTIONS } from '@/constants';
+import { QueryKeys } from '@/constants';
 import useErrorToast from '@/hooks/useErrorToast';
 import { Comment } from '@/types';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { QueryKey, useMutation, useQueryClient } from '@tanstack/react-query';
 
 interface LikeCommentProps {
   commentId: string;
   isLiked: boolean;
 }
 
-export default function useLikeComments() {
+export default function useLikeComments({
+  queryKey = QueryKeys.comments,
+  kudoQueryKey = QueryKeys.allKudos,
+}: {
+  queryKey?: QueryKey;
+  kudoQueryKey?: QueryKey;
+} = {}) {
+  const COMMENT_QUERY_OPTIONS = { queryKey, exact: false };
+  const KUDOS_QUERY_OPTIONS = { kudoQueryKey, exact: false };
   const queryClient = useQueryClient();
   const { errorToast } = useErrorToast();
 

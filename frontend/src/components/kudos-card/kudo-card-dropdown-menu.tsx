@@ -11,12 +11,14 @@ import { TKudos } from '@/types';
 import { useState } from 'react';
 import EditKudosDialog from '../dialogs/edit-kudos-dialog';
 import { DeleteKudoDialog } from '../dialogs/delete-kudo-dialog';
+import { QueryKey } from '@tanstack/react-query';
 
 interface KudoCardDropDownMenuProps {
   kudo: TKudos;
+  querKey?: QueryKey;
 }
 
-export default function KudoCardDropDownMenu({ kudo }: KudoCardDropDownMenuProps) {
+export default function KudoCardDropDownMenu({ kudo, querKey }: KudoCardDropDownMenuProps) {
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (
@@ -42,12 +44,14 @@ export default function KudoCardDropDownMenu({ kudo }: KudoCardDropDownMenuProps
           <EditKudosDialog
             kudo={kudo}
             setMenuOpen={setMenuOpen}
+            queryKey={querKey}
           />
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
           <DeleteKudoDialog
             kudo={kudo}
             setMenuOpen={setMenuOpen}
+            queryKey={querKey}
           />
         </DropdownMenuItem>
       </DropdownMenuContent>

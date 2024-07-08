@@ -1,16 +1,17 @@
 import { deleteSingleKudo } from '@/api/api-handlers';
-import { KUDOS_QUERY_OPTIONS } from '@/constants';
+import { QueryKeys } from '@/constants';
 import useErrorToast from '@/hooks/useErrorToast';
 import useSuccessToast from '@/hooks/useSuccessToast';
 import { TKudos } from '@/types';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { QueryKey, useMutation, useQueryClient } from '@tanstack/react-query';
 
 interface DeleteKudoProps {
   companyId: string;
   kudoId: string;
 }
 
-export default function useDeleteKudo() {
+export default function useDeleteKudo(queryKey: QueryKey = QueryKeys.allKudos) {
+  const KUDOS_QUERY_OPTIONS = { queryKey, exact: false };
   const queryClient = useQueryClient();
   const { errorToast } = useErrorToast();
   const { successToast } = useSuccessToast();
@@ -22,13 +23,14 @@ export default function useDeleteKudo() {
       const previousData = queryClient.getQueriesData(KUDOS_QUERY_OPTIONS);
 
       queryClient.setQueriesData(KUDOS_QUERY_OPTIONS, (old: any) => {
-        return old.filter((kudo: TKudos) => kudo.id !== kudoId);
+        return Array.isArray(old) ? old.filter((kudo: TKudos) => kudo.id !== kudoId) : old;
       });
       return { previousData };
     },
     onError: (err, __, context) => {
+      console.error(['useDeleteKudos'], err);
       queryClient.setQueriesData(KUDOS_QUERY_OPTIONS, context?.previousData);
-      errorToast({ message: err.message });
+      errorToast({ message: 'Error deleting your kudo, please try again. ' });
     },
     onSuccess: () => {
       queryClient.invalidateQueries(KUDOS_QUERY_OPTIONS);

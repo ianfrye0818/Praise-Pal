@@ -23,8 +23,15 @@ import { FormInputItem } from '../forms/form-input-item';
 import { FormTextAreaItem } from '../forms/form-text-area-item';
 import ComboBox from '../forms/find-receipint-combo-box';
 import { CheckBoxInputItem } from '../forms/form-checkbox-input-item';
+import { QueryKey } from '@tanstack/react-query';
 
-export default function AddKudosDialog({ children }: { children: React.ReactNode }) {
+export default function AddKudosDialog({
+  children,
+  queryKey,
+}: {
+  children?: React.ReactNode;
+  queryKey?: QueryKey;
+}) {
   const [open, setOpen] = useState(false);
   const { user } = useAuth().state;
   const { data: users } = useGetCompanyUsers({
@@ -39,7 +46,7 @@ export default function AddKudosDialog({ children }: { children: React.ReactNode
     ),
   });
 
-  const onSubmit = useSubmitAddKudosForm(user!, setOpen);
+  const onSubmit = useSubmitAddKudosForm(user!, queryKey);
 
   return (
     <Dialog
@@ -129,7 +136,10 @@ export default function AddKudosDialog({ children }: { children: React.ReactNode
                 Cancel
               </Button>
               <Button
-                onClick={form.handleSubmit(onSubmit)}
+                onClick={form.handleSubmit((values) => {
+                  onSubmit(values);
+                  setOpen(false);
+                })}
                 type='submit'
                 disabled={form.formState.isSubmitting || !form.formState.isValid}
               >

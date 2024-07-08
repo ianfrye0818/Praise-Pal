@@ -12,14 +12,16 @@ import { useState } from 'react';
 import useDeleteKudo from '@/hooks/api/useKudos/useDeleteKudo';
 import { TKudos } from '@/types';
 import { useAuth } from '@/hooks/useAuth';
+import { QueryKey } from '@tanstack/react-query';
 
 interface DialogDemoProps {
   setMenuOpen?: React.Dispatch<React.SetStateAction<boolean>>;
   kudo: TKudos;
   children?: React.ReactNode;
+  queryKey?: QueryKey;
 }
 
-export function DeleteKudoDialog({ setMenuOpen, kudo, children }: DialogDemoProps) {
+export function DeleteKudoDialog({ setMenuOpen, kudo, children, queryKey }: DialogDemoProps) {
   const { user: currentUser } = useAuth().state;
   const [open, setOpen] = useState(false);
   function handleCloseMenu() {
@@ -29,7 +31,7 @@ export function DeleteKudoDialog({ setMenuOpen, kudo, children }: DialogDemoProp
     }
   }
 
-  const { mutate: deleteKudo } = useDeleteKudo();
+  const { mutate: deleteKudo } = useDeleteKudo(queryKey);
 
   return (
     <Dialog

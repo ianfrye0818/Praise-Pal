@@ -10,6 +10,19 @@ import {
 } from 'lucide-react';
 import { env } from '@/zodSchemas/env';
 
+export const QueryKeys = {
+  allKudos: ['kudos'],
+  limitKudos: (limit: number) => ['kudos', { limit }],
+  singleKudo: (kudoId: string) => ['singleKudos', kudoId],
+  sentKudos: ['kudos', 'sent'],
+  receivedKudos: ['kudos', 'received'],
+  allUsers: ['user'],
+  singleUser: (userId: string) => ['users', userId],
+  company: ['company'],
+  userNotifications: ['userNotifications'],
+  comments: ['comments'],
+};
+
 export const sidebarLinks: SidebarLink[] = [
   {
     label: 'View All',
@@ -54,10 +67,6 @@ export const adminSideBarLink: SidebarLink = {
 
 export const MAX_API_RETRY_REQUESTS = 3;
 export const BASE_API_URL = env.VITE_API_BASE_URL;
-
-export const IMAGES = {
-  logo: 'src/assets/logo.png',
-};
 
 export const SIGN_UP_FORM_DEFAULT_VALUES = {
   email: '',

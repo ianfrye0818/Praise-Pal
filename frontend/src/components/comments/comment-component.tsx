@@ -8,9 +8,11 @@ import UserAvitar from '../UserAvitar';
 import CommentDropDownMenu from './comment-drop-down-menu';
 import EditCommentForm from './edit-comment-form';
 import { SelectSeparator } from '../ui/select';
+import { useSingleKudoContext } from '@/hooks/useSingleKudoContext';
 
 export default function CommentComponent(comment: Comment) {
   const { user: currentUser } = useAuth().state;
+  const kudo = useSingleKudoContext();
   const [editMode, setEditMode] = useState(false);
   const [replyVisible, setReplyVisible] = useState(false);
   const senderDisplayName = getUserDisplayName(comment.user);

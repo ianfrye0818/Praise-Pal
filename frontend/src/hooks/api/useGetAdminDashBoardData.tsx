@@ -3,6 +3,7 @@ import useGetCompanyUsers from './useCompayUsers/useGetCompanyUsers';
 import { Role } from '@/types';
 import useGetCompanyKudos from './useKudos/useGetCompanyKudos';
 import useGetCompany from './useCompany/useGetCompany';
+import { QueryKeys } from '@/constants';
 
 export default function useGetAdminDashBoardData(limit: number = 10) {
   const { user } = useAuth().state;
@@ -13,10 +14,13 @@ export default function useGetAdminDashBoardData(limit: number = 10) {
     roles: [Role.USER, Role.ADMIN, Role.COMPANY_OWNER],
   });
 
-  const { data: kudos } = useGetCompanyKudos({
-    companyId: user?.companyId as string,
-    limit: limit,
-  });
+  const { data: kudos } = useGetCompanyKudos(
+    {
+      companyId: user?.companyId as string,
+      limit: limit,
+    },
+    QueryKeys.limitKudos(limit)
+  );
 
   const { data: company } = useGetCompany(user?.companyId as string);
 

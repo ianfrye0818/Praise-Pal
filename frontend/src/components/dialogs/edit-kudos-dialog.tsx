@@ -18,12 +18,21 @@ import { Form } from '../ui/form';
 
 import { EDIT_KUDOS_DIALOG_FORM_DEFAULT_VALUES } from '@/constants';
 
-import { EditKudosDialogProps } from '@/types';
 import useSubmitEditKudosForm from '@/hooks/forms/useSubmitEditKudosForm';
 import { FormInputItem } from '../forms/form-input-item';
 import { FormTextAreaItem } from '../forms/form-text-area-item';
+import { QueryKey } from '@tanstack/react-query';
+import { TKudos } from '@/types';
 
-export default function EditKudosDialog({ kudo, setMenuOpen }: EditKudosDialogProps) {
+export interface EditKudosDialogProps {
+  kudo: TKudos;
+  className?: string;
+  setMenuOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  isSingleKudo?: boolean;
+  queryKey?: QueryKey;
+}
+
+export default function EditKudosDialog({ kudo, setMenuOpen, queryKey }: EditKudosDialogProps) {
   const [open, setOpen] = useState(false);
 
   const form = useForm<z.infer<typeof editKudosFormSchema>>({
@@ -36,11 +45,7 @@ export default function EditKudosDialog({ kudo, setMenuOpen }: EditKudosDialogPr
     setMenuOpen(false);
   }
 
-  console.log(kudo);
-
-  const onSubmit = useSubmitEditKudosForm();
-
-  console.log(form.getValues());
+  const onSubmit = useSubmitEditKudosForm(queryKey);
 
   return (
     <Dialog

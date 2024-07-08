@@ -30,7 +30,6 @@ export default function SendPassWordResetLinkDialog({ children }: { children: Re
 
   const onSubmit = async (data: z.infer<typeof FormSchema>) => {
     try {
-      console.log(data);
       await sendResetLink(data);
       form.reset();
     } catch (error) {

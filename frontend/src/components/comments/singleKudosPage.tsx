@@ -4,9 +4,9 @@ import { Comment } from '@/types';
 import { useAuth } from '@/hooks/useAuth';
 import KudoCardDropDownMenu from '../kudos-card/kudo-card-dropdown-menu';
 import UserAvitar from '../UserAvitar';
-import LikeReplyButtons from './like-reply-buttons';
 import NewCommentForm from './new-comment-form';
 import { useSingleKudoContext } from '@/hooks/useSingleKudoContext';
+import KudoLikeButton from '../kudos-card/kudo-like-button';
 
 export default function SingleKudosPage() {
   const kudo = useSingleKudoContext();
@@ -15,11 +15,14 @@ export default function SingleKudosPage() {
   const senderDisplayName = getUserDisplayName(sender);
   const receiverDisplayName = getUserDisplayName(receiver);
   const usersKudo = kudo.sender.userId === currentUser?.userId;
+  const isLiked = kudo.userLikes
+    ? kudo.userLikes.some((userLike) => userLike.userId === currentUser?.userId)
+    : false;
 
   return (
     <div className='h-[calc(100vh-48px)]  flex flex-col justify-between  text-foreground rounded-lg md:shadow-md p-6 space-y-6 container mx-auto md:mt-12 md:h-auto md:block overflow-x-auto'>
       <div>
-        <div className='flex items-start space-x-4'>
+        <div className='flex items-start space-x-4 mb-8'>
           <UserAvitar displayName={senderDisplayName} />
           <div className='flex-1 space-y-2'>
             <div className='flex items-center justify-between'>
@@ -30,10 +33,15 @@ export default function SingleKudosPage() {
             </div>
             <div className='text-lg font-semibold'>{kudo.title}</div>
             <p>{kudo.message}</p>
-            <LikeReplyButtons
-              type='kudo'
-              kudo={kudo}
-            />
+            <div className='flex items-center gap-2'>
+              <KudoLikeButton
+                isLiked={isLiked}
+                kudoId={kudo?.id as string}
+                userId={currentUser?.userId as string}
+                companyId={currentUser?.companyId as string}
+              />
+              <p className='text-sm text-gray-500'>{kudo.likes}</p>
+            </div>
           </div>
           {usersKudo && <KudoCardDropDownMenu kudo={kudo} />}
         </div>

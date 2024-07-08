@@ -5,8 +5,8 @@ import {
   Injectable,
 } from '@nestjs/common';
 import { Role } from '@prisma/client';
-import { KudosService } from '../kudos/kudos.service';
-import { ClientUser } from '../types';
+import { KudosService } from '../kudos.service';
+import { ClientUser } from 'src/types';
 
 @Injectable()
 export class EditKudosGuard implements CanActivate {
@@ -15,7 +15,6 @@ export class EditKudosGuard implements CanActivate {
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
     const jwtUser = request.user as ClientUser;
-    const method = request.method;
 
     if (jwtUser.role === Role.SUPER_ADMIN) return true;
 

@@ -9,10 +9,10 @@ import {
   UpdateCompanyProps,
   UpdateKudoProps,
   KudosQueryParams,
+  CreateCommentFormProps,
   UserQueryParams,
   UserNotification,
   UserNotificationQueryParams,
-  CreateCommentFormProps,
   VerifyTokenAndResetPasswordProps,
 } from '@/types';
 import { ApiRoutes } from './api-routes';
@@ -89,11 +89,16 @@ export const getCompanyUsers = async (queryParams: UserQueryParams) =>
 export const getSingleCompanyUser = async (companyId: string, userId: string) =>
   await fetcher<User>({ url: ApiRoutes.users.findOneById(companyId, userId) });
 
-export const patchUpdateUser = async (companyId: string, userId: string, payload: Partial<User>) =>
-  await patcher<Partial<User>, User>({
+export const patchUpdateUser = async (
+  companyId: string,
+  userId: string,
+  payload: Partial<User>
+) => {
+  return await patcher<Partial<User>, User>({
     url: ApiRoutes.users.updateUserById(companyId, userId),
     data: payload,
   });
+};
 
 export const deleteSingleUser = async (companyId: string, userId: string) =>
   await deleter<void>({ url: ApiRoutes.users.deleteUserById(companyId, userId) });

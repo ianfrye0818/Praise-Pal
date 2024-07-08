@@ -9,22 +9,19 @@ export const Route = createLazyFileRoute('/_rootLayout/kudos/received')({
 
 function ReceivedPage() {
   const { user } = useAuth().state;
-  const {
-    data: kudos,
-    isLoading,
-    error,
-  } = useGetCompanyKudos({
+  const { data: kudos } = useGetCompanyKudos({
     companyId: user?.companyId as string,
     receiverId: user?.userId as string,
     isHidden: false,
   });
 
-  //TODO: add loading and error components
-  if (isLoading) return <div>Loading...</div>;
-  if (error) return <div>{error.message}</div>;
-
-  //TODO: add no kudos found component
-  if (!kudos || kudos.length === 0) return <div>No kudos found</div>;
+  if (!kudos || kudos.length === 0) {
+    return (
+      <div className='w-full h-full flex flex-col items-center justify-center'>
+        <p>You have no received Kudos!</p>
+      </div>
+    );
+  }
 
   return (
     <div>

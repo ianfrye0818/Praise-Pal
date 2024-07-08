@@ -24,7 +24,7 @@ import { FormTextAreaItem } from '../forms/form-text-area-item';
 import ComboBox from '../forms/find-receipint-combo-box';
 import { CheckBoxInputItem } from '../forms/form-checkbox-input-item';
 
-export default function AddKudosDialog() {
+export default function AddKudosDialog({ children }: { children: React.ReactNode }) {
   const [open, setOpen] = useState(false);
   const { user } = useAuth().state;
   const { data: users } = useGetCompanyUsers({
@@ -50,12 +50,16 @@ export default function AddKudosDialog() {
       }}
     >
       <DialogTrigger asChild>
-        <Button
-          className='ml-auto'
-          variant='default'
-        >
-          Add Kudo
-        </Button>
+        {children ? (
+          children
+        ) : (
+          <Button
+            className='ml-auto'
+            variant='default'
+          >
+            Add Kudo
+          </Button>
+        )}
       </DialogTrigger>
       <Form {...form}>
         <form>

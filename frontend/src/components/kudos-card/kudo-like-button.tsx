@@ -10,20 +10,13 @@ interface KudoLikeButtonProps {
   companyId: string;
 }
 
-export default function KudoLikeButton({
-  isLiked,
-  kudoId,
-  userId,
-  companyId,
-}: KudoLikeButtonProps) {
-  const { mutateAsync: toogleKudo } = useLikeKudos();
+export default function KudoLikeButton({ isLiked, kudoId }: KudoLikeButtonProps) {
+  const { mutateAsync: toggleKudo } = useLikeKudos();
 
-  async function hanldeToggleKudo() {
-    await toogleKudo({
-      companyId,
+  async function handleToggleKudo() {
+    await toggleKudo({
       kudoId,
       isLiked,
-      userId,
     });
   }
 
@@ -32,7 +25,7 @@ export default function KudoLikeButton({
       variant='ghost'
       size='icon'
       className='text-gray-400 hover:text-gray-900 dark:hover:text-gray-50'
-      onClick={hanldeToggleKudo}
+      onClick={handleToggleKudo}
     >
       <HeartIcon
         fill={isLiked ? 'red' : 'none'}

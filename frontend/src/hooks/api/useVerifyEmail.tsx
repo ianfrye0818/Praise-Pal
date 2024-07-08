@@ -12,7 +12,6 @@ export default function useVerifyEmail({ type }: { type: 'sendVerifyEmail' | 've
   return useMutation({
     mutationFn: async (payload: VerifyEmailProps) => {
       if (type === 'sendVerifyEmail') {
-        console.log({ payload });
         if (!payload.email) throw new Error('Email is required');
         return await postSendVerifyEmail(payload.email);
       } else {

@@ -6,12 +6,12 @@ import { User } from '@/types';
 
 export default function UpdateUserDialog({
   updatingUser,
-  trigger,
+  children,
   currentUser,
   disabled,
 }: {
   updatingUser: User;
-  trigger?: React.ReactNode | string;
+  children?: React.ReactNode;
   currentUser: User;
   disabled?: boolean;
 }) {
@@ -26,12 +26,7 @@ export default function UpdateUserDialog({
         setDeleting(false);
       }}
     >
-      <DialogTrigger
-        disabled={disabled}
-        asChild
-      >
-        {trigger}
-      </DialogTrigger>
+      <DialogTrigger disabled={disabled ? disabled : false}>{children}</DialogTrigger>
 
       <DialogContent>
         {deleting ? (

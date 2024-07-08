@@ -5,11 +5,37 @@ services:
     image: postgres
     container_name: postgres
     restart: unless-stopped
+    shm_size: 128mb
     environment:
       POSTGRES_PASSWORD: postgres
       POSTGRES_USER: postgres
-      POSTGRES_DB: paisepal
+      POSTGRES_DB: praisepal
     ports:
-      - '5432:5432'
+      - 5432:5432
     volumes:
-      - ./data:/var/lib/postgresql/data
+      - ./data:/var/lib/postgresql/data:rw
+    networks:
+      - praisePal-default
+
+  backend:
+    container_name: praisepal-backend
+    depends_on:
+      - db
+    env_file:
+      - .env
+    networks:
+      - praisePal-default
+    ports: 3001:3001
+    volumes:
+      - ./backend:/app
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+
+networks:
+  praisePal-default:
+    external: true
+
+volumes:
+  data:
+  backend:

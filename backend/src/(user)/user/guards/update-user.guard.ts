@@ -5,8 +5,8 @@ import {
   Injectable,
 } from '@nestjs/common';
 import { Role } from '@prisma/client';
-import { UserService } from '../(user)/user/user.service';
-import { ClientUser } from '../types';
+import { UserService } from '../user.service';
+import { ClientUser } from 'src/types';
 
 @Injectable()
 export class UpdateUserGuard implements CanActivate {

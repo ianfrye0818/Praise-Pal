@@ -1,4 +1,4 @@
-import { Sheet, SheetClose, SheetContent, SheetTrigger } from '../ui/sheet';
+import { Sheet, SheetContent, SheetTrigger } from '../ui/sheet';
 import SideBarFooter from '../sidebar/sidebar-footer';
 import { useState } from 'react';
 import { MenuIcon } from 'lucide-react';

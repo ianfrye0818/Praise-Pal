@@ -1,4 +1,4 @@
-import { Role, TKudos, User } from '@/types';
+import { Comment, Role, TKudos, User } from '@/types';
 import { type ClassValue, clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 

@@ -4,7 +4,7 @@ import { USER_QUERY_OPTIONS } from '@/constants';
 import { useAuth } from '@/hooks/useAuth';
 import useErrorToast from '@/hooks/useErrorToast';
 import useSuccessToast from '@/hooks/useSuccessToast';
-import { Role, User } from '@/types';
+import { User } from '@/types';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 interface UseGetUserProps {
@@ -24,12 +24,7 @@ export default function useUpdateCompanyUser() {
       if (userToUpdateId === currentUser.userId) {
         return await updateCurrentUser(dispatch, companyId, userToUpdateId, payload);
       } else {
-        const { role: _, ...rest } = payload;
-        return await patchUpdateUser(
-          companyId,
-          userToUpdateId,
-          currentUser.role === Role.COMPANY_OWNER ? payload : rest
-        );
+        return await patchUpdateUser(companyId, userToUpdateId, payload);
       }
     },
     onMutate: async (newData: Partial<User>) => {
@@ -50,9 +45,9 @@ export default function useUpdateCompanyUser() {
       });
       return { previousData };
     },
-    onError: (err, __, context) => {
+    onError: (_, __, context) => {
       queryClient.setQueriesData(USER_QUERY_OPTIONS, context?.previousData);
-      errorToast({ message: err.message });
+      errorToast({ message: 'Something went wrong updating your account. ' });
     },
 
     onSuccess: () => {

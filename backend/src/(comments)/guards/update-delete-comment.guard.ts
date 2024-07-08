@@ -5,9 +5,10 @@ import {
   Injectable,
 } from '@nestjs/common';
 import { Role } from '@prisma/client';
-import { ClientUser } from '../types';
+
 import { Request } from 'express';
 import { CommentsService } from 'src/(comments)/comments/comments.service';
+import { ClientUser } from 'src/types';
 
 @Injectable()
 export class EditCommentGuard implements CanActivate {

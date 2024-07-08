@@ -1,30 +1,33 @@
 import { TKudos } from '@/types';
 import KudoCardDropDownMenu from './kudo-card-dropdown-menu';
 import KudoLikeButton from './kudo-like-button';
-import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import { useAuth } from '@/hooks/useAuth';
-import { capitalizeString, getUserDisplayName, timeAgo } from '@/lib/utils';
+import { capitalizeString, cn, getUserDisplayName, timeAgo } from '@/lib/utils';
 import { MessageCircle } from 'lucide-react';
 import { Link } from '@tanstack/react-router';
+import UserAvitar from '../UserAvitar';
 
 type Props = {
   kudo: TKudos;
-  commenting?: boolean;
 };
 
-export default function KudosCard({ kudo, commenting = false }: Props) {
+export default function KudosCard({ kudo }: Props) {
   const { user } = useAuth().state;
   const { sender, receiver } = kudo;
-  const isLiked = kudo.userLikes.some((userLike) => userLike.userId === user?.userId);
-  const usersKudo = kudo.sender.userId === user?.userId;
-  const senderDisplayName = getUserDisplayName(sender);
-  const receiverDisplayName = getUserDisplayName(receiver);
+  const isLiked = kudo.userLikes
+    ? kudo.userLikes.some((userLike) => userLike.userId === user?.userId)
+    : false;
+  const usersKudo = sender ? sender.userId === user?.userId : false;
+  const senderDisplayName = sender ? getUserDisplayName(sender) : '';
+  const receiverDisplayName = sender ? getUserDisplayName(receiver) : '';
   return (
-    <div className='flex items-center p-4 bg-white shadow-md rounded-lg my-8 dark:bg-gray-800 dark:text-gray-200'>
-      <Avatar>
-        <AvatarImage />
-        <AvatarFallback className='avatar'>{senderDisplayName[0].toUpperCase()}</AvatarFallback>
-      </Avatar>
+    <div
+      className={cn(
+        'flex items-center p-4 bg-white shadow-md rounded-lg my-8 dark:bg-gray-800 dark:text-gray-200',
+        kudo.isHidden && 'opacity-50'
+      )}
+    >
+      <UserAvitar displayName={senderDisplayName} />
       <div className='ml-4 flex-1'>
         <div className='flex justify-between items-center'>
           <p className='font-bold text-customBlue'>
@@ -34,7 +37,10 @@ export default function KudosCard({ kudo, commenting = false }: Props) {
           </p>
           <p className='text-sm text-gray-500 hidden md:block'>{timeAgo(kudo.createdAt)}</p>
         </div>
-        {kudo.title && <h3 className='font-bold text-lg my-2'>{capitalizeString(kudo.title)}</h3>}
+        <div className='flex gap-2 items-center'>
+          {kudo.title && <h3 className='font-bold text-lg my-2'>{capitalizeString(kudo.title)}</h3>}
+          {kudo.isHidden && <p className='font-bold italic'>{'(Hidden)'}</p>}
+        </div>
         <p>{kudo.message}</p>
         <div className='mt-2 flex items-center justify-between'>
           <div className='flex m-0 gap-3 items-center'>
@@ -49,17 +55,15 @@ export default function KudosCard({ kudo, commenting = false }: Props) {
               <p className='text-sm text-gray-500'>{kudo.likes}</p>
             </div>
 
-            {!commenting && (
-              <Link
-                className='flex items-center gap-1 '
-                to='/kudos/$kudosId'
-                params={{ kudosId: kudo.id }}
-              >
-                <MessageCircle className='size-4 cursor-pointer text-gray-400' />
+            <Link
+              className='flex items-center gap-1 '
+              to='/kudos/$kudosId'
+              params={{ kudosId: kudo.id }}
+            >
+              <MessageCircle className='size-4 cursor-pointer text-gray-400' />
 
-                <p className='text-sm text-gray-500'>{kudo.comments?.length}</p>
-              </Link>
-            )}
+              <p className='text-sm text-gray-500'>{kudo.comments?.length}</p>
+            </Link>
           </div>
           {usersKudo && <KudoCardDropDownMenu kudo={kudo} />}
         </div>

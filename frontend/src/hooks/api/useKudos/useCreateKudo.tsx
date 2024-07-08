@@ -5,6 +5,13 @@ import useSuccessToast from '@/hooks/useSuccessToast';
 import { CreateKudoFormProps } from '@/types';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
+const placeholderKudo = {
+  id: '1',
+  comments: [],
+  likes: 0,
+  userLikes: [],
+};
+
 export default function useCreateKudo() {
   const queryClient = useQueryClient();
   const { errorToast } = useErrorToast();
@@ -17,23 +24,30 @@ export default function useCreateKudo() {
       const previousData = queryClient.getQueriesData(KUDOS_QUERY_OPTIONS);
 
       queryClient.setQueriesData(KUDOS_QUERY_OPTIONS, (old: any) => {
-        return {
-          ...old,
-          payload: {
-            ...payload,
-            id: '1',
-          },
-        };
+        if (Array.isArray(old)) {
+          return [
+            ...old,
+            {
+              ...payload,
+              ...placeholderKudo,
+            },
+          ];
+        } else {
+          return placeholderKudo;
+        }
       });
 
       return previousData;
     },
-    onError: (err, __, context) => {
+    onError: (_, __, context) => {
       queryClient.setQueriesData(KUDOS_QUERY_OPTIONS, context);
-      errorToast({ message: err.message });
+      errorToast({
+        message: 'An error occured when creating Kudo, Please refresh the page and try again. ',
+      });
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries(KUDOS_QUERY_OPTIONS);
+    onSuccess: async () => {
+      await queryClient.invalidateQueries(KUDOS_QUERY_OPTIONS);
+      await queryClient.refetchQueries();
       successToast({ message: 'Kudo created successfully' });
     },
   });

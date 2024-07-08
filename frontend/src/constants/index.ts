@@ -9,7 +9,6 @@ import {
   LayoutDashboard,
 } from 'lucide-react';
 import { env } from '@/zodSchemas/env';
-import { isMainThread } from 'worker_threads';
 
 export const sidebarLinks: SidebarLink[] = [
   {

@@ -60,16 +60,15 @@ export default function UsersTable({ users, showUserNumber = true }: UsersTableP
                     disabled={user.role === 'COMPANY_OWNER'}
                     currentUser={currentUser as User}
                     updatingUser={user}
-                    trigger={
-                      <Button
-                        disabled={user.role === 'COMPANY_OWNER'}
-                        size={'sm'}
-                        variant={'secondary'}
-                      >
-                        Edit
-                      </Button>
-                    }
-                  />
+                  >
+                    <Button
+                      disabled={user.role === 'COMPANY_OWNER'}
+                      size={'sm'}
+                      variant={'secondary'}
+                    >
+                      Edit
+                    </Button>
+                  </UpdateUserDialog>
                 </TableCell>
               </TableRow>
             ))}

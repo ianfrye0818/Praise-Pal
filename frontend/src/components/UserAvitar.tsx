@@ -1,9 +1,9 @@
 import { Avatar, AvatarFallback } from './ui/avatar';
 
-export default function UserAvitar({ displayName }: { displayName: string }) {
+export default function UserAvitar({ displayName }: { displayName?: string }) {
   return (
     <Avatar>
-      <AvatarFallback>{displayName[0].toUpperCase()}</AvatarFallback>
+      <AvatarFallback>{displayName ? displayName[0].toUpperCase() : ''}</AvatarFallback>
     </Avatar>
   );
 }

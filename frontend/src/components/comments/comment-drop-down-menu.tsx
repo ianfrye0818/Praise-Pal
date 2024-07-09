@@ -7,6 +7,8 @@ import {
 } from '../ui/dropdown-menu';
 import { EllipsisIcon } from 'lucide-react';
 import { useState } from 'react';
+import { QueryKeys } from '@/constants';
+import { useSingleKudoContext } from '@/hooks/useSingleKudoContext';
 
 interface CommentDropDownMenuProps {
   companyId: string;
@@ -25,8 +27,13 @@ export default function CommentDropDownMenu({
   children,
   canEdit,
 }: CommentDropDownMenuProps) {
+  const kudo = useSingleKudoContext();
   const [open, setOpen] = useState(false);
-  const { mutateAsync: deleteComment } = useDeleteComment(companyId);
+  const { mutateAsync: deleteComment } = useDeleteComment({
+    companyId,
+    commentQueryKey: QueryKeys.comments,
+    kudosQueryKey: QueryKeys.singleKudo(kudo.id),
+  });
 
   return (
     <DropdownMenu

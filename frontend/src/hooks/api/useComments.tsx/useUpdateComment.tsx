@@ -1,8 +1,8 @@
 import { patchUpdateComment } from '@/api/api-handlers';
-import { COMMENT_QUERY_OPTIONS, KUDOS_QUERY_OPTIONS } from '@/constants';
+import { QueryKeys } from '@/constants';
 import useErrorToast from '@/hooks/useErrorToast';
 import { Comment } from '@/types';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { QueryKey, useMutation, useQueryClient } from '@tanstack/react-query';
 
 interface UpdateCommentProps {
   commentId: string;
@@ -10,9 +10,20 @@ interface UpdateCommentProps {
   parentId?: string;
 }
 
-export default function useUpdateComment(companyId: string) {
+export default function useUpdateComment({
+  commentQueryKey = QueryKeys.comments,
+  companyId,
+  kudoQueryKey = QueryKeys.allKudos,
+}: {
+  companyId: string;
+  commentQueryKey: QueryKey;
+  kudoQueryKey: QueryKey;
+}) {
   const queryClient = useQueryClient();
   const { errorToast } = useErrorToast();
+
+  const COMMENT_QUERY_OPTIONS = { queryKey: commentQueryKey, exact: false };
+  const KUDOS_QUERY_OPTIONS = { queryKey: kudoQueryKey, exact: false };
 
   const updateCommentInTree = (
     comments: Comment[],

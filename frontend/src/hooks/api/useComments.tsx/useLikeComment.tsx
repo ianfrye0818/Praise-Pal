@@ -10,13 +10,13 @@ interface LikeCommentProps {
 }
 
 export default function useLikeComments({
-  queryKey = QueryKeys.comments,
+  commentQueryKey = QueryKeys.comments,
   kudoQueryKey = QueryKeys.allKudos,
 }: {
-  queryKey?: QueryKey;
+  commentQueryKey?: QueryKey;
   kudoQueryKey?: QueryKey;
 } = {}) {
-  const COMMENT_QUERY_OPTIONS = { queryKey, exact: false };
+  const COMMENT_QUERY_OPTIONS = { commentQueryKey, exact: false };
   const KUDOS_QUERY_OPTIONS = { kudoQueryKey, exact: false };
   const queryClient = useQueryClient();
   const { errorToast } = useErrorToast();

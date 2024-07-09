@@ -7,9 +7,9 @@ services:
     restart: unless-stopped
     shm_size: 128mb
     environment:
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_USER: postgres
-      POSTGRES_DB: praisepal
+      - POSTGRES_PASSWORD: postgres
+      - POSTGRES_USER: postgres
+      - POSTGRES_DB: praisepal
     ports:
       - 5432:5432
     volumes:
@@ -21,8 +21,16 @@ services:
     container_name: praisepal-backend
     depends_on:
       - db
-    env_file:
-      - .env
+    environment:
+      - DATABASE_URL=
+      - JWT_SECRET=
+      - JWT_REFRESH_SECRET=
+      - PASSWORD_RESET_SECRET=
+      - EMAIL_VERIFICATION_SECRET=
+      - CLIENT_URL=http://frontend:80
+      - PORT=3001
+      - NODE_ENV=
+      - RESEND_API_KEY=
     networks:
       - praisePal-default
     ports: 3001:3001
@@ -30,6 +38,22 @@ services:
       - ./backend:/app
     build:
       context: ./backend
+      dockerfile: Dockerfile
+
+  frontend:
+    container_name: praisepal-frontend
+    depends_on:
+      - backend
+    environment:
+      - VITE_API_BASE_URL=http://backend:3001
+      - VITE_NODE_ENV=production
+    networks:
+      - praisePal-default
+    ports: 3000:3000
+    volumes:
+      - ./frontend:/app
+    build:
+      context: ./frontend
       dockerfile: Dockerfile
 
 networks:

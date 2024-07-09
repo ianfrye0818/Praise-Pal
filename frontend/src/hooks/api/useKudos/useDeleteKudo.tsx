@@ -13,6 +13,7 @@ interface DeleteKudoProps {
 export default function useDeleteKudo(queryKey: QueryKey = QueryKeys.allKudos) {
   const KUDOS_QUERY_OPTIONS = { queryKey, exact: false };
   const queryClient = useQueryClient();
+
   const { errorToast } = useErrorToast();
   const { successToast } = useSuccessToast();
   const mutation = useMutation({
@@ -32,8 +33,8 @@ export default function useDeleteKudo(queryKey: QueryKey = QueryKeys.allKudos) {
       queryClient.setQueriesData(KUDOS_QUERY_OPTIONS, context?.previousData);
       errorToast({ message: 'Error deleting your kudo, please try again. ' });
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries(KUDOS_QUERY_OPTIONS);
+    onSuccess: async () => {
+      await queryClient.invalidateQueries(KUDOS_QUERY_OPTIONS);
       successToast({ message: 'Kudo deleted successfully' });
     },
   });

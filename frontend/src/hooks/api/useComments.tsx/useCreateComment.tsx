@@ -1,10 +1,21 @@
 import { postCreateComment } from '@/api/api-handlers';
-import { COMMENT_QUERY_OPTIONS, KUDOS_QUERY_OPTIONS } from '@/constants';
+import { QueryKeys } from '@/constants';
 import useErrorToast from '@/hooks/useErrorToast';
 import { Comment, CreateCommentFormProps, Role } from '@/types';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { QueryKey, useMutation, useQueryClient } from '@tanstack/react-query';
 
-export default function useCreateComment(companyId: string) {
+export default function useCreateComment({
+  commentQueryKey = QueryKeys.comments,
+  companyId,
+  kudoQueryKey = QueryKeys.allKudos,
+}: {
+  companyId: string;
+  kudoQueryKey?: QueryKey;
+  commentQueryKey?: QueryKey;
+}) {
+  const COMMENT_QUERY_OPTIONS = { queryKey: commentQueryKey, exact: false };
+  const KUDOS_QUERY_OPTIONS = { queryKey: kudoQueryKey, exact: false };
+
   const queryClient = useQueryClient();
   const { errorToast } = useErrorToast();
 

@@ -1,5 +1,5 @@
 import { useAuth } from '@/hooks/useAuth';
-import { Comment, TKudos } from '@/types';
+import { Comment } from '@/types';
 import { Button } from '../ui/button';
 import KudoLikeButton from '../kudos-card/kudo-like-button';
 import CommentLikeButton from './comment-like-button';
@@ -55,7 +55,7 @@ export default function LikeReplyButtons({
         )}
 
         <p className='text-sm text-gray-500'>
-          {kudo ? kudo.likes : comment ? comment?.likes : '0'}
+          {type === 'kudo' ? kudo.likes : comment ? comment?.likes : '0'}
         </p>
       </div>
     </div>

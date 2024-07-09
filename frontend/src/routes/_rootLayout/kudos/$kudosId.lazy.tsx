@@ -1,9 +1,11 @@
 import SingleKudosPage from '@/components/comments/singleKudosPage';
+import { Button } from '@/components/ui/button';
 import { QueryKeys } from '@/constants';
-import useGetCompanyKudos from '@/hooks/api/useKudos/useGetCompanyKudos';
+import useGetSingleKudo from '@/hooks/api/useKudos/useGetSingleKudo';
 import { useAuth } from '@/hooks/useAuth';
+
 import { TKudos } from '@/types';
-import { createLazyFileRoute } from '@tanstack/react-router';
+import { createLazyFileRoute, useRouter } from '@tanstack/react-router';
 import { createContext } from 'react';
 
 export const KudoContext = createContext<TKudos | null>(null);
@@ -15,20 +17,34 @@ export const Route = createLazyFileRoute('/_rootLayout/kudos/$kudosId')({
 function Component() {
   const { kudosId } = Route.useParams();
   const { user: currentUser } = useAuth().state;
+  const router = useRouter();
 
-  const { data: kudos } = useGetCompanyKudos(
-    {
-      companyId: currentUser?.companyId as string,
-      id: kudosId,
-    },
-    QueryKeys.singleKudo(kudosId)
-  );
+  const { data: kudo } = useGetSingleKudo({
+    companyId: currentUser?.companyId as string,
+    kudoId: kudosId,
+    queryKey: QueryKeys.singleKudo(kudosId),
+  });
 
-  if (!kudos || kudos.length === 0) return <div>No Kudo Found</div>;
+  if (!kudo) {
+    return (
+      <div className='w-full h-full flex flex-col justify-center items-center gap-8 max-w-[400px] mx-auto'>
+        <h1 className='text-2xl font-bold'>This Kudo no longer exists</h1>
+
+        <Button
+          className='w-full'
+          onClick={() => {
+            router.navigate({ to: '/' });
+          }}
+        >
+          Return Home
+        </Button>
+      </div>
+    );
+  }
 
   return (
     <div>
-      <KudoContext.Provider value={kudos[0]}>
+      <KudoContext.Provider value={kudo}>
         <SingleKudosPage />
       </KudoContext.Provider>
     </div>

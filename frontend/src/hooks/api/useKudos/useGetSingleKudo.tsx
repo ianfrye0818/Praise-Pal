@@ -1,17 +1,20 @@
-// import { getsingleKudo } from '@/api/api-handlers';
-// import { useQuery } from '@tanstack/react-query';
+import { getsingleKudo } from '@/api/api-handlers';
+import { QueryKeys } from '@/constants';
+import { QueryKey, useQuery } from '@tanstack/react-query';
 
-// export default function useGetSingleKudo({
-//   companyId,
-//   kudoId,
-// }: {
-//   companyId: string;
-//   kudoId: string;
-// }) {
-//   const query = useQuery({
-//     queryKey: ['singleKudo', kudoId],
-//     queryFn: async () => getsingleKudo(companyId, kudoId),
-//     enabled: !!companyId && !!kudoId,
-//   });
-//   return query;
-// }
+export default function useGetSingleKudo({
+  companyId,
+  kudoId,
+  queryKey = QueryKeys.singleKudo(kudoId),
+}: {
+  companyId: string;
+  kudoId: string;
+  queryKey?: QueryKey;
+}) {
+  const query = useQuery({
+    queryKey,
+    queryFn: async () => getsingleKudo(companyId, kudoId),
+    enabled: !!companyId && !!kudoId,
+  });
+  return query;
+}

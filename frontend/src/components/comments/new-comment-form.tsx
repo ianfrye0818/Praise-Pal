@@ -10,6 +10,7 @@ import { Button } from '../ui/button';
 import { Send } from 'lucide-react';
 import { NewCommentSchema } from '@/zodSchemas';
 import { useSingleKudoContext } from '@/hooks/useSingleKudoContext';
+import { QueryKeys } from '@/constants';
 
 export default function NewCommentForm({
   type,
@@ -23,7 +24,11 @@ export default function NewCommentForm({
   const { user: currentUser } = useAuth().state;
   const kudo = useSingleKudoContext();
 
-  const { mutateAsync: createComment } = useCreateComment(currentUser?.companyId as string);
+  const { mutateAsync: createComment } = useCreateComment({
+    companyId: currentUser?.companyId as string,
+    kudoQueryKey: QueryKeys.singleKudo(kudo.id),
+    commentQueryKey: QueryKeys.comments,
+  });
 
   const form = useForm<z.infer<typeof NewCommentSchema>>({
     defaultValues: {

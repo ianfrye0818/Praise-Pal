@@ -13,6 +13,7 @@ import useDeleteKudo from '@/hooks/api/useKudos/useDeleteKudo';
 import { TKudos } from '@/types';
 import { useAuth } from '@/hooks/useAuth';
 import { QueryKey } from '@tanstack/react-query';
+import { useNavigate, useLocation } from '@tanstack/react-router';
 
 interface DialogDemoProps {
   setMenuOpen?: React.Dispatch<React.SetStateAction<boolean>>;
@@ -31,7 +32,9 @@ export function DeleteKudoDialog({ setMenuOpen, kudo, children, queryKey }: Dial
     }
   }
 
-  const { mutate: deleteKudo } = useDeleteKudo(queryKey);
+  const { mutateAsync: deleteKudo, isPending } = useDeleteKudo(queryKey);
+  const navigate = useNavigate();
+  const { pathname } = useLocation();
 
   return (
     <Dialog
@@ -70,13 +73,18 @@ export function DeleteKudoDialog({ setMenuOpen, kudo, children, queryKey }: Dial
               onClick={() => {
                 handleCloseMenu();
               }}
+              disabled={isPending}
             >
               Cancel
             </Button>
             <Button
+              disabled={isPending}
               className='bg-red-500 hover:bg-red-600'
-              onClick={() => {
+              onClick={async () => {
                 deleteKudo({ kudoId: kudo.id, companyId: currentUser?.companyId as string });
+                if (pathname.startsWith('/kudos')) {
+                  navigate({ to: '/' });
+                }
                 handleCloseMenu();
               }}
             >

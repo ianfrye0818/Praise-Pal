@@ -8,21 +8,22 @@ import UserAvitar from '../UserAvitar';
 import CommentDropDownMenu from './comment-drop-down-menu';
 import EditCommentForm from './edit-comment-form';
 import { SelectSeparator } from '../ui/select';
-import { useSingleKudoContext } from '@/hooks/useSingleKudoContext';
 
 export default function CommentComponent(comment: Comment) {
   const { user: currentUser } = useAuth().state;
-  const kudo = useSingleKudoContext();
   const [editMode, setEditMode] = useState(false);
   const [replyVisible, setReplyVisible] = useState(false);
-  const senderDisplayName = getUserDisplayName(comment.user);
+  const senderDisplayName = comment.user ? getUserDisplayName(comment.user) : '';
   const canSeeDropDown =
-    comment.user.userId === currentUser?.userId ||
-    currentUser?.role === Role.ADMIN ||
-    currentUser?.role === Role.COMPANY_OWNER;
-  const canEdit = comment.user.userId === currentUser?.userId;
+    comment.user && currentUser
+      ? comment.user.userId === currentUser?.userId ||
+        currentUser?.role === Role.ADMIN ||
+        currentUser?.role === Role.COMPANY_OWNER
+      : false;
+  const canEdit =
+    comment.user && currentUser?.userId ? comment.user.userId === currentUser?.userId : false;
   const showSeperator = comment.parentId;
-
+  console.log({ comment });
   return (
     <div className='flex items-start space-x-4 p-2 min-w-[300px] overflow-x-auto'>
       <UserAvitar displayName={senderDisplayName} />

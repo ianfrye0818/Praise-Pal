@@ -20,7 +20,7 @@ export default function CommentLikeButton({
 }: Props) {
   const { mutateAsync: toggleLikeComment } = useLikeComment({
     kudoQueryKey,
-    queryKey: commentQueryKey,
+    commentQueryKey,
   });
   const handleToggleCommentLike = async () => {
     await toggleLikeComment({ commentId, isLiked });

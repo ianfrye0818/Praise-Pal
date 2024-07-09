@@ -13,5 +13,8 @@ export default ({ mode }: { mode: string }) => {
         '@': path.resolve(__dirname, './src'),
       },
     },
+    build: {
+      outDir: './build',
+    },
   });
 };

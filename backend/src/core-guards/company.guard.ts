@@ -18,8 +18,6 @@ export class CompanyGuard implements CanActivate {
     const request = context.switchToHttp().getRequest();
     const user = request.user as ClientUser;
 
-    console.log(user);
-
     if (!user) {
       throw new UnauthorizedException(
         'Must be logged in to access this resource',

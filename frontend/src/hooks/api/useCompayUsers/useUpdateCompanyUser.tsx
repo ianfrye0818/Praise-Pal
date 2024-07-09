@@ -1,11 +1,11 @@
 import { patchUpdateUser } from '@/api/api-handlers';
 import { updateCurrentUser } from '@/api/auth-actions';
-import { USER_QUERY_OPTIONS } from '@/constants';
+import { QueryKeys } from '@/constants';
 import { useAuth } from '@/hooks/useAuth';
 import useErrorToast from '@/hooks/useErrorToast';
 import useSuccessToast from '@/hooks/useSuccessToast';
 import { User } from '@/types';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { QueryKey, useMutation, useQueryClient } from '@tanstack/react-query';
 
 interface UseGetUserProps {
   userToUpdateId: string;
@@ -14,7 +14,10 @@ interface UseGetUserProps {
   currentUser: User;
 }
 
-export default function useUpdateCompanyUser() {
+export default function useUpdateCompanyUser({
+  queryKey = QueryKeys.allUsers,
+}: { queryKey?: QueryKey } = {}) {
+  const USER_QUERY_OPTIONS = { queryKey, exact: false };
   const { dispatch } = useAuth();
   const queryClient = useQueryClient();
   const { errorToast } = useErrorToast();

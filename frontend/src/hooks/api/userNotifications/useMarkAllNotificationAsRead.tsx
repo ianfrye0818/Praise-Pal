@@ -1,8 +1,11 @@
 import { patchMarkAllNotificationAsRead } from '@/api/api-handlers';
-import { USER_NOTIFICATION_QUERY_OPTIONS } from '@/constants';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { QueryKeys } from '@/constants';
+import { QueryKey, useMutation, useQueryClient } from '@tanstack/react-query';
 
-export default function useMarkAllNotificationsAsRead() {
+export default function useMarkAllNotificationsAsRead({
+  queryKey = QueryKeys.userNotifications,
+}: { queryKey?: QueryKey } = {}) {
+  const USER_NOTIFICATION_QUERY_OPTIONS = { queryKey, exact: false };
   const queryClient = useQueryClient();
   const mutation = useMutation({
     mutationFn: async () => {

@@ -1,10 +1,14 @@
 import { getUserNotifications } from '@/api/api-handlers';
+import { QueryKeys } from '@/constants';
 import { UserNotificationQueryParams } from '@/types';
-import { useQuery } from '@tanstack/react-query';
+import { QueryKey, useQuery } from '@tanstack/react-query';
 
-export default function useGetUserNotifications(queryParams?: UserNotificationQueryParams) {
+export default function useGetUserNotifications(
+  queryParams?: UserNotificationQueryParams,
+  queryKey: QueryKey = QueryKeys.userNotifications
+) {
   const query = useQuery({
-    queryKey: ['userNotifications', queryParams],
+    queryKey,
     queryFn: async () => {
       return await getUserNotifications(queryParams);
     },

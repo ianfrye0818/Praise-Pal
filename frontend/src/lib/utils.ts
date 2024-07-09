@@ -1,4 +1,4 @@
-import { Comment, Role, TKudos, User } from '@/types';
+import { Role, User } from '@/types';
 import { type ClassValue, clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
@@ -71,7 +71,5 @@ export function getRoleDropDownOptions() {
 }
 
 export function getUserDisplayName(user: User) {
-  return user.firstName && user.lastName
-    ? `${user.firstName} ${user.lastName[0]}.`
-    : user.displayName;
+  return user.firstName && user.lastName ? `${user.firstName} ${user.lastName}` : '';
 }

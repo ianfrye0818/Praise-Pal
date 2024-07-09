@@ -9,6 +9,8 @@ import { FormInputItem } from '../forms/form-input-item';
 import { Button } from '../ui/button';
 import { Send } from 'lucide-react';
 import { EditCommentSchema } from '@/zodSchemas';
+import { useSingleKudoContext } from '@/hooks/useSingleKudoContext';
+import { QueryKeys } from '@/constants';
 
 export default function EditCommentForm({
   setEditMode,
@@ -18,7 +20,12 @@ export default function EditCommentForm({
   comment: Comment;
 }) {
   const { user: currentUser } = useAuth().state;
-  const { mutateAsync: updateComment } = useUpdateComment(currentUser?.companyId as string);
+  const kudo = useSingleKudoContext();
+  const { mutateAsync: updateComment } = useUpdateComment({
+    companyId: currentUser?.companyId as string,
+    commentQueryKey: QueryKeys.comments,
+    kudoQueryKey: QueryKeys.singleKudo(kudo.id),
+  });
 
   const form = useForm<z.infer<typeof EditCommentSchema>>({
     defaultValues: {

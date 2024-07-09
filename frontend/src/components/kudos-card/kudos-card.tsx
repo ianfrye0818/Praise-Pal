@@ -6,6 +6,7 @@ import { capitalizeString, cn, getUserDisplayName, timeAgo } from '@/lib/utils';
 import { MessageCircle } from 'lucide-react';
 import { Link } from '@tanstack/react-router';
 import UserAvitar from '../UserAvitar';
+import { QueryKeys } from '@/constants';
 
 type Props = {
   kudo: TKudos;
@@ -65,7 +66,12 @@ export default function KudosCard({ kudo }: Props) {
               <p className='text-sm text-gray-500'>{kudo.comments?.length}</p>
             </Link>
           </div>
-          {usersKudo && <KudoCardDropDownMenu kudo={kudo} />}
+          {usersKudo && (
+            <KudoCardDropDownMenu
+              kudo={kudo}
+              querKey={QueryKeys.allKudos}
+            />
+          )}
         </div>
       </div>
     </div>

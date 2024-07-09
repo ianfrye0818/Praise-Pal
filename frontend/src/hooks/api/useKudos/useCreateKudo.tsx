@@ -1,18 +1,29 @@
 import { postCreateKudo } from '@/api/api-handlers';
-import { KUDOS_QUERY_OPTIONS } from '@/constants';
+import { QueryKeys } from '@/constants';
 import useErrorToast from '@/hooks/useErrorToast';
 import useSuccessToast from '@/hooks/useSuccessToast';
 import { CreateKudoFormProps } from '@/types';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { QueryKey, useMutation, useQueryClient } from '@tanstack/react-query';
 
 const placeholderKudo = {
   id: '1',
   comments: [],
   likes: 0,
   userLikes: [],
+  receiver: {
+    userId: '2',
+    firstName: 'Place',
+    lastName: 'Holder',
+  },
+  sender: {
+    userId: '3',
+    firstName: 'Place',
+    lastName: 'Holder',
+  },
 };
 
-export default function useCreateKudo() {
+export default function useCreateKudo(queryKey: QueryKey = QueryKeys.allKudos) {
+  const KUDOS_QUERY_OPTIONS = { queryKey, exact: false };
   const queryClient = useQueryClient();
   const { errorToast } = useErrorToast();
   const { successToast } = useSuccessToast();
@@ -39,7 +50,8 @@ export default function useCreateKudo() {
 
       return previousData;
     },
-    onError: (_, __, context) => {
+    onError: (err, __, context) => {
+      console.error(['useCreateKudo'], err);
       queryClient.setQueriesData(KUDOS_QUERY_OPTIONS, context);
       errorToast({
         message: 'An error occured when creating Kudo, Please refresh the page and try again. ',
@@ -47,7 +59,7 @@ export default function useCreateKudo() {
     },
     onSuccess: async () => {
       await queryClient.invalidateQueries(KUDOS_QUERY_OPTIONS);
-      await queryClient.refetchQueries();
+      // await queryClient.refetchQueries();
       successToast({ message: 'Kudo created successfully' });
     },
   });

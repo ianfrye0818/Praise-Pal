@@ -13,12 +13,15 @@ export default function CommentComponent(comment: Comment) {
   const { user: currentUser } = useAuth().state;
   const [editMode, setEditMode] = useState(false);
   const [replyVisible, setReplyVisible] = useState(false);
-  const senderDisplayName = getUserDisplayName(comment.user);
+  const senderDisplayName = comment.user ? getUserDisplayName(comment.user) : '';
   const canSeeDropDown =
-    comment.user.userId === currentUser?.userId ||
-    currentUser?.role === Role.ADMIN ||
-    currentUser?.role === Role.COMPANY_OWNER;
-  const canEdit = comment.user.userId === currentUser?.userId;
+    comment.user && currentUser
+      ? comment.user.userId === currentUser?.userId ||
+        currentUser?.role === Role.ADMIN ||
+        currentUser?.role === Role.COMPANY_OWNER
+      : false;
+  const canEdit =
+    comment.user && currentUser?.userId ? comment.user.userId === currentUser?.userId : false;
   const showSeperator = comment.parentId;
 
   return (

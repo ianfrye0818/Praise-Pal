@@ -5,12 +5,14 @@ import { useAuth } from '@/hooks/useAuth';
 import KudoCardDropDownMenu from '../kudos-card/kudo-card-dropdown-menu';
 import UserAvitar from '../UserAvitar';
 import NewCommentForm from './new-comment-form';
-import { useSingleKudoContext } from '@/hooks/useSingleKudoContext';
 import KudoLikeButton from '../kudos-card/kudo-like-button';
+import { QueryKeys } from '@/constants';
+import { useSingleKudoContext } from '@/hooks/useSingleKudoContext';
 
 export default function SingleKudosPage() {
-  const kudo = useSingleKudoContext();
   const { user: currentUser } = useAuth().state;
+  const kudo = useSingleKudoContext();
+
   const { sender, receiver } = kudo;
   const senderDisplayName = getUserDisplayName(sender);
   const receiverDisplayName = getUserDisplayName(receiver);
@@ -39,11 +41,17 @@ export default function SingleKudosPage() {
                 kudoId={kudo?.id as string}
                 userId={currentUser?.userId as string}
                 companyId={currentUser?.companyId as string}
+                queryKey={QueryKeys.singleKudo(kudo.id)}
               />
               <p className='text-sm text-gray-500'>{kudo.likes}</p>
             </div>
           </div>
-          {usersKudo && <KudoCardDropDownMenu kudo={kudo} />}
+          {usersKudo && (
+            <KudoCardDropDownMenu
+              kudo={kudo}
+              querKey={QueryKeys.singleKudo(kudo.id)}
+            />
+          )}
         </div>
         <CommentSectionComponent comments={kudo.comments as Comment[]} />
       </div>

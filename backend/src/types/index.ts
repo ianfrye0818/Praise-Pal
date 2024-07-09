@@ -4,10 +4,9 @@ export interface ClientUser {
   email: string;
   userId: string;
   companyId: string;
-  role?: Role;
-  displayName: string;
-  firstName?: string;
-  lastName?: string;
+  role: Role;
+  firstName: string;
+  lastName: string;
 }
 export interface ClientComment {
   id: string;

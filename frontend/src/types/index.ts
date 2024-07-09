@@ -16,21 +16,13 @@ export interface SignUpFormProps extends SignInFormProps {
   companyCode: string;
 }
 
-export interface EditKudosDialogProps {
-  kudo: TKudos;
-  className?: string;
-  setMenuOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  isSingleKudo?: boolean;
-}
-
 export interface User {
   email: string;
   userId: string;
   companyId: string;
   role: Role;
-  displayName: string;
-  firstName?: string | null | undefined;
-  lastName?: string | null | undefined;
+  firstName: string;
+  lastName: string;
 }
 
 export type UpdateUserProps = Partial<Omit<User, 'companyId' | 'userId' | 'role'>>;
@@ -157,7 +149,6 @@ interface QueryParams {
 
 export interface UserQueryParams extends QueryParams {
   userId?: string;
-  displayName?: string;
   email?: string;
   companyId?: string;
   firstName?: string;
@@ -166,7 +157,7 @@ export interface UserQueryParams extends QueryParams {
 }
 
 export interface KudosQueryParams extends QueryParams {
-  kudosId?: string;
+  // kudosId?: string;
   senderId?: string;
   isHidden?: boolean;
   receiverId?: string;

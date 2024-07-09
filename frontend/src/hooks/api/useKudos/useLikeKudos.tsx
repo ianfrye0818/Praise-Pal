@@ -1,15 +1,16 @@
 import { deleteRemoveLikeKudo, postAddLikeKudo } from '@/api/api-handlers';
-import { KUDOS_QUERY_OPTIONS } from '@/constants';
+import { QueryKeys } from '@/constants';
 import useErrorToast from '@/hooks/useErrorToast';
 import { TKudos } from '@/types';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { QueryKey, useMutation, useQueryClient } from '@tanstack/react-query';
 
 interface LikeKudoProps {
   kudoId: string;
   isLiked: boolean;
 }
 
-export default function useLikeKudos() {
+export default function useLikeKudos(queryKey: QueryKey = QueryKeys.allKudos) {
+  const KUDOS_QUERY_OPTIONS = { queryKey, exact: false };
   const queryClient = useQueryClient();
   const { errorToast } = useErrorToast();
 
@@ -27,7 +28,6 @@ export default function useLikeKudos() {
 
       try {
         queryClient.setQueriesData(KUDOS_QUERY_OPTIONS, (old: any) => {
-          // Check if old is an array
           if (Array.isArray(old)) {
             return old.map((kudo: TKudos) => {
               if (kudo && kudo.id === kudoId) {
@@ -59,8 +59,9 @@ export default function useLikeKudos() {
       return { previousData };
     },
     onError: (err, __, context) => {
+      console.error(['useLikeKudos'], err);
       queryClient.setQueriesData(KUDOS_QUERY_OPTIONS, context?.previousData);
-      errorToast({ message: err.message });
+      errorToast({ message: 'Error liking kudos, please try again later. ' });
     },
     onSuccess: () => {
       queryClient.invalidateQueries(KUDOS_QUERY_OPTIONS);

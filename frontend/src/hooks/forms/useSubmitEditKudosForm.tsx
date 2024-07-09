@@ -1,10 +1,10 @@
 import * as z from 'zod';
 import { editKudosFormSchema } from '@/zodSchemas';
-import { User } from '@/types';
 import useUpdateKudo from '../api/useKudos/useUpdateKudo';
+import { QueryKey } from '@tanstack/react-query';
 
-export default function useSubmitEditKudosForm() {
-  const { mutateAsync } = useUpdateKudo();
+export default function useSubmitEditKudosForm(queryKey?: QueryKey) {
+  const { mutateAsync } = useUpdateKudo(queryKey);
 
   async function onSubmit(data: z.infer<typeof editKudosFormSchema>) {
     try {

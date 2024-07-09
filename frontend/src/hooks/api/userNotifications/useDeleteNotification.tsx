@@ -1,9 +1,12 @@
 import { deleteNotificationById } from '@/api/api-handlers';
-import { USER_NOTIFICATION_QUERY_OPTIONS } from '@/constants';
+import { QueryKeys } from '@/constants';
 import { UserNotification } from '@/types';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { QueryKey, useMutation, useQueryClient } from '@tanstack/react-query';
 
-export default function useDeleteNotification() {
+export default function useDeleteNotification({
+  queryKey = QueryKeys.userNotifications,
+}: { queryKey?: QueryKey } = {}) {
+  const USER_NOTIFICATION_QUERY_OPTIONS = { queryKey, exact: false };
   const queryClient = useQueryClient();
   const mutation = useMutation({
     mutationFn: async (notificationId: string) => {

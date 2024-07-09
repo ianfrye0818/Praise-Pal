@@ -2,7 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 import { MailIcon, PhoneIcon } from 'lucide-react';
 import { Button } from '../ui/button';
-import { Company, User } from '@/types';
+import { Company, Role, User } from '@/types';
 import UpdateCompanyDialog from '../dialogs/update-company-dialog';
 import { useAuth } from '@/hooks/useAuth';
 import { useState } from 'react';
@@ -10,6 +10,7 @@ import { useState } from 'react';
 export default function CompanyCard({ company }: { company: Company }) {
   const { user: currentUser } = useAuth().state;
   const [error, setError] = useState<string | null>(null);
+  const canEditCompany = currentUser?.role === Role.COMPANY_OWNER;
 
   return (
     <>
@@ -25,12 +26,14 @@ export default function CompanyCard({ company }: { company: Company }) {
               error={error}
               setError={setError}
             >
-              <Button
-                onClick={() => setError(null)}
-                variant={'secondary'}
-              >
-                Edit
-              </Button>
+              {canEditCompany && (
+                <Button
+                  onClick={() => setError(null)}
+                  variant={'secondary'}
+                >
+                  Edit
+                </Button>
+              )}
             </UpdateCompanyDialog>
           </CardTitle>
         </CardHeader>

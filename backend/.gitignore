@@ -4,5 +4,6 @@ node_modules
 data/
 dist/
 .dist/
+build/
 seed/
 seed.ts

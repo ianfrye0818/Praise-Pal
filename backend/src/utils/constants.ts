@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 
 export const userSelectOptions = {
   userId: true,
-  displayName: true,
   firstName: true,
   lastName: true,
   email: true,

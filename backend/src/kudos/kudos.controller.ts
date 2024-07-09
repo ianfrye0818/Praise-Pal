@@ -27,7 +27,9 @@ export class KudosController {
   @UseGuards(CompanyGuard)
   @Get()
   async findAll(@Query() query: KudosFilterDTO) {
-    return await this.kudosService.getAllKudos(query);
+    const kudos = await this.kudosService.getAllKudos(query);
+
+    return kudos;
   }
 
   @UseGuards(CompanyGuard)

@@ -28,7 +28,7 @@ export const postLoginUser = async (payload: SignInFormProps) =>
   });
 
 export const postRegisterUser = async (payload: SignUpFormProps) =>
-  await poster<SignUpFormProps, User & AuthTokens>({
+  await poster<SignUpFormProps, { message: string; status: number; email: string }>({
     client: 'AUTH',
     url: ApiRoutes.auth.register,
     data: payload,
@@ -104,8 +104,10 @@ export const deleteSingleUser = async (companyId: string, userId: string) =>
   await deleter<void>({ url: ApiRoutes.users.deleteUserById(companyId, userId) });
 
 //kudos actions`
-export const getCompanyKudos = async (queryPrams: KudosQueryParams) =>
-  await fetcher<TKudos[]>({ url: ApiRoutes.kudos.findAll(queryPrams) });
+export const getCompanyKudos = async (queryPrams: KudosQueryParams) => {
+  const url = ApiRoutes.kudos.findAll(queryPrams);
+  return await fetcher<TKudos[]>({ url });
+};
 
 export const getsingleKudo = async (companyId: string, kudoId: string) =>
   await fetcher<TKudos>({ url: ApiRoutes.kudos.findOneById(companyId, kudoId) });

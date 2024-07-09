@@ -9,7 +9,14 @@ async function bootstrap() {
 
   // CORS configuration
   app.enableCors({
-    origin: env.CLIENT_URL,
+    origin: [
+      env.CLIENT_URL,
+      'http://0.0.0.0:8011',
+      'http://localhost:8011',
+      'http://localhost:5173',
+      'https://praise-pal.com',
+      'https://www.praise-pal.com',
+    ],
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true,

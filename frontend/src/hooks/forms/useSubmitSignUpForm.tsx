@@ -2,16 +2,16 @@ import * as z from 'zod';
 import { register } from '@/api/auth-actions';
 import { signUpFormSchema } from '@/zodSchemas';
 import { UseFormReturn } from 'react-hook-form';
-import { useNavigate } from '@tanstack/react-router';
 import { isCustomError } from '@/errors';
 import { useAuth } from '../useAuth';
 import { isAxiosError } from 'axios';
 import useErrorToast from '../useErrorToast';
+import useSuccessToast from '../useSuccessToast';
 
 export default function useSubmitSignUpForm(form: UseFormReturn<z.infer<typeof signUpFormSchema>>) {
-  const navigate = useNavigate();
   const { dispatch } = useAuth();
   const { errorToast } = useErrorToast();
+  const { successToast } = useSuccessToast();
 
   async function onSubmit(data: z.infer<typeof signUpFormSchema>) {
     if (data.password !== data.confirmPassword) {
@@ -19,8 +19,10 @@ export default function useSubmitSignUpForm(form: UseFormReturn<z.infer<typeof s
       return;
     }
     try {
-      await register(dispatch, data);
-      await navigate({ to: '/' });
+      const resp = await register(dispatch, data);
+      if (resp) {
+        successToast({ title: 'Account created', message: resp.message });
+      }
     } catch (error) {
       console.error(['signInFormError'], error);
       if (isAxiosError(error))

@@ -1,10 +1,12 @@
 import { patchUpdateKudo } from '@/api/api-handlers';
-import { KUDOS_QUERY_OPTIONS } from '@/constants';
+import { QueryKeys } from '@/constants';
+
 import useErrorToast from '@/hooks/useErrorToast';
 import { TKudos, UpdateKudoProps } from '@/types';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { QueryKey, useMutation, useQueryClient } from '@tanstack/react-query';
 
-export default function useUpdateKudo() {
+export default function useUpdateKudo(queryKey: QueryKey = QueryKeys.allKudos) {
+  const KUDOS_QUERY_OPTIONS = { queryKey, exact: false };
   const queryClient = useQueryClient();
   const { errorToast } = useErrorToast();
 
@@ -17,22 +19,25 @@ export default function useUpdateKudo() {
       const previousData = queryClient.getQueriesData(KUDOS_QUERY_OPTIONS);
 
       queryClient.setQueriesData(KUDOS_QUERY_OPTIONS, (old: any) => {
-        return old.map((kudo: TKudos) => {
-          if (kudo.id === payload.id) {
-            return {
-              ...kudo,
-              ...payload,
-            };
-          }
-          return kudo;
-        });
+        return Array.isArray(old)
+          ? old.map((kudo: TKudos) => {
+              if (kudo.id === payload.id) {
+                return {
+                  ...kudo,
+                  ...payload,
+                };
+              }
+              return kudo;
+            })
+          : old;
       });
       return { previousData };
     },
 
     onError: (err, __, context) => {
+      console.error(['useUpdateKudo', err]);
       queryClient.setQueriesData(KUDOS_QUERY_OPTIONS, context?.previousData);
-      errorToast({ message: err.message });
+      errorToast({ message: 'Something went wrong updating kudo - please try again.' });
     },
     onSuccess: () => {
       queryClient.invalidateQueries(KUDOS_QUERY_OPTIONS);

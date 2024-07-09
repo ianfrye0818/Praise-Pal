@@ -19,7 +19,7 @@ export default function useErrorToast() {
       variant: 'destructive',
       duration: duration || 5000,
       action,
-      className: 'flex flex-col gap-3',
+      className: 'flex flex-col gap-3 items-start',
     });
   };
 

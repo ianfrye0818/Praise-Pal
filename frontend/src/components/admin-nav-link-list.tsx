@@ -14,7 +14,7 @@ export default function AdminNavLinkList({
   setMenuOpen?: React.Dispatch<React.SetStateAction<boolean>>;
   type?: 'desktop' | 'mobile';
 }) {
-  const { setAdminMode } = useAdminMode();
+  // const { setAdminMode } = useAdminMode();
   return (
     <nav className='flex flex-col gap-4'>
       <Link
@@ -39,7 +39,7 @@ export default function AdminNavLinkList({
         variant={'ghost'}
         className='justify-start p-2 '
         onClick={async () => {
-          setAdminMode(false);
+          // setAdminMode(false);
           type === 'mobile' && setMenuOpen!(false);
         }}
         asChild

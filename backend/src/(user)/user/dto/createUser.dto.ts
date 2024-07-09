@@ -5,12 +5,9 @@ import { IsEmail, IsOptional, IsString, IsDate, IsEnum } from 'class-validator';
 
 export class createUserDTO {
   @IsString()
-  displayName: string;
-
-  @IsOptional()
   firstName: string;
 
-  @IsOptional()
+  @IsString()
   lastName: string;
 
   @IsEmail()

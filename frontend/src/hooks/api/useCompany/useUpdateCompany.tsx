@@ -1,11 +1,15 @@
 import { patchUpdateCompany } from '@/api/api-handlers';
-import { COMPANY_QUERY_OPTIONS } from '@/constants';
+import { QueryKeys } from '@/constants';
+
 import useErrorToast from '@/hooks/useErrorToast';
 import useSuccessToast from '@/hooks/useSuccessToast';
 import { UpdateCompanyProps } from '@/types';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { QueryKey, useMutation, useQueryClient } from '@tanstack/react-query';
 
-export default function useUpdateCompany() {
+export default function useUpdateCompany({
+  queryKey = QueryKeys.company,
+}: { queryKey?: QueryKey } = {}) {
+  const COMPANY_QUERY_OPTIONS = { queryKey, exact: false };
   const queryClient = useQueryClient();
   const { errorToast } = useErrorToast();
   const { successToast } = useSuccessToast();
@@ -24,8 +28,12 @@ export default function useUpdateCompany() {
       return { previousData };
     },
     onError: (err, __, context) => {
+      console.error(['useUpdateCompany'], err, context);
       queryClient.setQueriesData(COMPANY_QUERY_OPTIONS, context?.previousData);
-      errorToast({ message: err.message });
+      errorToast({
+        message:
+          'Something went wrong updating your company - please try again or contact your administrator for assistance',
+      });
     },
 
     onSuccess: () => {

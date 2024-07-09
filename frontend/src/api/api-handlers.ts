@@ -28,7 +28,7 @@ export const postLoginUser = async (payload: SignInFormProps) =>
   });
 
 export const postRegisterUser = async (payload: SignUpFormProps) =>
-  await poster<SignUpFormProps, User & AuthTokens>({
+  await poster<SignUpFormProps, { message: string; status: number; email: string }>({
     client: 'AUTH',
     url: ApiRoutes.auth.register,
     data: payload,

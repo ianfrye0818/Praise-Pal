@@ -1,9 +1,7 @@
 .git-bk
 .env
 node_modules/
-data/
-dist/
-.dist/
+
 .dockerignore
 .next/
 .env.local
@@ -24,7 +22,10 @@ docker-compose.yml
 /out/
 
 # production
-/build
+/build/
+/dist/
+/.dist/
+/data/
 
 # misc
 .DS_Store
@@ -63,3 +64,4 @@ lerna-debug.log*
 *.njsproj
 *.sln
 *.sw?
+docker/

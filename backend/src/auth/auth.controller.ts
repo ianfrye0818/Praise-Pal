@@ -8,6 +8,7 @@ import {
   Get,
   Query,
   Req,
+  HttpStatus,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { UserService } from '../(user)/user/user.service';
@@ -43,8 +44,14 @@ export class AuthController {
   @Post('register')
   async registerUser(@Body() data: createUserDTO) {
     const newUser = await this.userService.create(data);
+    await this.authService.sendVerifyEmail({ email: newUser.email });
 
-    return await this.authService.login(newUser);
+    return {
+      message: 'User created successfully. Please verify your email.',
+      status: HttpStatus.CREATED,
+      email: newUser.email,
+    };
+    // return await this.authService.login(newUser);
   }
 
   @Post('logout')
@@ -60,7 +67,6 @@ export class AuthController {
 
   @Post('verify-email')
   async verifyEmail(@Body() data: { email: string }) {
-    console.log('data from client: ', data);
     return await this.authService.sendVerifyEmail(data);
   }
 
@@ -78,7 +84,6 @@ export class AuthController {
     @Body() data: { password: string },
     @Req() req: any,
   ) {
-    console.log({ data, email: req.email });
     await this.authService.updatedVerifiedPassword(req.email, data.password);
   }
 

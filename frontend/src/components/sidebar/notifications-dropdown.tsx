@@ -14,6 +14,7 @@ export default function NotificationsDropDown({
   notifications?: UserNotification[];
 }) {
   const [open, setOpen] = useState(false);
+  const canPerformActions = notifications && notifications?.length > 0;
 
   const { mutateAsync: markAllAsRead } = useMarkAllNotificationsAsRead();
 
@@ -21,10 +22,10 @@ export default function NotificationsDropDown({
     <Popover
       open={open}
       onOpenChange={(open) => {
-        notifications && notifications?.length > 0 ? setOpen(open) : setOpen(false);
+        canPerformActions ? setOpen(open) : setOpen(false);
       }}
     >
-      <PopoverTrigger onClick={async () => markAllAsRead()}>
+      <PopoverTrigger onClick={canPerformActions ? async () => markAllAsRead() : undefined}>
         <div className='relative'>{children}</div>
       </PopoverTrigger>
       {notifications && (

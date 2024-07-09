@@ -21,7 +21,5 @@ export function generateClientSideUserProperties(user: User) {
 export function getDisplayName(user: ClientUser, isAnonymous?: boolean) {
   return isAnonymous
     ? 'Someone Special'
-    : user.firstName && user.lastName
-      ? `${user.firstName} ${user.lastName[0]}`
-      : user.displayName;
+    : `${user.firstName} ${user.lastName[0]}`;
 }

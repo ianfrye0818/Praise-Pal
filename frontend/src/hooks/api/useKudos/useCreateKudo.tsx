@@ -10,6 +10,16 @@ const placeholderKudo = {
   comments: [],
   likes: 0,
   userLikes: [],
+  receiver: {
+    userId: '2',
+    firstName: 'Place',
+    lastName: 'Holder',
+  },
+  sender: {
+    userId: '3',
+    firstName: 'Place',
+    lastName: 'Holder',
+  },
 };
 
 export default function useCreateKudo(queryKey: QueryKey = QueryKeys.allKudos) {

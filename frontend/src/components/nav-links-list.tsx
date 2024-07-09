@@ -15,7 +15,7 @@ export default function NavLinksList({
   type?: 'desktop' | 'mobile';
 }) {
   const { isAdmin } = useAuth().state;
-  const { setAdminMode } = useAdminMode();
+  // const { setAdminMode } = useAdminMode();
   const navigate = useNavigate();
   return (
     <nav className='flex flex-col gap-4'>
@@ -41,7 +41,7 @@ export default function NavLinksList({
           variant={'link'}
           className='flex gap-3 items-center p-3 justify-start rounded-md hover:no-underline text-lg'
           onClick={async () => {
-            setAdminMode(true);
+            // setAdminMode(true);
             type === 'mobile' && setMenuOpen!(false);
             await navigate({ to: '/admin/dashboard' });
           }}

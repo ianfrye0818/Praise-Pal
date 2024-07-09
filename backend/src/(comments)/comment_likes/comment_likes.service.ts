@@ -8,6 +8,7 @@ import { UserNotificationsService } from 'src/(user)/user-notifications/user-not
 import { CommentsService } from '../comments/comments.service';
 import { UserService } from 'src/(user)/user/user.service';
 import { ActionType } from '@prisma/client';
+import { getDisplayName } from 'src/utils';
 
 @Injectable()
 export class CommentLikesService {
@@ -39,9 +40,7 @@ export class CommentLikesService {
         const likingUser = await this.usersService.findOneById(userId);
 
         if (likingUser) {
-          const displayName =
-            `${likingUser.firstName} ${likingUser.lastName[0]}` ||
-            likingUser.displayName;
+          const displayName = getDisplayName(likingUser);
 
           await this.userNotificationsService.createNotification({
             userId: updatedComment.user.userId,

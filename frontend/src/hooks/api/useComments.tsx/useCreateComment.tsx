@@ -58,7 +58,6 @@ export default function useCreateComment({
           likes: 0,
           user: {
             companyId: companyId,
-            displayName: 'Test User',
             email: 'test@test.com',
             role: Role.USER,
             userId: payload.userId,

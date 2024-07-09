@@ -67,7 +67,6 @@ interface RegisterRequestAction {
 
 interface RegisterSuccessAction {
   type: ActionType.REGISTER_SUCCESS;
-  payload: { user: User };
 }
 
 interface RegisterFailureAction {
@@ -111,7 +110,6 @@ const authReducer = (state: AuthState, action: AuthAction): AuthState => {
     case ActionType.UPDATE_REQUEST:
       return { ...state, loading: true };
     case ActionType.LOGIN_SUCCESS:
-    case ActionType.REGISTER_SUCCESS:
     case ActionType.UPDATE_SUCCESS:
       return {
         ...state,

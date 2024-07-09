@@ -21,9 +21,8 @@ export interface User {
   userId: string;
   companyId: string;
   role: Role;
-  displayName: string;
-  firstName?: string | null | undefined;
-  lastName?: string | null | undefined;
+  firstName: string;
+  lastName: string;
 }
 
 export type UpdateUserProps = Partial<Omit<User, 'companyId' | 'userId' | 'role'>>;
@@ -150,7 +149,6 @@ interface QueryParams {
 
 export interface UserQueryParams extends QueryParams {
   userId?: string;
-  displayName?: string;
   email?: string;
   companyId?: string;
   firstName?: string;

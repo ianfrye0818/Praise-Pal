@@ -66,14 +66,10 @@ export const register = async (dispatch: Dispatch<AuthAction>, signUpPayload: Si
   dispatch({ type: ActionType.REGISTER_REQUEST });
   try {
     const data = await AuthActions.register(signUpPayload);
-    if (!data) throw new Error('Error registering user');
-    const { accessToken, refreshToken, ...user } = data;
-    setAuthTokens({ accessToken, refreshToken });
-    setUserToken(user);
     dispatch({
       type: ActionType.REGISTER_SUCCESS,
-      payload: { user },
     });
+    return data;
   } catch (error) {
     dispatch({ type: ActionType.REGISTER_FAILURE });
   }

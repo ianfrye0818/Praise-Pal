@@ -41,7 +41,6 @@ export class CompanyController {
   }
 
   @UseGuards(CompanyOwnerGuard)
-  @UseGuards(CompanyGuard)
   @Patch(':companyId')
   async updateCompanyById(
     @Param('companyId') companyId: string,

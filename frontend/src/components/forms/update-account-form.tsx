@@ -66,14 +66,7 @@ export function UpdateAccountDialog({
               />
             </div>
           </div>
-          <div className='space-y-2'>
-            <FormInputItem<typeof updateUserFormSchema>
-              control={form.control}
-              name='displayName'
-              label='Display Name'
-              placeholder='John Doe'
-            />
-          </div>
+
           <div className='space-y-2'>
             <FormInputItem<typeof updateUserFormSchema>
               control={form.control}

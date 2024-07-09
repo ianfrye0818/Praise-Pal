@@ -10,7 +10,7 @@ export default function KudoCommentList({ comments }: KudoCommentListProps) {
   return (
     <div className='py-2 border px-3 my-3'>
       {comments.map((comment) => {
-        const displayName = getUserDisplayName(comment.user);
+        const displayName = comment.user ? getUserDisplayName(comment.user) : '';
         return (
           <div
             key={comment.id}

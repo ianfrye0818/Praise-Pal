@@ -1,9 +1,10 @@
 import { getCompany } from '@/api/api-handlers';
-import { useQuery } from '@tanstack/react-query';
+import { QueryKeys } from '@/constants';
+import { QueryKey, useQuery } from '@tanstack/react-query';
 
-export default function useGetCompany(companyId: string) {
+export default function useGetCompany(companyId: string, queryKey: QueryKey = QueryKeys.company) {
   const query = useQuery({
-    queryKey: ['company'],
+    queryKey,
     queryFn: async () => getCompany(companyId),
     enabled: !!companyId,
   });

@@ -13,6 +13,7 @@ import * as z from 'zod';
 import { ControllerRenderProps, UseFormReturn } from 'react-hook-form';
 import { addKudoFormSchema } from '@/zodSchemas';
 import { User } from '@/types';
+import { getUserDisplayName } from '@/lib/utils';
 
 interface ComboBoxProps {
   field: ControllerRenderProps<z.infer<typeof addKudoFormSchema>, 'receiverId'>;
@@ -33,15 +34,7 @@ export default function ComboBox({ field, form, users, currentUser }: ComboBoxPr
       <PopoverTrigger asChild>
         <Button variant='outline'>
           {field.value
-            ? users
-                .filter((r) => r.userId === field.value)
-                .map((r) => {
-                  if (r.firstName && r.lastName) {
-                    return `${r.firstName} ${r.lastName}`;
-                  } else {
-                    return r.displayName;
-                  }
-                })
+            ? users.filter((r) => r.userId === field.value).map((r) => getUserDisplayName(r))
             : 'Select a recipient'}
         </Button>
       </PopoverTrigger>
@@ -59,12 +52,10 @@ export default function ComboBox({ field, form, users, currentUser }: ComboBoxPr
                       setOpen(false);
                       field.onChange(r.userId);
                     }}
-                    value={
-                      r.firstName && r.lastName ? `${r.firstName} ${r.lastName}` : r.displayName
-                    }
+                    value={getUserDisplayName(r)}
                     key={r.userId}
                   >
-                    {r.firstName && r.lastName ? `${r.firstName} ${r.lastName}` : r.displayName}
+                    getUserDisplayName(r)
                   </CommandItem>
                 );
               })}

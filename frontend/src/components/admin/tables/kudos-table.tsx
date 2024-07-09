@@ -12,7 +12,7 @@ import {
 } from '@/components/ui/table';
 import useUpdateKudo from '@/hooks/api/useKudos/useUpdateKudo';
 import { useAuth } from '@/hooks/useAuth';
-import { timeAgo } from '@/lib/utils';
+import { getUserDisplayName, timeAgo } from '@/lib/utils';
 import { TKudos } from '@/types';
 
 interface UsersTableProps {
@@ -41,14 +41,8 @@ export default function KudosTable({ kudos, showKudosNumber = true }: UsersTable
           </TableHeader>
           <TableBody>
             {kudos.map((kudo) => {
-              const reciverDisplayName =
-                kudo.receiver.firstName && kudo.receiver.lastName
-                  ? `${kudo.receiver.firstName} ${kudo.receiver.lastName}`
-                  : kudo.receiver.displayName;
-              const senderDisplayName =
-                kudo.sender.firstName && kudo.sender.lastName
-                  ? `${kudo.sender.firstName} ${kudo.sender.lastName}`
-                  : kudo.sender.displayName;
+              const reciverDisplayName = kudo.receiver ? getUserDisplayName(kudo.receiver) : '';
+              const senderDisplayName = kudo.sender ? getUserDisplayName(kudo.sender) : '';
               return (
                 <TableRow key={kudo.id}>
                   <TableCell>

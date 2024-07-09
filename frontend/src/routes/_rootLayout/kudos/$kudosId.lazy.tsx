@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { QueryKeys } from '@/constants';
 import useGetSingleKudo from '@/hooks/api/useKudos/useGetSingleKudo';
 import { useAuth } from '@/hooks/useAuth';
-
+import useErrorToast from '@/hooks/useErrorToast';
 import { TKudos } from '@/types';
 import { createLazyFileRoute, useRouter } from '@tanstack/react-router';
 import { createContext } from 'react';
@@ -18,6 +18,7 @@ function Component() {
   const { kudosId } = Route.useParams();
   const { user: currentUser } = useAuth().state;
   const router = useRouter();
+  const { errorToast } = useErrorToast();
 
   const { data: kudo } = useGetSingleKudo({
     companyId: currentUser?.companyId as string,
@@ -40,6 +41,11 @@ function Component() {
         </Button>
       </div>
     );
+  }
+
+  if (kudo.isHidden && kudo.sender.userId !== currentUser?.userId) {
+    router.navigate({ to: '/' });
+    errorToast({ message: 'This Kudo is hidden' });
   }
 
   return (

@@ -21,6 +21,7 @@ export const QueryKeys = {
   company: ['company'],
   userNotifications: ['userNotifications'],
   comments: ['comments'],
+  verifyToken: (token: string) => ['verifyToken', token],
 };
 
 export const sidebarLinks: SidebarLink[] = [
@@ -67,12 +68,12 @@ export const adminSideBarLink: SidebarLink = {
 
 export const MAX_API_RETRY_REQUESTS = 3;
 export const BASE_API_URL = env.VITE_API_BASE_URL;
+console.log(BASE_API_URL);
 
 export const SIGN_UP_FORM_DEFAULT_VALUES = {
   email: '',
   password: '',
   confirmPassword: '',
-  displayName: '',
   companyCode: '',
 };
 
@@ -100,7 +101,6 @@ export const UPDATE_USER_DIALOG_DEFAULT_VALUES = (user: User) => {
     email: user.email,
     firstName: user.firstName,
     lastName: user.lastName,
-    displayName: user.displayName,
     role: user.role,
   };
 };
@@ -118,29 +118,4 @@ export const UPDATE_COMPANY_DIALOG_DEFAULT_VALUES = (company: Company) => {
 
 export const RESET_PASSWORD_DEFAULT_VALUES = (token: string) => {
   return { token, password: '', confirmPassword: '' };
-};
-
-export const KUDOS_QUERY_OPTIONS = {
-  queryKey: ['kudos'],
-  exact: false,
-};
-
-export const USER_QUERY_OPTIONS = {
-  queryKey: ['companyUsers'],
-  exact: false,
-};
-
-export const COMPANY_QUERY_OPTIONS = {
-  queryKey: ['company'],
-  exact: false,
-};
-
-export const USER_NOTIFICATION_QUERY_OPTIONS = {
-  queryKey: ['userNotifications'],
-  exact: false,
-};
-
-export const COMMENT_QUERY_OPTIONS = {
-  queryKey: ['comments'],
-  exact: false,
 };

@@ -9,10 +9,6 @@ export class FilterUserDTO {
 
   @IsOptional()
   @IsString()
-  displayName?: string;
-
-  @IsOptional()
-  @IsString()
   email?: string;
 
   @IsOptional()

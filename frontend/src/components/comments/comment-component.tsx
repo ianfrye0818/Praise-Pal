@@ -23,7 +23,7 @@ export default function CommentComponent(comment: Comment) {
   const canEdit =
     comment.user && currentUser?.userId ? comment.user.userId === currentUser?.userId : false;
   const showSeperator = comment.parentId;
-  console.log({ comment });
+
   return (
     <div className='flex items-start space-x-4 p-2 min-w-[300px] overflow-x-auto'>
       <UserAvitar displayName={senderDisplayName} />

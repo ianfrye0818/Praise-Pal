@@ -1,5 +1,4 @@
 import UpdateUserDialog from '@/components/dialogs/update-user-dialog';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 
 import {
@@ -10,7 +9,9 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import UserAvitar from '@/components/UserAvitar';
 import { useAuth } from '@/hooks/useAuth';
+import { getUserDisplayName } from '@/lib/utils';
 import { User } from '@/types';
 
 interface UsersTableProps {
@@ -33,7 +34,6 @@ export default function UsersTable({ users, showUserNumber = true }: UsersTableP
           <TableHeader>
             <TableRow>
               <TableHead>Name</TableHead>
-              <TableHead>Display Name</TableHead>
               <TableHead>Email</TableHead>
               <TableHead>Role</TableHead>
               <TableHead>Actions</TableHead>
@@ -44,15 +44,12 @@ export default function UsersTable({ users, showUserNumber = true }: UsersTableP
               <TableRow key={user.userId}>
                 <TableCell>
                   <div className='flex items-center gap-2'>
-                    <Avatar className='w-8 h-8 border'>
-                      <AvatarFallback>{user.displayName[0].toUpperCase()}</AvatarFallback>
-                    </Avatar>
+                    <UserAvitar displayName={getUserDisplayName(user)} />
                     <span className='flex gap-2 items-center'>
                       {user.firstName ?? ''} {user.lastName ?? ''}
                     </span>
                   </div>
                 </TableCell>
-                <TableCell>{user.displayName ?? ''}</TableCell>
                 <TableCell>{user.email}</TableCell>
                 <TableCell>{user.role}</TableCell>
                 <TableCell>

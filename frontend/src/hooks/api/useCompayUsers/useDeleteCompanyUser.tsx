@@ -1,16 +1,19 @@
 import { deleteSingleUser } from '@/api/api-handlers';
-import { USER_QUERY_OPTIONS } from '@/constants';
+import { QueryKeys } from '@/constants';
 import useErrorToast from '@/hooks/useErrorToast';
 import useSuccessToast from '@/hooks/useSuccessToast';
 import { User } from '@/types';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { QueryKey, useMutation, useQueryClient } from '@tanstack/react-query';
 
 interface UseGetUserProps {
   userId: string;
   companyId: string;
 }
 
-export default function useDeleteCompanyUser() {
+export default function useDeleteCompanyUser({
+  queryKey = QueryKeys.allUsers,
+}: { queryKey?: QueryKey } = {}) {
+  const USER_QUERY_OPTIONS = { queryKey, exact: false };
   const queryClient = useQueryClient();
   const { errorToast } = useErrorToast();
   const { successToast } = useSuccessToast();
@@ -31,8 +34,12 @@ export default function useDeleteCompanyUser() {
       return { previousData };
     },
     onError: (err, __, context) => {
+      console.error(['useDeleteCompanyUser'], err, context);
       queryClient.setQueriesData(USER_QUERY_OPTIONS, context?.previousData);
-      errorToast({ message: err.message });
+      errorToast({
+        message:
+          'Something went wrong updating user. If this happens again, please contact your administrator',
+      });
     },
 
     onSuccess: () => {

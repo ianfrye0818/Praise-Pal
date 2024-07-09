@@ -10,7 +10,6 @@ COPY package*.json ./
 # Install app dependencies
 RUN npm install
 
-
 # Bundle app source
 COPY . .
 
@@ -20,4 +19,4 @@ RUN npx prisma generate
 RUN npm run build
 
 # Start the server using the production build
-CMD [ "npm", "run", "start:generate" ]
+CMD [ "npm", "run", "start:prod" ]

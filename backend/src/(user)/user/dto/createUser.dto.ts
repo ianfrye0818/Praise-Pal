@@ -1,7 +1,14 @@
 import { PartialType } from '@nestjs/mapped-types';
 import { Role } from '@prisma/client';
 import { Transform } from 'class-transformer';
-import { IsEmail, IsOptional, IsString, IsDate, IsEnum } from 'class-validator';
+import {
+  IsEmail,
+  IsOptional,
+  IsString,
+  IsDate,
+  IsEnum,
+  IsBoolean,
+} from 'class-validator';
 
 export class createUserDTO {
   @IsString()
@@ -26,6 +33,10 @@ export class updateUserDTO extends PartialType(createUserDTO) {
   @IsEnum(['ADMIN', 'USER'], { message: 'Role must be either Admin or User' })
   @Transform(({ value }: { value: string }) => value.toUpperCase())
   role?: Role;
+
+  @IsOptional()
+  @IsBoolean()
+  verified?: boolean;
 
   @IsOptional()
   @IsDate()

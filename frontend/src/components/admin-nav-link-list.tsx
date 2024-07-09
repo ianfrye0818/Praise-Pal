@@ -1,7 +1,6 @@
 import { adminSidebarLinks } from '@/constants';
 import { Link } from '@tanstack/react-router';
 import NavBarLink from './sidebar/nav-bar-link';
-import useAdminMode from '@/hooks/useAdminMode';
 import { Button } from './ui/button';
 import { ArrowLeft } from 'lucide-react';
 

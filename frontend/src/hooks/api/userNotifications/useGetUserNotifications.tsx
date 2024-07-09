@@ -12,7 +12,7 @@ export default function useGetUserNotifications(
     queryFn: async () => {
       return await getUserNotifications(queryParams);
     },
-    refetchInterval: 60000,
+    refetchInterval: 30000,
     refetchIntervalInBackground: true,
   });
   return query;

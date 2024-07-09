@@ -19,8 +19,8 @@ export const signUpFormSchema = z.object({
 });
 
 export const updateUserFormSchema = z.object({
-  firstName: z.string().nullable(),
-  lastName: z.string().nullable(),
+  firstName: z.string(),
+  lastName: z.string(),
   email: z.string().email('Please enter a valid email address'),
   role: z.nativeEnum(Role),
 });

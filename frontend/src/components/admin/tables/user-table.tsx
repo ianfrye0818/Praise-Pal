@@ -1,5 +1,6 @@
 import UpdateUserDialog from '@/components/dialogs/update-user-dialog';
 import { Button } from '@/components/ui/button';
+import { Switch } from '@/components/ui/switch';
 
 import {
   Table,
@@ -10,6 +11,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import UserAvitar from '@/components/UserAvitar';
+import useUpdateCompanyUser from '@/hooks/api/useCompayUsers/useUpdateCompanyUser';
 import { useAuth } from '@/hooks/useAuth';
 import { getUserDisplayName } from '@/lib/utils';
 import { User } from '@/types';
@@ -25,6 +27,7 @@ interface UsersTableProps {
 
 export default function UsersTable({ users, showUserNumber = true }: UsersTableProps) {
   const { user: currentUser } = useAuth().state;
+  const { mutateAsync: toggleVerified } = useUpdateCompanyUser();
 
   return (
     <div className=''>
@@ -36,6 +39,7 @@ export default function UsersTable({ users, showUserNumber = true }: UsersTableP
               <TableHead>Name</TableHead>
               <TableHead>Email</TableHead>
               <TableHead>Role</TableHead>
+              <TableHead>Verified</TableHead>
               <TableHead>Actions</TableHead>
             </TableRow>
           </TableHeader>
@@ -52,6 +56,20 @@ export default function UsersTable({ users, showUserNumber = true }: UsersTableP
                 </TableCell>
                 <TableCell>{user.email}</TableCell>
                 <TableCell>{user.role}</TableCell>
+                <TableCell>
+                  <Switch
+                    disabled={user.role === 'COMPANY_OWNER'}
+                    checked={user.verified}
+                    onCheckedChange={async (checked: boolean) =>
+                      await toggleVerified({
+                        companyId: user.companyId,
+                        userToUpdateId: user.userId,
+                        currentUser: currentUser as User,
+                        payload: { verified: checked },
+                      })
+                    }
+                  />
+                </TableCell>
                 <TableCell>
                   <UpdateUserDialog
                     disabled={user.role === 'COMPANY_OWNER'}

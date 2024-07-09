@@ -23,6 +23,7 @@ export interface User {
   role: Role;
   firstName: string;
   lastName: string;
+  verified: boolean;
 }
 
 export type UpdateUserProps = Partial<Omit<User, 'companyId' | 'userId' | 'role'>>;

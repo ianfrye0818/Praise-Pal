@@ -2,7 +2,6 @@ import { sidebarLinks } from '@/constants';
 import { Link, useNavigate } from '@tanstack/react-router';
 import NavBarLink from './sidebar/nav-bar-link';
 import { useAuth } from '@/hooks/useAuth';
-import useAdminMode from '@/hooks/useAdminMode';
 import { Button } from './ui/button';
 import { ShieldCheck } from 'lucide-react';
 import logo from '@/assets/logo.png';

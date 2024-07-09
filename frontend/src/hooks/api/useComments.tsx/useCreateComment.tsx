@@ -63,6 +63,7 @@ export default function useCreateComment({
             userId: payload.userId,
             firstName: 'Test',
             lastName: 'User',
+            verified: true,
           },
           commentLikes: [],
           createdAt: new Date().toISOString(),

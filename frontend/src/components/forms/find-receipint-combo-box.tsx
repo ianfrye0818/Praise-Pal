@@ -55,7 +55,7 @@ export default function ComboBox({ field, form, users, currentUser }: ComboBoxPr
                     value={getUserDisplayName(r)}
                     key={r.userId}
                   >
-                    getUserDisplayName(r)
+                    {getUserDisplayName(r)}
                   </CommandItem>
                 );
               })}

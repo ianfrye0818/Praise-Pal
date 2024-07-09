@@ -7,6 +7,7 @@ export interface ClientUser {
   role: Role;
   firstName: string;
   lastName: string;
+  verified: boolean;
 }
 export interface ClientComment {
   id: string;

@@ -13,29 +13,25 @@ services:
     ports:
       - 5432:5432
     volumes:
-      - ./data:/var/lib/postgresql/data:rw
+      - ../docker/db:/var/lib/postgresql/data:rw
     networks:
-      - praisePal-default
+      - praisepal_default
 
-  backend:
-    container_name: praisepal-backend
-    depends_on:
-      - db
-    env_file:
-      - .env
-    networks:
-      - praisePal-default
-    ports: 3001:3001
-    volumes:
-      - ./backend:/app
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
+  # backend:
+  #   container_name: praisepal-backend
+  #   depends_on:
+  #     - db
+  #   env_file:
+  #     - .env
+  #   networks:
+  #     - praisepal_default
+  #   ports: 3001:3001
+  #   volumes:
+  #     - ./backend:/app
+  #   build:
+  #     context: ./backend
+  #     dockerfile: Dockerfile
 
 networks:
-  praisePal-default:
+  praisepal_default:
     external: true
-
-volumes:
-  data:
-  backend:

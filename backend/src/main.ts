@@ -13,6 +13,7 @@ async function bootstrap() {
       env.CLIENT_URL,
       'http://0.0.0.0:8011',
       'http://localhost:8011',
+      'http://localhost:5174',
       'http://localhost:5173',
       'https://praise-pal.com',
       'https://www.praise-pal.com',

@@ -2,18 +2,17 @@ version: '3.9'
 services:
   frontend:
     container_name: praisepal-frontend
-    # depends_on:
-    #   - backend
+    image: biggiefrye45/praisepal-frontend:staging
     env_file:
       - .env
     networks:
-      - praisePal-default
+      - praisepal_default
     ports:
       - 8011:80
-      - 44311:443
     volumes:
       - ./docker/frontend:/app #comment this line for production
       # -/docker/appdata/praisepal/frontend:/app #uncomment this line for production
-    # build:
-    #   context: ./frontend
-    #   dockerfile: Dockerfile
+
+networks:
+  praisepal_default:
+    external: true

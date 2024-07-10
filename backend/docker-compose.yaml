@@ -1,36 +1,18 @@
 version: '3.9'
 
 services:
-  db:
-    image: postgres
-    container_name: postgres
-    restart: unless-stopped
-    shm_size: 128mb
-    environment:
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_USER: postgres
-      POSTGRES_DB: praisepal
-    ports:
-      - 5432:5432
-    volumes:
-      - ../docker/db:/var/lib/postgresql/data:rw
+  backend:
+    container_name: praisepal-backend
+    image: biggiefrye45/praisepal-backend:staging
+    env_file:
+      - .env
     networks:
       - praisepal_default
-
-  # backend:
-  #   container_name: praisepal-backend
-  #   depends_on:
-  #     - db
-  #   env_file:
-  #     - .env
-  #   networks:
-  #     - praisepal_default
-  #   ports: 3001:3001
-  #   volumes:
-  #     - ./backend:/app
-  #   build:
-  #     context: ./backend
-  #     dockerfile: Dockerfile
+    ports:
+      - 3001:3001
+    volumes:
+      - ./backend:/app
+    restart: unless-stopped
 
 networks:
   praisepal_default:

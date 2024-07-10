@@ -28,7 +28,9 @@ interface UsersTableProps {
 
 export default function UsersTable({ users, showUserNumber = true, limit }: UsersTableProps) {
   const { user: currentUser } = useAuth().state;
-  const { mutateAsync: toggleVerified } = useUpdateCompanyUser();
+  const { mutateAsync: toggleVerified } = useUpdateCompanyUser({
+    queryKey: limit ? QueryKeys.limitUsers(limit) : QueryKeys.allUsers,
+  });
 
   return (
     <div className=''>

@@ -19,6 +19,7 @@ export default function UsersDashboardCard({ users }: { users: User[] }) {
       <UsersTable
         users={users}
         showUserNumber={false}
+        limit={10}
       />
     </div>
   );

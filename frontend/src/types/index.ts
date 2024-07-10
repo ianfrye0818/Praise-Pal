@@ -155,6 +155,7 @@ export interface UserQueryParams extends QueryParams {
   firstName?: string;
   lastName?: string;
   roles?: Role | Role[];
+  cursor?: any;
 }
 
 export interface KudosQueryParams extends QueryParams {

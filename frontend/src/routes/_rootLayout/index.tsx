@@ -5,7 +5,6 @@ import useGetCompanyKudos from '@/hooks/api/useKudos/useGetCompanyKudos';
 import { useAuth } from '@/hooks/useAuth';
 import AddKudosDialog from '@/components/dialogs/add-kudos-dialog';
 import { QueryKeys } from '@/constants';
-import { InfinitySpin } from 'react-loader-spinner';
 import DataLoader from '@/components/data-loader';
 
 export const Route = createFileRoute('/_rootLayout/')({

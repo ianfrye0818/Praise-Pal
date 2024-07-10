@@ -41,7 +41,7 @@ export default function ComboBox({ field, form, users, currentUser }: ComboBoxPr
       <PopoverContent className='min-w-[300px] p-0'>
         <Command className='rounded-lg border shadow-md'>
           <CommandInput placeholder='Type a command or search...' />
-          <CommandList>
+          <CommandList className='bg-white0'>
             <CommandEmpty>No results found.</CommandEmpty>
             <CommandGroup>
               {users.map((r) => {

@@ -12,7 +12,7 @@ const ErrorComponent = () => {
   }, [queryErrorResetBoundry]);
 
   return (
-    <div className='flex flex-col items-center justify-center h-screen p-4 text-center'>
+    <div className='flex flex-col items-center justify-center h-dvh p-4 text-center'>
       <h2 className='text-4xl font-semibold text-slate-800'>Oops! We've hit a snag</h2>
       <p className='mt-4 text-lg text-slate-800'>
         It seems that the data you're looking for is missing or could not be retrieved at this time.

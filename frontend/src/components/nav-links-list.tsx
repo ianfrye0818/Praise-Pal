@@ -20,12 +20,12 @@ export default function NavLinksList({
     <nav className='flex flex-col gap-4'>
       <Link
         to='/'
-        className='mb-12 cursor-pointer items-center gap-2 flex'
+        className='mb-12 cursor-pointer items-center gap-2 flex justify-center'
       >
         <img
           src={logo}
           alt='logo'
-          className='w-full object-contain'
+          className='w-[75%] object-contain'
         />
       </Link>
       {sidebarLinks.map((link) => (

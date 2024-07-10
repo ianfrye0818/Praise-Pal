@@ -10,7 +10,7 @@ interface RouterContext {
 }
 export const Route = createRootRouteWithContext<RouterContext>()({
   component: () => (
-    <div className='h-screen w-screen md:w-auto'>
+    <div className='md:w-auto'>
       <Outlet />
       <ScrollToTop />
       <GetLastPathName />

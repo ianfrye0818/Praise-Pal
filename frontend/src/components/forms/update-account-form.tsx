@@ -84,19 +84,20 @@ export function UpdateAccountDialog({
             />
           )}
           <DialogFooter>
-            <div className='w-full flex justify-between'>
+            <div className='w-full flex flex-col md:flex-row justify-between gap-2'>
               <Button
                 type='button'
                 onClick={(e) => {
                   e.stopPropagation();
                   setDeleting(true);
                 }}
-                className='bg-red-500 hover:bg-red-600'
+                className='bg-red-500 hover:bg-red-600 order-2 md:-order-1'
               >
                 Delete Account
               </Button>
-              <div className='flex items-center gap-2'>
+              <div className='flex flex-col md:flex-row items-center gap-2'>
                 <Button
+                  className='block w-full md:w-auto md:inline my-2 md:my-auto order-1 md:-order-1'
                   onClick={() => setOpen(false)}
                   type='button'
                   variant={'outline'}
@@ -105,7 +106,7 @@ export function UpdateAccountDialog({
                 </Button>
                 <Button
                   type='submit'
-                  className='ml-auto'
+                  className='block w-full md:w-auto md:ml-auto'
                   disabled={!form.formState.isValid || form.formState.isSubmitting}
                 >
                   {form.formState.isSubmitting ? 'Updating...' : 'Update'}

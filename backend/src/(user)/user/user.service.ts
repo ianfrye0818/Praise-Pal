@@ -22,7 +22,7 @@ export class UserService {
   ) {}
 
   async findAllUsers(filter: FilterUserDTO): Promise<ClientUser[]> {
-    const { limit, offset, sort, roles, ...otherFilters } = filter;
+    const { limit, offset, sort, roles, cursor, ...otherFilters } = filter;
     try {
       const users = await this.prismaService.user.findMany({
         where: {
@@ -30,9 +30,10 @@ export class UserService {
           role: { in: roles },
           ...otherFilters,
         },
-        orderBy: { createdAt: sort || 'desc' },
+        orderBy: { createdAt: sort || 'asc' },
         take: limit,
-        skip: offset,
+        skip: offset ? offset : 0,
+        cursor: cursor ? { userId: cursor } : undefined,
       });
       const clientUsers = users.map((user) =>
         generateClientSideUserProperties(user),

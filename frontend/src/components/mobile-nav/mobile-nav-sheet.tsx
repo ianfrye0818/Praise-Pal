@@ -21,10 +21,9 @@ export default function MobileNavSheet() {
         </SheetTrigger>
         <SheetContent
           side={'left'}
-          className='bg-white w-[350px] h-full flex flex-col gap-4 p-4'
+          className='bg-white h-dvh flex flex-col gap-4 p-4'
         >
-          {/* <h1 className='text-26 font-ibm-plex-serif font-bold text-black-1'>Praise Pal</h1> */}
-          <div className='flex h-[calc(100vh-72px)] flex-col justify-between overflow-y-auto;'>
+          <div className='flex h-full flex-col justify-between'>
             {adminMode ? (
               <AdminNavLinkList
                 type={'mobile'}

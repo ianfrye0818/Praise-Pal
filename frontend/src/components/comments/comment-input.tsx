@@ -8,7 +8,7 @@ const CommentInputComponent = forwardRef<
   React.InputHTMLAttributes<HTMLInputElement>
 >((props, ref) => {
   return (
-    <div className='flex w-full items-center space-x-2 mt-4'>
+    <div className='flex w-full max-w-[300px] items-center space-x-2 mt-4'>
       <div className='relative w-full'>
         <Input
           ref={ref}

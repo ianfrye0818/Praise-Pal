@@ -4,10 +4,10 @@ import { useAuth } from './hooks/useAuth';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AuthProvider } from './providers/AuthReducerProvider';
 import AdminModeProvider from './providers/AdminModeProvider';
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { InfinitySpin } from 'react-loader-spinner';
 import ErrorComponent from './components/error-component';
 import NotFoundComponent from './components/not-found-component';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -24,7 +24,7 @@ const router = createRouter({
   context: { state: undefined!, queryClient },
   defaultNotFoundComponent: NotFoundComponent,
   defaultPendingComponent: () => (
-    <div className='h-screen w-full flex justify-center items-center'>
+    <div className='h-[100dvh] w-full flex justify-center items-center'>
       <InfinitySpin
         width='200'
         color='#4fa94d'

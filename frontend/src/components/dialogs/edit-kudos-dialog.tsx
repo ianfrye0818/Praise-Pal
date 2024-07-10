@@ -93,7 +93,7 @@ export default function EditKudosDialog({ kudo, setMenuOpen, queryKey }: EditKud
             <DialogFooter>
               <Button
                 variant='outline'
-                className='mr-auto'
+                className='md:mr-auto my-2 md:my-auto'
                 onClick={() => {
                   handleCloseMenus();
                   form.reset();

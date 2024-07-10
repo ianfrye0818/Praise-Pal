@@ -24,7 +24,7 @@ export default function KudosCard({ kudo }: Props) {
   return (
     <div
       className={cn(
-        'flex items-center p-4 bg-white shadow-md rounded-lg my-8 dark:bg-gray-800 dark:text-gray-200',
+        'flex items-center w-full p-4 bg-white shadow-md rounded-lg my-8 dark:bg-gray-800 dark:text-gray-200',
         kudo.isHidden && 'opacity-50'
       )}
     >

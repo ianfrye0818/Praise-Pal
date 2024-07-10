@@ -57,4 +57,7 @@ export class FilterUserDTO {
   @IsOptional()
   @IsEnum(['asc', 'desc'])
   sort?: 'asc' | 'desc';
+
+  @IsOptional()
+  cursor?: any;
 }

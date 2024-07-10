@@ -32,7 +32,7 @@ export default function NotificationsDropDown({
         <PopoverContent
           side='bottom'
           sideOffset={15}
-          className=' bg-white flex flex-col gap-4 min-w-48'
+          className=' bg-white flex flex-col gap-4 max-w-screen-sm w-[300px] shadow-md rounded-md p-2'
         >
           <ScrollArea>
             <div className='flex flex-col gap-2 h-[250px]'>

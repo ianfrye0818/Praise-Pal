@@ -11,6 +11,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import UserAvitar from '@/components/UserAvitar';
+import { QueryKeys } from '@/constants';
 import useUpdateCompanyUser from '@/hooks/api/useCompayUsers/useUpdateCompanyUser';
 import { useAuth } from '@/hooks/useAuth';
 import { getUserDisplayName } from '@/lib/utils';
@@ -25,7 +26,7 @@ interface UsersTableProps {
   showUserNumber?: boolean;
 }
 
-export default function UsersTable({ users, showUserNumber = true }: UsersTableProps) {
+export default function UsersTable({ users, showUserNumber = true, limit }: UsersTableProps) {
   const { user: currentUser } = useAuth().state;
   const { mutateAsync: toggleVerified } = useUpdateCompanyUser();
 

@@ -7,7 +7,7 @@
   "license": "UNLICENSED",
   "scripts": {
     "build": "nest build",
-    "docker:build": "docker buildx build -t $DOCKER_TAG .",
+    "docker:build": "docker buildx build -t biggiefrye45/praisepal-backend:latest .",
     "docker:push": "docker push biggiefrye45/praisepal-backend:latest",
     "docker:deploy": "docker-compose up -d",
     "docker": "docker buildx build -t biggiefrye45/praisepal-backend:latest . && docker push biggiefrye45/praisepal-backend:latest",

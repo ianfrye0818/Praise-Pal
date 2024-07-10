@@ -1,15 +1,17 @@
 import { deleteLikeComment, postAddLikeComment } from '@/api/api-handlers';
 import { QueryKeys } from '@/constants';
 import useErrorToast from '@/hooks/useErrorToast';
-import { Comment } from '@/types';
+import { Comment, CommentLike } from '@/types';
 import { QueryKey, useMutation, useQueryClient } from '@tanstack/react-query';
 
 interface LikeCommentProps {
   commentId: string;
   isLiked: boolean;
+  userId: string;
+  commentLikes: CommentLike[];
 }
 
-export default function useLikeComments({
+export default function useLikeComment({
   commentQueryKey = QueryKeys.comments,
   kudoQueryKey = QueryKeys.allKudos,
 }: {
@@ -24,19 +26,25 @@ export default function useLikeComments({
   const updateLikesInTree = (
     comments: Comment[],
     commentId: string,
-    isLiked: boolean
+    isLiked: boolean,
+    userId: string,
+    commentLikes: CommentLike[]
   ): Comment[] => {
     return comments.map((comment) => {
       if (comment.id === commentId) {
         return {
           ...comment,
           likes: isLiked ? comment.likes - 1 : comment.likes + 1,
-          isLiked: !isLiked,
+          commentLikes: isLiked
+            ? commentLikes.filter((like) => like.userId !== userId)
+            : [...commentLikes, { userId, commentId }],
         };
       }
       return {
         ...comment,
-        comments: comment.comments ? updateLikesInTree(comment.comments, commentId, isLiked) : [],
+        comments: comment.comments
+          ? updateLikesInTree(comment.comments, commentId, isLiked, userId, commentLikes)
+          : [],
       };
     });
   };
@@ -49,18 +57,27 @@ export default function useLikeComments({
         await postAddLikeComment(commentId);
       }
     },
-    onMutate: async ({ commentId, isLiked }) => {
+    onMutate: async ({ commentId, isLiked, userId, commentLikes }) => {
       await queryClient.cancelQueries(COMMENT_QUERY_OPTIONS);
       const previousData = queryClient.getQueriesData(COMMENT_QUERY_OPTIONS);
 
       try {
         queryClient.setQueriesData(COMMENT_QUERY_OPTIONS, (old: any) => {
           if (Array.isArray(old)) {
-            return updateLikesInTree(old, commentId, isLiked);
+            return updateLikesInTree(old, commentId, isLiked, userId, commentLikes);
           }
 
           if (typeof old === 'object' && old !== null) {
-            return { ...old, comments: updateLikesInTree(old.comments || [], commentId, isLiked) };
+            return {
+              ...old,
+              comments: updateLikesInTree(
+                old.comments || [],
+                commentId,
+                isLiked,
+                userId,
+                commentLikes
+              ),
+            };
           }
 
           return old;

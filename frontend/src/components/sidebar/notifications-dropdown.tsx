@@ -28,15 +28,15 @@ export default function NotificationsDropDown({
       <PopoverTrigger onClick={canPerformActions ? async () => markAllAsRead() : undefined}>
         <div className='relative'>{children}</div>
       </PopoverTrigger>
-      {notifications && (
+      {
         <PopoverContent
           side='bottom'
           sideOffset={15}
-          className=' bg-white flex flex-col gap-4'
+          className=' bg-white flex flex-col gap-4 min-w-48'
         >
           <ScrollArea>
             <div className='flex flex-col gap-2 h-[250px]'>
-              {notifications.map((notification) => (
+              {notifications!.map((notification) => (
                 <NotificationCard
                   key={notification.id}
                   notification={notification}
@@ -46,7 +46,7 @@ export default function NotificationsDropDown({
             </div>
           </ScrollArea>
         </PopoverContent>
-      )}
+      }
     </Popover>
   );
 }

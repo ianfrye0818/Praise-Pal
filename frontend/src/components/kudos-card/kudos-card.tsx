@@ -51,6 +51,7 @@ export default function KudosCard({ kudo }: Props) {
                 kudoId={kudo.id}
                 userId={user?.userId as string}
                 companyId={user?.companyId as string}
+                userLikes={kudo.userLikes}
               />
 
               <p className='text-sm text-gray-500'>{kudo.likes}</p>

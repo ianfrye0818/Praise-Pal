@@ -1,12 +1,14 @@
 import { deleteRemoveLikeKudo, postAddLikeKudo } from '@/api/api-handlers';
 import { QueryKeys } from '@/constants';
 import useErrorToast from '@/hooks/useErrorToast';
-import { TKudos } from '@/types';
+import { TKudos, UserLike } from '@/types';
 import { QueryKey, useMutation, useQueryClient } from '@tanstack/react-query';
 
 interface LikeKudoProps {
   kudoId: string;
   isLiked: boolean;
+  userLikes: UserLike[];
+  userId: string;
 }
 
 export default function useLikeKudos(queryKey: QueryKey = QueryKeys.allKudos) {
@@ -22,7 +24,7 @@ export default function useLikeKudos(queryKey: QueryKey = QueryKeys.allKudos) {
         await postAddLikeKudo(kudoId);
       }
     },
-    onMutate: async ({ kudoId, isLiked }) => {
+    onMutate: async ({ kudoId, isLiked, userLikes, userId }) => {
       await queryClient.cancelQueries(KUDOS_QUERY_OPTIONS);
       const previousData = queryClient.getQueriesData(KUDOS_QUERY_OPTIONS);
 
@@ -34,7 +36,9 @@ export default function useLikeKudos(queryKey: QueryKey = QueryKeys.allKudos) {
                 return {
                   ...kudo,
                   likes: isLiked ? kudo.likes - 1 : kudo.likes + 1,
-                  isLiked: !isLiked,
+                  userLikes: isLiked
+                    ? userLikes.filter((like: any) => like.userId !== userId)
+                    : [...userLikes, { userId }],
                 };
               } else {
                 return kudo;

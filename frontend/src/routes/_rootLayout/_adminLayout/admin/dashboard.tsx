@@ -1,6 +1,8 @@
 import CompanyCard from '@/components/admin/company-card';
 import KudosDashboardCard from '@/components/admin/kudos-dashboard-card';
 import UsersDashboardCard from '@/components/admin/users-dashboard.card';
+import DataLoader from '@/components/data-loader';
+import ErrorComponent from '@/components/error-component';
 import useGetAdminDashBoardData from '@/hooks/api/useGetAdminDashBoardData';
 import { createFileRoute } from '@tanstack/react-router';
 
@@ -9,7 +11,14 @@ export const Route = createFileRoute('/_rootLayout/_adminLayout/admin/dashboard'
 });
 
 export function AdminDashboard() {
-  const { users, kudos, company } = useGetAdminDashBoardData();
+  const { users, kudos, company, isLoading, isError } = useGetAdminDashBoardData();
+  if (isLoading) {
+    return <DataLoader />;
+  }
+
+  if (isError) {
+    return <ErrorComponent />;
+  }
 
   return (
     <main className='flex flex-1 flex-col p-2 md:gap-8 md:p-6 items-center '>

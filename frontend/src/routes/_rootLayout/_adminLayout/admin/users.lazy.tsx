@@ -1,4 +1,5 @@
 import UsersTable from '@/components/admin/tables/user-table';
+import DataLoader from '@/components/data-loader';
 import useGetCompanyUsers from '@/hooks/api/useCompayUsers/useGetCompanyUsers';
 import { useAuth } from '@/hooks/useAuth';
 import { Role } from '@/types';
@@ -10,20 +11,15 @@ export const Route = createLazyFileRoute('/_rootLayout/_adminLayout/admin/users'
 
 function UsersAdminPage() {
   const { user } = useAuth().state;
-  const {
-    data: users,
-    isLoading,
-    isError,
-  } = useGetCompanyUsers({
+  const { data: users, isLoading } = useGetCompanyUsers({
     companyId: user?.companyId as string,
     roles: [Role.USER, Role.ADMIN, Role.COMPANY_OWNER],
   });
 
-  //TODO: add loading and error components
-  if (isLoading) return <div>Loading...</div>;
-  if (isError) return <div>Error</div>;
+  if (isLoading) {
+    return <DataLoader />;
+  }
 
-  //TODO: add no users found component
   if (!users || !users.length) return <div>No Users</div>;
 
   return (

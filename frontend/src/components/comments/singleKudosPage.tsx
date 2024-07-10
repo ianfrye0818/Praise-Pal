@@ -42,6 +42,7 @@ export default function SingleKudosPage() {
                 userId={currentUser?.userId as string}
                 companyId={currentUser?.companyId as string}
                 queryKey={QueryKeys.singleKudo(kudo.id)}
+                userLikes={kudo.userLikes}
               />
               <p className='text-sm text-gray-500'>{kudo.likes}</p>
             </div>

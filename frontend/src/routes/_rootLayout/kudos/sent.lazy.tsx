@@ -4,6 +4,7 @@ import { useAuth } from '@/hooks/useAuth';
 import useGetCompanyKudos from '@/hooks/api/useKudos/useGetCompanyKudos';
 import AddKudosDialog from '@/components/dialogs/add-kudos-dialog';
 import { QueryKeys } from '@/constants';
+import DataLoader from '@/components/data-loader';
 
 export const Route = createLazyFileRoute('/_rootLayout/kudos/sent')({
   component: () => <SentPage />,
@@ -11,13 +12,17 @@ export const Route = createLazyFileRoute('/_rootLayout/kudos/sent')({
 
 function SentPage() {
   const { user } = useAuth().state;
-  const { data: kudos } = useGetCompanyKudos(
+  const { data: kudos, isLoading } = useGetCompanyKudos(
     {
       companyId: user?.companyId as string,
       senderId: user?.userId as string,
     },
     QueryKeys.sentKudos
   );
+
+  if (isLoading) {
+    return <DataLoader />;
+  }
 
   if (!kudos || kudos.length === 0) {
     return (

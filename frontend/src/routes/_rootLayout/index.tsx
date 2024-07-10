@@ -5,6 +5,8 @@ import useGetCompanyKudos from '@/hooks/api/useKudos/useGetCompanyKudos';
 import { useAuth } from '@/hooks/useAuth';
 import AddKudosDialog from '@/components/dialogs/add-kudos-dialog';
 import { QueryKeys } from '@/constants';
+import { InfinitySpin } from 'react-loader-spinner';
+import DataLoader from '@/components/data-loader';
 
 export const Route = createFileRoute('/_rootLayout/')({
   component: () => <HomePage />,
@@ -12,13 +14,17 @@ export const Route = createFileRoute('/_rootLayout/')({
 
 function HomePage() {
   const { user } = useAuth().state;
-  const { data: kudos } = useGetCompanyKudos(
+  const { data: kudos, isLoading } = useGetCompanyKudos(
     {
       companyId: user?.companyId as string,
       isHidden: false,
     },
     QueryKeys.allKudos
   );
+
+  if (isLoading) {
+    return <DataLoader />;
+  }
 
   if (!kudos || kudos.length === 0) {
     return (

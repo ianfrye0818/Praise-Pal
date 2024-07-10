@@ -1,4 +1,5 @@
 import KudosTable from '@/components/admin/tables/kudos-table';
+import DataLoader from '@/components/data-loader';
 import { QueryKeys } from '@/constants';
 import useGetCompanyKudos from '@/hooks/api/useKudos/useGetCompanyKudos';
 import { useAuth } from '@/hooks/useAuth';
@@ -10,12 +11,16 @@ export const Route = createLazyFileRoute('/_rootLayout/_adminLayout/admin/kudos'
 
 function KudosAdminPage() {
   const { user } = useAuth().state;
-  const { data: kudos } = useGetCompanyKudos(
+  const { data: kudos, isLoading } = useGetCompanyKudos(
     {
       companyId: user?.companyId as string,
     },
     QueryKeys.allKudos
   );
+
+  if (isLoading) {
+    return <DataLoader />;
+  }
 
   if (!kudos || kudos.length === 0) {
     return (

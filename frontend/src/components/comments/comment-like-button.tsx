@@ -3,6 +3,7 @@ import { Button } from '../ui/button';
 import { cn } from '@/lib/utils';
 import useLikeComment from '@/hooks/api/useComments.tsx/useLikeComment';
 import { QueryKey } from '@tanstack/react-query';
+import { CommentLike } from '@/types';
 
 interface Props {
   isLiked: boolean;
@@ -10,6 +11,7 @@ interface Props {
   userId: string;
   kudoQueryKey?: QueryKey;
   commentQueryKey?: QueryKey;
+  commentLikes: CommentLike[];
 }
 
 export default function CommentLikeButton({
@@ -17,13 +19,15 @@ export default function CommentLikeButton({
   commentId,
   kudoQueryKey,
   commentQueryKey,
+  commentLikes,
+  userId,
 }: Props) {
   const { mutateAsync: toggleLikeComment } = useLikeComment({
     kudoQueryKey,
     commentQueryKey,
   });
   const handleToggleCommentLike = async () => {
-    await toggleLikeComment({ commentId, isLiked });
+    await toggleLikeComment({ commentId, isLiked, commentLikes, userId });
   };
   return (
     <Button

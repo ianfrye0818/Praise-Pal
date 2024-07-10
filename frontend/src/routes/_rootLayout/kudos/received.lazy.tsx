@@ -3,6 +3,7 @@ import KudosCard from '@/components/kudos-card/kudos-card';
 import useGetCompanyKudos from '@/hooks/api/useKudos/useGetCompanyKudos';
 import { useAuth } from '@/hooks/useAuth';
 import { QueryKeys } from '@/constants';
+import DataLoader from '@/components/data-loader';
 
 export const Route = createLazyFileRoute('/_rootLayout/kudos/received')({
   component: () => <ReceivedPage />,
@@ -10,7 +11,7 @@ export const Route = createLazyFileRoute('/_rootLayout/kudos/received')({
 
 function ReceivedPage() {
   const { user } = useAuth().state;
-  const { data: kudos } = useGetCompanyKudos(
+  const { data: kudos, isLoading } = useGetCompanyKudos(
     {
       companyId: user?.companyId as string,
       receiverId: user?.userId as string,
@@ -18,6 +19,10 @@ function ReceivedPage() {
     },
     QueryKeys.receivedKudos
   );
+
+  if (isLoading) {
+    return <DataLoader />;
+  }
 
   if (!kudos || kudos.length === 0) {
     return (

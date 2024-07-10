@@ -17,6 +17,7 @@ export const QueryKeys = {
   sentKudos: ['kudos', 'sent'],
   receivedKudos: ['kudos', 'received'],
   allUsers: ['user'],
+  limitUsers: (limit: number) => ['users', { limit }],
   singleUser: (userId: string) => ['users', userId],
   company: ['company'],
   userNotifications: ['userNotifications'],

@@ -10,15 +10,24 @@ interface KudoLikeButtonProps {
   userId: string;
   companyId: string;
   queryKey?: QueryKey;
+  userLikes: any;
 }
 
-export default function KudoLikeButton({ isLiked, kudoId, queryKey }: KudoLikeButtonProps) {
+export default function KudoLikeButton({
+  isLiked,
+  kudoId,
+  queryKey,
+  userLikes,
+  userId,
+}: KudoLikeButtonProps) {
   const { mutateAsync: toggleKudo } = useLikeKudos(queryKey);
 
   async function handleToggleKudo() {
     await toggleKudo({
-      kudoId,
       isLiked,
+      kudoId,
+      userId,
+      userLikes,
     });
   }
 

@@ -1,5 +1,5 @@
 import { useAuth } from '@/hooks/useAuth';
-import { Comment } from '@/types';
+import { Comment, CommentLike, UserLike } from '@/types';
 import { Button } from '../ui/button';
 import KudoLikeButton from '../kudos-card/kudo-like-button';
 import CommentLikeButton from './comment-like-button';
@@ -45,12 +45,14 @@ export default function LikeReplyButtons({
             userId={currentUser?.userId as string}
             companyId={currentUser?.companyId as string}
             queryKey={QueryKeys.singleKudo(kudo!.id as string)}
+            userLikes={kudo?.userLikes as UserLike[]}
           />
         ) : (
           <CommentLikeButton
             commentId={comment?.id as string}
             isLiked={isLiked()}
             userId={currentUser?.userId as string}
+            commentLikes={comment?.commentLikes as CommentLike[]}
           />
         )}
 

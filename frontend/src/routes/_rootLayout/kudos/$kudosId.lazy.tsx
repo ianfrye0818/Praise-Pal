@@ -1,4 +1,5 @@
 import SingleKudosPage from '@/components/comments/singleKudosPage';
+import DataLoader from '@/components/data-loader';
 import { Button } from '@/components/ui/button';
 import { QueryKeys } from '@/constants';
 import useGetSingleKudo from '@/hooks/api/useKudos/useGetSingleKudo';
@@ -20,11 +21,15 @@ function Component() {
   const router = useRouter();
   const { errorToast } = useErrorToast();
 
-  const { data: kudo } = useGetSingleKudo({
+  const { data: kudo, isLoading } = useGetSingleKudo({
     companyId: currentUser?.companyId as string,
     kudoId: kudosId,
     queryKey: QueryKeys.singleKudo(kudosId),
   });
+
+  if (isLoading) {
+    return <DataLoader />;
+  }
 
   if (!kudo) {
     return (

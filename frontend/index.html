@@ -1,6 +1,15 @@
 <!doctype html>
 <html lang="en">
   <head>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag('js', new Date());
+
+      gtag('config', 'G-NERP20PR46');
+    </script>
     <link
       rel="apple-touch-icon"
       sizes="180x180"
@@ -30,11 +39,16 @@
 
     <title>PraisePal - Spread The Kudos</title>
   </head>
+
   <body>
     <div id="root"></div>
     <script
       type="module"
       src="/src/main.tsx"
+    ></script>
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=G-NERP20PR46"
     ></script>
   </body>
 </html>

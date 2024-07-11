@@ -43,9 +43,12 @@ export class KudosService {
             select: {
               ...commentSelectOptions,
             },
-            orderBy: {
-              createdAt: 'asc',
-            },
+            orderBy: [
+              {
+                createdAt: sort || 'asc',
+              },
+              { id: 'asc' },
+            ],
           },
         },
       });

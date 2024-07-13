@@ -1,10 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../core-services/prisma.service';
 import { CreateUserNotificationDTO } from './dto/createUserNotification.dto';
-import { Cron } from '@nestjs/schedule';
 import { EmailService } from 'src/core-services/email.service';
 import { FilterUserNotificationsDTO } from './dto/filterUserNotifications.dto';
-import { userNotificationSelectOptions } from 'src/utils/constants';
 import { Prisma } from '@prisma/client';
 
 @Injectable()

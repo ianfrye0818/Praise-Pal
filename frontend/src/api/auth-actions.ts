@@ -63,12 +63,12 @@ export const login = async (dispatch: Dispatch<AuthAction>, signInPayload: SignI
 };
 
 export const register = async (dispatch: Dispatch<AuthAction>, signUpPayload: SignUpFormProps) => {
-  dispatch({ type: ActionType.REGISTER_REQUEST });
+  // dispatch({ type: ActionType.REGISTER_REQUEST });
   try {
     const data = await AuthActions.register(signUpPayload);
-    dispatch({
-      type: ActionType.REGISTER_SUCCESS,
-    });
+    // dispatch({
+    //   type: ActionType.REGISTER_SUCCESS,
+    // });
     return data;
   } catch (error) {
     dispatch({ type: ActionType.REGISTER_FAILURE });

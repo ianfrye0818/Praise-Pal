@@ -15,29 +15,27 @@ enum Role {
 }
 
 model User {
-  userId                 String                  @id @default(cuid())
-  displayName            String?
-  firstName              String
-  lastName               String
-  email                  String                  @unique
-  password               String
-  role                   Role?                   @default(USER)
-  companyId              String
-  company                Company                 @relation(fields: [companyId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  notifications          UserNotifications[]
-  settings               UserSettings[]
-  createdAt              DateTime                @default(now())
-  updatedAt              DateTime                @updatedAt
-  deletedAt              DateTime?
-  sentKudos              Kudos[]                 @relation(name: "SentKudos")
-  receivedKudos          Kudos[]                 @relation(name: "ReceivedKudos")
-  userLikes              User_Like[]
-  refreshTokens          RefreshToken[]
-  comments               Comment[]
-  commentLkes            Comment_Like[]
-  verified               Boolean                 @default(false)
-  // passwordResetToken     PasswordResetToken?
-  // emailVerificationToken EmailVerificationToken?
+  userId        String              @id @default(cuid())
+  firstName     String
+  lastName      String
+  email         String              @unique
+  password      String
+  role          Role                @default(USER)
+  companyId     String
+  company       Company             @relation(fields: [companyId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  notifications UserNotifications[] @relation("user")
+  newUser       UserNotifications[] @relation("newUser")
+  settings      UserSettings[]
+  createdAt     DateTime            @default(now())
+  updatedAt     DateTime            @updatedAt
+  deletedAt     DateTime?
+  sentKudos     Kudos[]             @relation(name: "SentKudos")
+  receivedKudos Kudos[]             @relation(name: "ReceivedKudos")
+  userLikes     User_Like[]
+  refreshTokens RefreshToken[]
+  comments      Comment[]
+  commentLkes   Comment_Like[]
+  isActive      Boolean             @default(true)
 }
 
 model Company {
@@ -119,9 +117,11 @@ model Comment_Like {
 model UserNotifications {
   id         String     @id @default(cuid())
   userId     String
-  user       User       @relation(fields: [userId], references: [userId])
+  user       User       @relation(fields: [userId], references: [userId], name: "user")
   actionType ActionType
   message    String
+  newUserId String?
+  newUser   User?       @relation(fields: [newUserId], references: [userId], name: "newUser")
   kudosId    String?
   commentId  String?
   comment    Comment?   @relation(fields: [commentId], references: [id], onDelete: Cascade)
@@ -157,24 +157,5 @@ enum ActionType {
   COMMENT_COMMENT
   KUDOS_COMMENT
   KUDOS
+  NEW_USER
 }
-
-// model PasswordResetToken {
-//   id        String   @id @default(cuid())
-//   userId    String   @unique
-//   user      User     @relation(fields: [userId], references: [userId], onDelete: Cascade, onUpdate: Cascade)
-//   token     String
-//   createdAt DateTime @default(now())
-//   expiresAt DateTime
-//   used      Boolean  @default(false)
-// }
-
-// model EmailVerificationToken {
-//   id        String   @id @default(cuid())
-//   userId    String   @unique
-//   user      User     @relation(fields: [userId], references: [userId], onDelete: Cascade, onUpdate: Cascade)
-//   token     String
-//   createdAt DateTime @default(now())
-//   expiresAt DateTime
-//   used      Boolean  @default(false)
-// }

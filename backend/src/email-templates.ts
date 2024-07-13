@@ -23,7 +23,7 @@ export const resetPasswordHtml = (url: string) => {
   return html.replace(/{{resetPasswordUrl}}/g, url);
 };
 
-export const verifyEmailHtml = (url: string) => {
+export const newUserEmailUser = (newUserFullName: string) => {
   const html = `
   <html lang="en">
   <head>
@@ -32,9 +32,30 @@ export const verifyEmailHtml = (url: string) => {
   <title>Verify Email</title>
   </head>
   <body>
+  <h1>Pending Verification</h1>
+  <p>Hi {{newUserFullName}}</p>
+  <p>Your request is pending admin approval</p>
+  <p>Please reach out <a href='mailto:support@praise-pal.com'>support@praise-pal.com</a> if you have any questions or concerns</p>
+
+  </body>
+  </html>
+  `;
+
+  return html.replace(/{{newUserFullName}}/g, newUserFullName);
+};
+
+export const newUserEmailOwner = (url: string, newUserFullName: string) => {
+  const html = `
+  <html lang="en">
+  <head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>New User Verification</title>
+  </head>
+  <body>
   <h1>Verify Email</h1>
-  <p>Click the link to verify your email</p>
-  <a href="{{verifyEmailUrl}}">Verify Email</a>
+  <p>{{newUserFullName}} has requsted to join your company. Click the link below to verify user</p>
+  <a href="{{verifyEmailUrl}}">Verify User</a>
   
   <p>
   If link above does not work - please copy and paste this link into your
@@ -42,12 +63,13 @@ export const verifyEmailHtml = (url: string) => {
   </p>
   <p>{{verifyEmailUrl}}</p>
   
-  <p>Verification link will expire in one hour</p>
   </body>
   </html>
   `;
 
-  return html.replace(/{{verifyEmailUrl}}/g, url);
+  return html
+    .replace(/{{verifyEmailUrl}}/g, url)
+    .replace(/{{newUserFullName}}/g, newUserFullName);
 };
 
 export const cronErrorEmailHtml = (

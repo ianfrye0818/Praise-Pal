@@ -21,7 +21,8 @@ export default function useSubmitSignUpForm(form: UseFormReturn<z.infer<typeof s
     try {
       const resp = await register(dispatch, data);
       if (resp) {
-        successToast({ title: 'Account created', message: resp.message });
+        // successToast({ title: 'Account created', message: resp.message });
+        console.log(resp);
       }
     } catch (error) {
       console.error(['signInFormError'], error);

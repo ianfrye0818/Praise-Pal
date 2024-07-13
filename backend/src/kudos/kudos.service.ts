@@ -29,13 +29,13 @@ export class KudosService {
   ) {}
 
   async getAllKudos(filter: KudosFilterDTO, select?: Prisma.KudosSelect) {
-    const { limit, offset, sort, ...otherFilters } = filter;
+    const { take, skip, sort, ...otherFilters } = filter;
     try {
       const kudos = await this.prismaService.kudos.findMany({
         where: { deletedAt: filter.deletedAt || null, ...otherFilters },
         orderBy: [{ createdAt: sort || 'desc' }, { id: sort || 'asc' }],
-        take: limit,
-        skip: offset,
+        take,
+        skip,
         select: select || {
           ...kudoSelectOptions,
           comments: {

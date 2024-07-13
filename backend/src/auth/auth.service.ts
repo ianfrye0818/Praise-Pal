@@ -14,7 +14,13 @@ import { RefreshTokenService } from '../core-services/refreshToken.service';
 import { generateClientSideUserProperties } from '../utils';
 import { EmailService } from 'src/core-services/email.service';
 import { env } from 'src/env';
-import { resetPasswordHtml, verifyEmailHtml } from 'src/email-templates';
+import {
+  newUserEmailOwner,
+  newUserEmailUser,
+  resetPasswordHtml,
+} from 'src/email-templates';
+import { createUserDTO } from 'src/(user)/user/dto/createUser.dto';
+import { Role } from '@prisma/client';
 
 @Injectable()
 export class AuthService {
@@ -39,7 +45,7 @@ export class AuthService {
       );
 
     //make sure user is verified
-    if (user && user.verified === false)
+    if (user && user.isActive === false)
       throw new UnauthorizedException(
         'Please verify your email before logging in',
       );
@@ -52,21 +58,27 @@ export class AuthService {
 
   async verifyToken(type: TokenType, token: string) {
     type = type.toUpperCase() as TokenType;
-    let response: { message: string; status: number; type: TokenType };
+    let response: {
+      message: string;
+      status: number;
+      type: TokenType;
+      payload?: any;
+    };
 
-    if (type !== 'EMAIL' && type !== 'PASSWORD')
+    if (type !== 'NEW_USER' && type !== 'PASSWORD')
       throw new HttpException('Invalid token type', 400);
 
     try {
-      if (type === 'EMAIL') {
-        this.jwtService.verify(token, {
+      if (type === 'NEW_USER') {
+        const payload = this.jwtService.verify(token, {
           secret: env.EMAIL_VERIFICATION_SECRET,
           ignoreExpiration: false,
         });
         response = {
+          payload,
           message: 'Email token is valid',
           status: HttpStatus.OK,
-          type: 'EMAIL',
+          type: 'NEW_USER',
         };
       }
 
@@ -181,23 +193,61 @@ export class AuthService {
     }
   }
 
-  async sendVerifyEmail(data: { email: string }) {
+  async registerUser(data: createUserDTO) {
     try {
-      const user = await this.userService.findOneByEmail(data.email);
-      if (!user) throw new UnauthorizedException('User not found');
-
-      const token = this.generateEmailVerificationToken(user.email);
-
-      const url = `${env.CLIENT_URL}/verify-email/${token}`;
-
-      await this.emailService.sendEmail({
-        html: verifyEmailHtml(url),
-        subject: 'Verify your email',
-        to: [user.email],
+      const newUserData = await this.userService.create(data);
+      const companyOwnerEmail = newUserData.company.users.find(
+        (user) => user.role === Role.COMPANY_OWNER,
+      ).email;
+      return await this.sendNewUserEmail({
+        newUserEmail: newUserData.newUser.email,
+        newUserFullName: `${newUserData.newUser.firstName} ${newUserData.newUser.lastName}`,
+        newUserId: newUserData.newUser.userId,
+        companyOwnerEmail,
       });
+    } catch (error) {
+      console.error(['Register User Error'], error);
+      throw new InternalServerErrorException('Could not register user');
+    }
+  }
+
+  async sendNewUserEmail({
+    newUserId,
+    companyOwnerEmail,
+    newUserFullName,
+    newUserEmail,
+  }: {
+    newUserId: string;
+    companyOwnerEmail?: string;
+    newUserFullName: string;
+    newUserEmail: string;
+  }) {
+    try {
+      const token = this.generateEmailVerificationToken({
+        fullName: newUserFullName,
+        userId: newUserId,
+        email: newUserEmail,
+      });
+
+      const url = `${env.CLIENT_URL}/admin/verify-user/${token}`;
+
+      // if (companyOwnerEmail) {
+      //   await this.emailService.sendEmail({
+      //     html: newUserEmailOwner(url, newUserFullName),
+      //     subject: 'Verify New User',
+      //     to: [companyOwnerEmail],
+      //   });
+      // }
+
+      // await this.emailService.sendEmail({
+      //   html: newUserEmailUser(newUserFullName),
+      //   subject: 'Pending Verification',
+      //   to: [newUserEmail],
+      // });
       return {
-        message: 'Check your email for a verification link',
+        message: '',
         status: HttpStatus.OK,
+        url,
       };
     } catch (error) {
       console.error(['Verify Email Error'], error);
@@ -208,7 +258,7 @@ export class AuthService {
 
   async verifyEmailToken(email: string) {
     try {
-      await this.userService.updateByEmail(email, { verified: true });
+      await this.userService.updateByEmail(email, { isActive: true });
       return { message: 'Email verified', status: HttpStatus.OK };
     } catch (error) {
       console.error(['Verify Email Token Error'], error);
@@ -230,17 +280,17 @@ export class AuthService {
     });
   }
 
-  private generateEmailVerificationToken(email: string) {
+  private generateEmailVerificationToken(payload: any) {
     return this.jwtService.sign(
-      { email },
-      { secret: env.EMAIL_VERIFICATION_SECRET },
+      { payload },
+      { secret: env.EMAIL_VERIFICATION_SECRET, expiresIn: '1d' },
     );
   }
 
   private generatePasswordResetToken(email: string) {
     return this.jwtService.sign(
       { email },
-      { secret: env.PASSWORD_RESET_SECRET },
+      { secret: env.PASSWORD_RESET_SECRET, expiresIn: '1h' },
     );
   }
 }

@@ -11,6 +11,7 @@ import { ThrottlerGuard } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
 import { RefreshStrategy } from './strategies/refresh-strategy';
 import { RefreshTokenService } from '../core-services/refreshToken.service';
+import { UserNotificationsService } from 'src/(user)/user-notifications/user-notifications.service';
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { RefreshTokenService } from '../core-services/refreshToken.service';
     PrismaService,
     EmailService,
     RefreshTokenService,
+    UserNotificationsService,
     { provide: APP_GUARD, useClass: ThrottlerGuard },
   ],
   exports: [AuthService],

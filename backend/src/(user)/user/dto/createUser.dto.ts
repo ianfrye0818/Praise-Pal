@@ -36,7 +36,7 @@ export class updateUserDTO extends PartialType(createUserDTO) {
 
   @IsOptional()
   @IsBoolean()
-  verified?: boolean;
+  isActive?: boolean;
 
   @IsOptional()
   @IsDate()

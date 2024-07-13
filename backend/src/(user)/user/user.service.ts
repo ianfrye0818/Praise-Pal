@@ -8,17 +8,19 @@ import { PrismaService } from '../../core-services/prisma.service';
 import { createUserDTO, updateUserDTO } from './dto/createUser.dto';
 import * as bcrypt from 'bcryptjs';
 import { Cron } from '@nestjs/schedule';
-import { Prisma, User } from '@prisma/client';
+import { ActionType, Prisma, Role, User } from '@prisma/client';
 import { EmailService } from '../../core-services/email.service';
 import { generateClientSideUserProperties } from '../../utils';
 import { ClientUser } from '../../types';
 import { FilterUserDTO } from './dto/filterUser.dto';
+import { UserNotificationsService } from '../user-notifications/user-notifications.service';
 
 @Injectable()
 export class UserService {
   constructor(
     private prismaService: PrismaService,
     private emailService: EmailService,
+    private notificationService: UserNotificationsService,
   ) {}
 
   async findAllUsers(filter: FilterUserDTO): Promise<ClientUser[]> {
@@ -89,13 +91,18 @@ export class UserService {
     }
   }
 
-  async create(data: createUserDTO): Promise<User> {
+  async create(data: createUserDTO) {
     const { companyCode, password, ...userData } = data;
 
     const hashedPassword = await bcrypt.hash(password, 10);
     const formattedEmail = userData.email.toLowerCase();
     const company = await this.prismaService.company.findUnique({
       where: { companyCode },
+      include: {
+        users: {
+          where: { OR: [{ role: Role.ADMIN }, { role: Role.COMPANY_OWNER }] },
+        },
+      },
     });
     if (!company) throw new NotFoundException('Company not found');
     const newUser = await this.prismaService.user.create({
@@ -106,7 +113,17 @@ export class UserService {
         email: formattedEmail,
       },
     });
-    return newUser;
+    await Promise.all(
+      company.users.map((user) =>
+        this.notificationService.createNotification({
+          actionType: ActionType.NEW_USER,
+          message: `${newUser.firstName} ${newUser.lastName[0]} is waiting for your approval`,
+          userId: user.userId,
+          newUserId: newUser.userId,
+        }),
+      ),
+    );
+    return { newUser, company };
   }
   catch(error) {
     console.error(error);

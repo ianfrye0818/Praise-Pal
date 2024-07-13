@@ -14,7 +14,14 @@ export class CreateUserNotificationDTO {
   commentId?: string;
 
   @IsEnum(
-    ['COMMENT_LIKE', 'KUDOS_LIKE', 'COMMENT_COMMENT', 'KUDOS_COMMENT', 'KUDOS'],
+    [
+      'COMMENT_LIKE',
+      'KUDOS_LIKE',
+      'COMMENT_COMMENT',
+      'KUDOS_COMMENT',
+      'KUDOS',
+      'NEW_USER',
+    ],
     {
       message: 'Action Type Must Be LIKE, COMMENT, or KUDOS',
     },
@@ -25,16 +32,8 @@ export class CreateUserNotificationDTO {
   @IsOptional()
   @IsString()
   kudosId?: string;
+
+  @IsOptional()
+  @IsString()
+  newUserId?: string;
 }
-
-// export class UpdateUserNotificationDTO extends PartialType(
-//   CreateUserNotificationDTO,
-// ) {
-//   @IsOptional()
-//   @IsBoolean()
-//   isRead?: boolean;
-
-//   @IsOptional()
-//   @IsDate()
-//   deletedAt?: Date;
-// }

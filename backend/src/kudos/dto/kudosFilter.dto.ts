@@ -59,15 +59,15 @@ export class KudosFilterDTO {
   @IsBoolean()
   isHidden?: boolean;
 
-  @IsOptional()
   @IsInt()
   @Type(() => Number)
-  limit?: number;
+  @IsOptional()
+  take?: number;
 
+  @Type(() => Number)
   @IsOptional()
   @IsInt()
-  @Type(() => Number)
-  offset?: number;
+  skip?: number;
 
   @IsOptional()
   @IsEnum(['asc', 'desc'])

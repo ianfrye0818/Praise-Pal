@@ -7,7 +7,7 @@ export interface ClientUser {
   role: Role;
   firstName: string;
   lastName: string;
-  verified: boolean;
+  isActive: boolean;
 }
 export interface ClientComment {
   id: string;
@@ -44,4 +44,4 @@ export interface JWTPayload extends ClientUser {
   exp: number;
 }
 
-export type TokenType = 'EMAIL' | 'PASSWORD';
+export type TokenType = 'NEW_USER' | 'PASSWORD';

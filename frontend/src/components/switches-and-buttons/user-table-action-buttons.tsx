@@ -1,18 +1,23 @@
-'use client';
-
 import { Button } from '@/components/ui/button';
 import ConfirmationDialog from '../dialogs/confirmation-dialog';
-import { User } from '@/types';
-import useDeleteCompanyUser from '@/hooks/api/useCompayUsers/useRestoreCompanyUser';
 import useRestoreCompanyUser from '@/hooks/api/useCompayUsers/useRestoreCompanyUser';
+import { User } from '@/types';
+import useDeleteCompanyUser from '@/hooks/api/useCompayUsers/useDeleteCompanyUser';
 
 interface UserTableActionButtonsProps {
   updatingUser: User;
+  disabled: boolean;
 }
 
-export default function UserTableActionButtons({ updatingUser }: UserTableActionButtonsProps) {
-  const { mutateAsync: softDeleteUser } = useDeleteCompanyUser();
-  const { mutateAsync: restoreSoftDeletedUser } = useRestoreCompanyUser();
+export default function UserTableActionButtons({
+  updatingUser,
+  disabled,
+}: UserTableActionButtonsProps) {
+  const { mutateAsync: softDeleteUser, isPending: useDeleteCompanyUserIsPending } =
+    useDeleteCompanyUser();
+  const { mutateAsync: restoreSoftDeletedUser, isPending: useRestoreCompanyUserIsPending } =
+    useRestoreCompanyUser();
+
   return (
     <div>
       {updatingUser.deletedAt === null ? (
@@ -28,7 +33,12 @@ export default function UserTableActionButtons({ updatingUser }: UserTableAction
             })
           }
         >
-          <Button variant='destructive'>Delete</Button>
+          <Button
+            variant='destructive'
+            disabled={disabled || useDeleteCompanyUserIsPending}
+          >
+            Delete
+          </Button>
         </ConfirmationDialog>
       ) : (
         <ConfirmationDialog
@@ -43,7 +53,12 @@ export default function UserTableActionButtons({ updatingUser }: UserTableAction
             })
           }
         >
-          <Button variant='confirm'>Restore</Button>
+          <Button
+            variant='confirm'
+            disabled={disabled || useRestoreCompanyUserIsPending}
+          >
+            Restore
+          </Button>
         </ConfirmationDialog>
       )}
     </div>

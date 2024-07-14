@@ -1,8 +1,16 @@
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '../ui/form';
 import { Input } from '../ui/input';
-import { useController } from 'react-hook-form';
+import { Control, FieldPath, useController } from 'react-hook-form';
 import { z } from 'zod';
-import { FormInputItemProps } from '@/types';
+
+export interface FormInputItemProps<T extends z.ZodTypeAny>
+  extends React.InputHTMLAttributes<HTMLInputElement> {
+  control: Control<z.infer<T>, any>;
+  name: FieldPath<z.infer<T>>;
+  label?: string;
+  type?: string;
+  onChange?: (...event: any[]) => void;
+}
 
 export function FormInputItem<T extends z.ZodTypeAny>({
   control,

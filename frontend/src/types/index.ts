@@ -193,15 +193,6 @@ export interface UserNotificationQueryParams extends QueryParams {
   actionTypes?: ActionTypes | ActionTypes[];
 }
 
-export interface FormInputItemProps<T extends z.ZodTypeAny>
-  extends React.InputHTMLAttributes<HTMLInputElement> {
-  control: Control<z.infer<T>, any>;
-  name: FieldPath<z.infer<T>>;
-  label?: string;
-  type?: string;
-  onChange?: (...event: any[]) => void;
-}
-
 export interface SelectInputProps<T extends z.ZodTypeAny>
   extends React.SelectHTMLAttributes<HTMLSelectElement> {
   control: Control<z.infer<T>, any>;

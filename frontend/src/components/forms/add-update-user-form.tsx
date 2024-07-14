@@ -1,19 +1,34 @@
+import * as z from 'zod';
+import { useForm } from 'react-hook-form';
 import { Button } from '@/components/ui/button';
+import { capitalizeString, cn, getRoleOptions } from '@/lib/utils';
+import { Role, User } from '@/types';
+import { addUserSchema, updateUserSchema } from '@/zodSchemas';
+import { useAuth } from '@/hooks/useAuth';
 import { DialogFooter } from '@/components/ui/dialog';
 import { Form } from '@/components/ui/form';
-import { capitalizeString, cn } from '@/lib/utils';
-import { useForm } from 'react-hook-form';
 import { FormInputItem } from '@/components/forms/form-input-item';
 import FormSelectItem from '@/components/forms/form-select-item';
-import * as z from 'zod';
-import { useToast } from '../ui/use-toast';
 import DeleteConfirmDialog from '../dialogs/delete-account-confirmation';
-import { Role, User } from '@/types';
-import { useAuth } from '@/hooks/useAuth';
-import { addUserSchema, updateUserSchema } from '@/zodSchemas';
-import useUpdateCompanyUser from '@/hooks/api/useCompayUsers/useUpdateCompanyUser';
-import useCreateCompanyUser from '@/hooks/api/useCompayUsers/useCreateCompanyUser';
+import useSubmitAddUpdateCompanyUserForm from '@/hooks/forms/useSubmitUpdateUserForm';
 import useDeleteCompanyUser from '@/hooks/api/useCompayUsers/useDeleteCompanyUser';
+
+const defaultAddValues = {
+  email: '',
+  firstName: '',
+  lastName: '',
+  password: '',
+  role: Role.USER,
+  companyCode: '',
+};
+
+const defaultUpdateValues = (updatingUser?: User) => ({
+  email: updatingUser?.email,
+  companyCode: updatingUser?.companyCode,
+  firstName: updatingUser?.firstName,
+  lastName: updatingUser?.lastName,
+  role: updatingUser?.role,
+});
 
 interface AddUpdateUserFormProps {
   type: 'add' | 'update';
@@ -24,55 +39,23 @@ interface AddUpdateUserFormProps {
 export default function AddUpdateUserForm({ type, setOpen, updatingUser }: AddUpdateUserFormProps) {
   const { user: currentUser } = useAuth().state;
   const formSchema = type === 'add' ? addUserSchema : updateUserSchema;
-  const { toast } = useToast();
-  const { mutateAsync: updateUser } = useUpdateCompanyUser();
-  const { mutateAsync: createUser } = useCreateCompanyUser();
+
   const { mutateAsync: deleteUser } = useDeleteCompanyUser();
-  const form = useForm<z.infer<typeof formSchema>>({
-    defaultValues:
-      type === 'update'
-        ? {
-            email: updatingUser?.email,
-            companyCode: updatingUser?.companyCode,
-            firstName: updatingUser?.firstName,
-            lastName: updatingUser?.lastName,
-            role: updatingUser?.role,
-          }
-        : {
-            email: '',
-            firstName: '',
-            lastName: '',
-            password: '',
-            role: Role.USER,
-            companyCode: '',
-          },
+  const onSubmit = useSubmitAddUpdateCompanyUserForm({
+    formSchema,
+    type,
+    updatingUser,
+    currentUser: currentUser as User,
   });
 
-  const onSubmit = async (data: z.infer<typeof formSchema>) => {
-    try {
-      if (type === 'add') {
-        await createUser(data as z.infer<typeof addUserSchema>);
-        toast({ title: 'Success', description: 'User created successfully' });
-      }
-      if (type === 'update') {
-        await updateUser({
-          companyCode: updatingUser?.companyCode as string,
-          currentUser: currentUser as User,
-          userToUpdateId: updatingUser?.userId as string,
-          payload: data as z.infer<typeof updateUserSchema>,
-        });
-        toast({ title: 'Success', description: 'User updated successfully' });
-      }
-    } catch (error) {
-      console.error(['onSubmit'], error);
-      toast({ title: 'Error', description: 'Error updating user', variant: 'destructive' });
-    }
-  };
+  const disableUpdateRole =
+    currentUser?.role !== Role.COMPANY_OWNER || updatingUser?.userId === currentUser?.userId;
+  const disableCompanyCode = currentUser?.role !== Role.SUPER_ADMIN;
+  const form = useForm<z.infer<typeof formSchema>>({
+    defaultValues: type === 'add' ? defaultAddValues : defaultUpdateValues(updatingUser),
+  });
 
-  const roleOptions = Object.values(Role).map((role) => ({
-    label: capitalizeString(role),
-    value: role,
-  }));
+  const roleOptions = getRoleOptions();
 
   return (
     <Form {...form}>
@@ -127,6 +110,7 @@ export default function AddUpdateUserForm({ type, setOpen, updatingUser }: AddUp
             options={roleOptions}
             label='Role'
             placeholder='Select Role'
+            disabled={disableUpdateRole}
           />
         </div>
 
@@ -136,6 +120,7 @@ export default function AddUpdateUserForm({ type, setOpen, updatingUser }: AddUp
             name='companyCode'
             label='Company Code'
             placeholder='Company Code'
+            disabled={disableCompanyCode}
           />
         </div>
 

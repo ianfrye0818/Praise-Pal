@@ -1,42 +1,37 @@
-import { patchUpdateUser } from '@/api/api-handlers';
+import { updateCurrentUser } from '@/api/auth-actions';
 import { QueryKeys } from '@/constants';
+import { useAuth } from '@/hooks/useAuth';
 import useErrorToast from '@/hooks/useErrorToast';
 import useSuccessToast from '@/hooks/useSuccessToast';
-import { Role, User } from '@/types';
+import { User } from '@/types';
 import { QueryKey, useMutation, useQueryClient } from '@tanstack/react-query';
 
-interface UseUpdateCuurentUserProps {
-  userToUpdateId: string;
+interface UseUpdateCurrentUserProps {
   companyCode: string;
   payload: Partial<User>;
   currentUser: User;
 }
 
-export default function useUpdateCompanyUser({
+export default function useUpdateCurrentUser({
   queryKey = QueryKeys.allUsers,
 }: { queryKey?: QueryKey } = {}) {
   const USER_QUERY_OPTIONS = { queryKey, exact: false };
+  const { dispatch } = useAuth();
   const queryClient = useQueryClient();
   const { errorToast } = useErrorToast();
   const { successToast } = useSuccessToast();
 
   const mutation = useMutation({
-    mutationFn: async ({
-      companyCode,
-      userToUpdateId,
-      payload,
-      currentUser,
-    }: UseUpdateCuurentUserProps) => {
-      if (currentUser.userId === userToUpdateId) {
-        throw new Error('Please click the avitar icon in the sidebar to update your account');
-      }
+    mutationFn: async ({ payload, currentUser, companyCode }: UseUpdateCurrentUserProps) => {
+      console.log({ payload });
+      const { companyCode: _, role: __, createdAt: ___, updatedAt: ____, ...rest } = payload;
 
-      const { companyCode: code, role, createdAt: _, updatedAt: __, ...rest } = payload;
-
-      const sendingPayload =
-        currentUser.role === Role.COMPANY_OWNER ? { ...rest, code, role } : rest;
-
-      return await patchUpdateUser(companyCode, userToUpdateId, sendingPayload);
+      return await updateCurrentUser({
+        dispatch,
+        companyCode,
+        currentUserId: currentUser.userId,
+        payload: rest,
+      });
     },
     onMutate: async (newData: Partial<User>) => {
       await queryClient.cancelQueries(USER_QUERY_OPTIONS);
@@ -54,6 +49,11 @@ export default function useUpdateCompanyUser({
             }
             return user;
           });
+        } else {
+          return {
+            ...old,
+            ...newData,
+          };
         }
       });
       return { previousData };

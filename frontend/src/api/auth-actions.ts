@@ -87,15 +87,20 @@ export const logout = async (dispatch: Dispatch<AuthAction>) => {
   }
 };
 
-export async function updateCurrentUser(
-  dispatch: Dispatch<AuthAction>,
-  companyCode: string,
-  userId: string,
-  updateUserPayload: UpdateUserProps
-) {
+export async function updateCurrentUser({
+  companyCode,
+  currentUserId,
+  dispatch,
+  payload,
+}: {
+  dispatch: Dispatch<AuthAction>;
+  currentUserId: string;
+  companyCode: string;
+  payload: UpdateUserProps;
+}) {
   dispatch({ type: ActionType.UPDATE_REQUEST });
   try {
-    const data = await AuthActions.update(companyCode, userId, updateUserPayload);
+    const data = await AuthActions.update(companyCode, currentUserId, payload);
     if (!data) throw new Error('Error updating user');
     dispatch({
       type: ActionType.UPDATE_SUCCESS,

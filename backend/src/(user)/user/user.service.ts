@@ -32,6 +32,7 @@ export class UserService {
       const users = await this.prismaService.user.findMany({
         where: {
           role: { in: roles },
+          NOT: { role: Role.COMPANY_OWNER },
           ...otherFilters,
         },
         orderBy: [{ lastName: sort || 'asc' }, { userId: 'asc' }],

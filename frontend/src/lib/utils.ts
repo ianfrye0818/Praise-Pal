@@ -66,14 +66,11 @@ export function capitalizeString(str: string) {
   }
 }
 
-export function getRoleDropDownOptions() {
-  return Object.values(Role)
-    .filter((role) => role !== Role.SUPER_ADMIN && role !== Role.COMPANY_OWNER)
-    .map((role) => ({
-      label: capitalizeString(role),
-      value: role,
-    }));
-}
+export const getRoleOptions = () =>
+  Object.values(Role).map((role) => ({
+    label: capitalizeString(role),
+    value: role,
+  }));
 
 interface UrlQueryParams {
   params: string;

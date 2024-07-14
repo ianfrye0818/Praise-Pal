@@ -1,18 +1,22 @@
 import { Toggle } from '@/components/ui/toggle';
 import useErrorToast from '@/hooks/useErrorToast';
 import useUpdateCompanyUser from '@/hooks/api/useCompayUsers/useUpdateCompanyUser';
-import { Role, User } from '@/types';
+import { User } from '@/types';
 import { QueryKeys } from '@/constants';
 import { useAuth } from '@/hooks/useAuth';
 
-export default function ToggleActiveSwitch({ user, limit }: { user: User; limit?: number }) {
+interface ToggleActiveSwitchProps {
+  user: User;
+  take?: number;
+  disabled?: boolean;
+}
+
+export default function ToggleActiveSwitch({ user, take, disabled }: ToggleActiveSwitchProps) {
   const { user: currentUser } = useAuth().state;
   const { errorToast } = useErrorToast();
   const { mutateAsync: toggleUserActive } = useUpdateCompanyUser({
-    queryKey: limit ? QueryKeys.limitUsers(limit) : QueryKeys.allUsers,
+    queryKey: take ? QueryKeys.limitUsers(take) : QueryKeys.allUsers,
   });
-
-  const canUpdateUser = currentUser!.role !== Role.USER;
 
   const handleToggleUserActiveStatus = async (isActive: boolean) => {
     try {
@@ -34,9 +38,7 @@ export default function ToggleActiveSwitch({ user, limit }: { user: User; limit?
   return (
     <>
       <Toggle
-        disabled={
-          user.role === Role.SUPER_ADMIN || user.role === Role.COMPANY_OWNER || !canUpdateUser
-        }
+        disabled={disabled}
         pressed={user.isActive}
         onPressedChange={handleToggleUserActiveStatus}
       >

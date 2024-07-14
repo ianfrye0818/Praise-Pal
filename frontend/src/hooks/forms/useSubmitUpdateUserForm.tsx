@@ -1,21 +1,64 @@
-import { Role, UpdateUserProps, User } from '@/types';
+import * as z from 'zod';
+import { User } from '@/types';
+import useErrorToast from '../useErrorToast';
+import useSuccessToast from '../useSuccessToast';
 import useUpdateCompanyUser from '../api/useCompayUsers/useUpdateCompanyUser';
+import useCreateCompanyUser from '../api/useCompayUsers/useCreateCompanyUser';
+import { addUserSchema, updateUserSchema } from '@/zodSchemas';
+import { isCustomError } from '@/errors';
+import useUpdateCurrentUser from '../api/useCompayUsers/useUpdateCurrentUser';
 
-export default function useSubmitUpdateUserForm(currentUser: User | null, user: User) {
+interface SubmitUpdateCompanyUserFormProps {
+  formSchema: z.ZodObject<any, any>;
+  type: 'add' | 'update';
+  updatingUser?: User;
+  currentUser: User;
+}
+
+export default function useSubmitAddUpdateCompanyUserForm({
+  formSchema,
+  type,
+  updatingUser,
+  currentUser,
+}: SubmitUpdateCompanyUserFormProps) {
+  const { errorToast } = useErrorToast();
+  const { successToast } = useSuccessToast();
   const { mutateAsync: updateUser } = useUpdateCompanyUser();
-  const onSubmit = async (data: UpdateUserProps) => {
-    const { role: _, ...rest } = data;
-
+  const { mutateAsync: updateCurrentUser } = useUpdateCurrentUser();
+  const { mutateAsync: createUser } = useCreateCompanyUser();
+  const updatingCurrentUser = updatingUser?.userId === currentUser.userId;
+  const onSubmit = async (data: z.infer<typeof formSchema>) => {
     try {
-      await updateUser({
-        companyCode: currentUser?.companyCode as string,
-        userToUpdateId: user.userId,
-        payload: currentUser?.role === Role.COMPANY_OWNER ? data : rest,
-        currentUser: currentUser as User,
-      });
+      if (type === 'add') {
+        await createUser(data as z.infer<typeof addUserSchema>);
+        successToast({ title: 'Success', message: 'User created successfully' });
+      }
+      if (type === 'update') {
+        if (updatingCurrentUser) {
+          await updateCurrentUser({
+            companyCode: updatingUser?.companyCode as string,
+            currentUser: currentUser as User,
+            payload: data as z.infer<typeof updateUserSchema>,
+          });
+          successToast({ title: 'Success', message: 'User updated successfully' });
+        } else {
+          await updateUser({
+            companyCode: updatingUser?.companyCode as string,
+            currentUser: currentUser as User,
+            userToUpdateId: updatingUser?.userId as string,
+            payload: data as z.infer<typeof updateUserSchema>,
+          });
+          successToast({ title: 'Success', message: 'User updated successfully' });
+        }
+      }
     } catch (error) {
-      console.error(error);
+      console.error(['onSubmit'], error);
+      if (isCustomError(error)) {
+        errorToast({ title: 'Error', message: error.message });
+      }
+      errorToast({ title: 'Error', message: 'Error updating user' });
     }
   };
+
   return onSubmit;
 }

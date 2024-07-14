@@ -1,8 +1,22 @@
 import * as z from 'zod';
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '../ui/form';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
+import { Control, FieldPath } from 'react-hook-form';
+import { SelectProps } from '@radix-ui/react-select';
 
-import { SelectInputProps } from '@/types';
+interface Option {
+  value: string;
+  label: string;
+}
+
+interface FormSelectItemProps<T extends z.ZodTypeAny> extends SelectProps {
+  control: Control<z.infer<T>, any>;
+  name: FieldPath<z.infer<T>>;
+  label?: string;
+  placeholder?: string;
+  options: Option[];
+  defaultValue?: string; // Add defaultValue to props
+}
 
 export default function FormSelectItem<T extends z.ZodTypeAny>({
   control,
@@ -10,7 +24,8 @@ export default function FormSelectItem<T extends z.ZodTypeAny>({
   label,
   placeholder,
   options,
-}: SelectInputProps<T>) {
+  ...props
+}: FormSelectItemProps<T>) {
   return (
     <FormField
       control={control}
@@ -22,6 +37,7 @@ export default function FormSelectItem<T extends z.ZodTypeAny>({
             <Select
               onValueChange={field.onChange}
               defaultValue={field.value}
+              {...props}
             >
               <FormControl>
                 <SelectTrigger>

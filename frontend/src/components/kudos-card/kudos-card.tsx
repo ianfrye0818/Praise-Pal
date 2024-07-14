@@ -15,8 +15,8 @@ type Props = {
 export default function KudosCard({ kudo }: Props) {
   const { user } = useAuth().state;
   const { sender, receiver } = kudo;
-  const isLiked = kudo.userLikes
-    ? kudo.userLikes.some((userLike) => userLike.userId === user?.userId)
+  const isLiked = kudo.kudoLikes
+    ? kudo.kudoLikes.some((kudoLike) => kudoLike.userId === user?.userId)
     : false;
   const usersKudo = sender ? sender.userId === user?.userId : false;
   const senderDisplayName = sender ? getUserDisplayName(sender) : '';
@@ -50,8 +50,8 @@ export default function KudosCard({ kudo }: Props) {
                 isLiked={isLiked}
                 kudoId={kudo.id}
                 userId={user?.userId as string}
-                companyId={user?.companyId as string}
-                userLikes={kudo.userLikes}
+                companyCode={user?.companyCode as string}
+                kudoLikes={kudo.kudoLikes}
               />
 
               <p className='text-sm text-gray-500'>{kudo.likes}</p>

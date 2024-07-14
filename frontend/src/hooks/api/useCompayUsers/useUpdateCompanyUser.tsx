@@ -9,7 +9,7 @@ import { QueryKey, useMutation, useQueryClient } from '@tanstack/react-query';
 
 interface UseGetUserProps {
   userToUpdateId: string;
-  companyId: string;
+  companyCode: string;
   payload: Partial<User>;
   currentUser: User;
 }
@@ -23,11 +23,11 @@ export default function useUpdateCompanyUser({
   const { errorToast } = useErrorToast();
   const { successToast } = useSuccessToast();
   const mutation = useMutation({
-    mutationFn: async ({ companyId, userToUpdateId, payload, currentUser }: UseGetUserProps) => {
+    mutationFn: async ({ companyCode, userToUpdateId, payload, currentUser }: UseGetUserProps) => {
       if (userToUpdateId === currentUser.userId) {
-        return await updateCurrentUser(dispatch, companyId, userToUpdateId, payload);
+        return await updateCurrentUser(dispatch, companyCode, userToUpdateId, payload);
       } else {
-        return await patchUpdateUser(companyId, userToUpdateId, payload);
+        return await patchUpdateUser(companyCode, userToUpdateId, payload);
       }
     },
     onMutate: async (newData: Partial<User>) => {

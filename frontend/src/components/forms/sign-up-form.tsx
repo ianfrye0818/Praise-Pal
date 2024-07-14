@@ -1,9 +1,7 @@
-import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { Button } from '@/components/ui/button';
 import { Form } from '@/components/ui/form';
-import { signUpFormSchema } from '@/zodSchemas';
 
 import { Link } from '@tanstack/react-router';
 import {
@@ -18,10 +16,12 @@ import { FormInputItem } from './form-input-item';
 import { SIGN_UP_FORM_DEFAULT_VALUES } from '@/constants';
 import useSubmitSignUpForm from '@/hooks/forms/useSubmitSignUpForm';
 import SendPassWordResetLinkDialog from '../dialogs/send-password-reset-link-dialog';
+import { addUserSchema } from '@/zodSchemas';
+import { SignUpFormProps } from '@/types';
 
 export default function SignUpForm() {
-  const form = useForm<z.infer<typeof signUpFormSchema>>({
-    resolver: zodResolver(signUpFormSchema),
+  const form = useForm<SignUpFormProps>({
+    resolver: zodResolver(addUserSchema),
     defaultValues: SIGN_UP_FORM_DEFAULT_VALUES,
   });
 
@@ -42,7 +42,7 @@ export default function SignUpForm() {
             onSubmit={form.handleSubmit(onSubmit)}
             className='flex flex-col gap-5'
           >
-            <FormInputItem<typeof signUpFormSchema>
+            <FormInputItem<typeof addUserSchema>
               control={form.control}
               name='email'
               label='Email'
@@ -50,14 +50,14 @@ export default function SignUpForm() {
               type='email'
             />
             <div className='grid grid-cols-2 gap-4'>
-              <FormInputItem<typeof signUpFormSchema>
+              <FormInputItem<typeof addUserSchema>
                 control={form.control}
                 name='password'
                 label='Password'
                 placeholder='Enter your password'
                 type='password'
               />
-              <FormInputItem<typeof signUpFormSchema>
+              <FormInputItem<typeof addUserSchema>
                 control={form.control}
                 name='confirmPassword'
                 label='Confirm Password'
@@ -65,7 +65,7 @@ export default function SignUpForm() {
                 type='password'
               />
             </div>
-            <FormInputItem<typeof signUpFormSchema>
+            <FormInputItem<typeof addUserSchema>
               control={form.control}
               name='companyCode'
               label='Company Code'
@@ -75,7 +75,7 @@ export default function SignUpForm() {
               minLength={4}
             />
             <div className='flex justify-between'>
-              <FormInputItem<typeof signUpFormSchema>
+              <FormInputItem<typeof addUserSchema>
                 control={form.control}
                 name='firstName'
                 label='First Name'
@@ -83,7 +83,7 @@ export default function SignUpForm() {
                 type='text'
               />
 
-              <FormInputItem<typeof signUpFormSchema>
+              <FormInputItem<typeof addUserSchema>
                 control={form.control}
                 name='lastName'
                 label='Last Name'

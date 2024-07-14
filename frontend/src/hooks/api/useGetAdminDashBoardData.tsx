@@ -3,31 +3,37 @@ import { Role } from '@/types';
 import { QueryKeys } from '@/constants';
 import { useQueries } from '@tanstack/react-query';
 import { getCompany, getCompanyKudos, getCompanyUsers } from '@/api/api-handlers';
+import { sortUsersByCompanyOwnerThenName } from '@/lib/utils';
 
-export default function useGetAdminDashBoardData(limit: number = 10) {
+export default function useGetAdminDashBoardData(take: number = 10) {
   const { user } = useAuth().state;
-  const companyId = user?.companyId as string;
+  const companyCode = user?.companyCode as string;
 
   const results = useQueries({
     queries: [
       {
         queryKey: QueryKeys.company,
-        queryFn: async () => await getCompany(companyId),
-        enabled: !!companyId,
+        queryFn: async () => await getCompany(companyCode),
+        enabled: !!companyCode,
       },
       {
-        queryKey: QueryKeys.limitUsers(limit),
-        queryFn: async () =>
-          await getCompanyUsers({
-            companyId,
+        queryKey: QueryKeys.limitUsers(take),
+        queryFn: async () => {
+          const users = await getCompanyUsers({
+            companyCode,
             roles: [Role.USER, Role.ADMIN, Role.COMPANY_OWNER],
-            limit: 10,
-          }),
-        enabled: !!companyId,
+            take: 10,
+          });
+          if (users) {
+            sortUsersByCompanyOwnerThenName(users);
+            return users;
+          } else return [];
+        },
+        enabled: !!companyCode,
       },
       {
-        queryKey: QueryKeys.limitKudos(limit),
-        queryFn: async () => await getCompanyKudos({ companyId, limit }),
+        queryKey: QueryKeys.limitKudos(take),
+        queryFn: async () => await getCompanyKudos({ companyCode, take }),
       },
     ],
   });

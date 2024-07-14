@@ -1,5 +1,5 @@
 import { useAuth } from '@/hooks/useAuth';
-import { Comment, CommentLike, UserLike } from '@/types';
+import { Comment, CommentLike, KudoLike } from '@/types';
 import { Button } from '../ui/button';
 import KudoLikeButton from '../kudos-card/kudo-like-button';
 import CommentLikeButton from './comment-like-button';
@@ -19,8 +19,8 @@ export default function LikeReplyButtons({
   const kudo = useSingleKudoContext();
 
   function isLiked() {
-    if (type === 'kudo' && kudo && Array.isArray(kudo.userLikes) && currentUser) {
-      return kudo.userLikes.some((userLike) => userLike.userId === currentUser.userId);
+    if (type === 'kudo' && kudo && Array.isArray(kudo.kudoLikes) && currentUser) {
+      return kudo.kudoLikes.some((kudoLike) => kudoLike.userId === currentUser.userId);
     }
     if (type === 'comment' && comment && Array.isArray(comment.commentLikes) && currentUser) {
       return comment.commentLikes.some((commentLike) => commentLike.userId === currentUser.userId);
@@ -43,9 +43,9 @@ export default function LikeReplyButtons({
             isLiked={isLiked()}
             kudoId={kudo?.id as string}
             userId={currentUser?.userId as string}
-            companyId={currentUser?.companyId as string}
+            companyCode={currentUser?.companyCode as string}
             queryKey={QueryKeys.singleKudo(kudo!.id as string)}
-            userLikes={kudo?.userLikes as UserLike[]}
+            kudoLikes={kudo?.kudoLikes as KudoLike[]}
           />
         ) : (
           <CommentLikeButton

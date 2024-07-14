@@ -9,7 +9,7 @@ const placeholderKudo = {
   id: '1',
   comments: [],
   likes: 0,
-  userLikes: [],
+  kudoLikes: [],
   receiver: {
     userId: '2',
     firstName: 'Place',

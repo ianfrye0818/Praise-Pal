@@ -13,7 +13,7 @@ export default function useGetCompanyKudos(
       const kudos = await getCompanyKudos(queryParams);
       return kudos;
     },
-    enabled: !!queryParams.companyId,
+    enabled: !!queryParams.companyCode,
   });
 
   return query;

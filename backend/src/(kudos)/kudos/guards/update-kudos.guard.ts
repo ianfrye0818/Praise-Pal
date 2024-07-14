@@ -18,11 +18,11 @@ export class EditKudosGuard implements CanActivate {
 
     if (jwtUser.role === Role.SUPER_ADMIN) return true;
 
-    const companyId = request.params.companyId || request.query.companyId;
+    const companyCode = request.params.companyCode || request.query.companyCode;
 
     if (
       (jwtUser.role === Role.ADMIN || jwtUser.role === Role.COMPANY_OWNER) &&
-      jwtUser.companyId === companyId
+      jwtUser.companyCode === companyCode
     ) {
       return true;
     }

@@ -22,7 +22,7 @@ export default function EditCommentForm({
   const { user: currentUser } = useAuth().state;
   const kudo = useSingleKudoContext();
   const { mutateAsync: updateComment } = useUpdateComment({
-    companyId: currentUser?.companyId as string,
+    companyCode: currentUser?.companyCode as string,
     commentQueryKey: QueryKeys.comments,
     kudoQueryKey: QueryKeys.singleKudo(kudo.id),
   });

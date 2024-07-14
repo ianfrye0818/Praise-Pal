@@ -17,8 +17,8 @@ export default function SingleKudosPage() {
   const senderDisplayName = getUserDisplayName(sender);
   const receiverDisplayName = getUserDisplayName(receiver);
   const usersKudo = kudo.sender.userId === currentUser?.userId;
-  const isLiked = kudo.userLikes
-    ? kudo.userLikes.some((userLike) => userLike.userId === currentUser?.userId)
+  const isLiked = kudo.kudoLikes
+    ? kudo.kudoLikes.some((kudoLike) => kudoLike.userId === currentUser?.userId)
     : false;
 
   return (
@@ -40,9 +40,9 @@ export default function SingleKudosPage() {
                 isLiked={isLiked}
                 kudoId={kudo?.id as string}
                 userId={currentUser?.userId as string}
-                companyId={currentUser?.companyId as string}
+                companyCode={currentUser?.companyCode as string}
                 queryKey={QueryKeys.singleKudo(kudo.id)}
-                userLikes={kudo.userLikes}
+                kudoLikes={kudo.kudoLikes}
               />
               <p className='text-sm text-gray-500'>{kudo.likes}</p>
             </div>

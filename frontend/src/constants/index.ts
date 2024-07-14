@@ -83,8 +83,8 @@ export const SIGN_IN_FORM_DEFAULT_VALUES = {
   password: '',
 };
 
-export const ADD_KUDOS_DIALOG_FORM_DEFAULT_VALUES = (senderId: string, companyId: string) => {
-  return { title: '', message: '', isAnonymous: false, receiverId: '', senderId, companyId };
+export const ADD_KUDOS_DIALOG_FORM_DEFAULT_VALUES = (senderId: string, companyCode: string) => {
+  return { title: '', message: '', isAnonymous: false, receiverId: '', senderId, companyCode };
 };
 
 export function EDIT_KUDOS_DIALOG_FORM_DEFAULT_VALUES(kudo: TKudos) {
@@ -93,7 +93,7 @@ export function EDIT_KUDOS_DIALOG_FORM_DEFAULT_VALUES(kudo: TKudos) {
     message: kudo.message,
     isHidden: kudo.isHidden,
     id: kudo.id,
-    companyId: kudo.companyId,
+    companyCode: kudo.companyCode,
   };
 }
 

@@ -4,20 +4,18 @@ import {
   InternalServerErrorException,
 } from '@nestjs/common';
 import { PrismaService } from '../../core-services/prisma.service';
-import { KudosService } from '../../kudos/kudos.service';
-import { UserNotificationsService } from '../user-notifications/user-notifications.service';
+import { KudosService } from '../kudos/kudos.service';
 
 @Injectable()
-export class UserLikesService {
+export class KudoLikesService {
   constructor(
     private prismaService: PrismaService,
     private kudosService: KudosService,
-    private userNotificationsService: UserNotificationsService,
   ) {}
 
   async createLike({ userId, kudosId }: { userId: string; kudosId: string }) {
     try {
-      await this.prismaService.user_Like.create({
+      await this.prismaService.kudo_Like.create({
         data: {
           kudosId,
           userId,
@@ -36,7 +34,7 @@ export class UserLikesService {
 
   async deleteLike({ kudosId, userId }: { kudosId: string; userId: string }) {
     try {
-      await this.prismaService.user_Like.delete({
+      await this.prismaService.kudo_Like.delete({
         where: {
           userId_kudosId: {
             kudosId,

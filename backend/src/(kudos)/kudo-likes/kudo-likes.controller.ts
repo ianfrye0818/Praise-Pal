@@ -6,18 +6,18 @@ import {
   Request,
   UseGuards,
 } from '@nestjs/common';
-import { UserLikesService } from './user-likes.service';
+import { KudoLikesService } from './kudo-likes.service';
 import { JwtGuard } from '../../auth/guards/jwt.guard';
 import { ClientUser } from '../../types';
 
 @UseGuards(JwtGuard)
 @Controller('likes')
-export class UserLikesController {
-  constructor(private userLikesService: UserLikesService) {}
+export class KudoLikesController {
+  constructor(private kudoLikesService: KudoLikesService) {}
 
   @Post(':id')
   async updateLike(@Param('id') kudosId: string, @Request() req: any) {
-    return await this.userLikesService.createLike({
+    return await this.kudoLikesService.createLike({
       kudosId,
       userId: (req.user as ClientUser).userId,
     });
@@ -25,7 +25,7 @@ export class UserLikesController {
 
   @Delete(':id')
   async deleteLike(@Param('id') kudosId: string, @Request() req: any) {
-    return await this.userLikesService.deleteLike({
+    return await this.kudoLikesService.deleteLike({
       kudosId,
       userId: (req.user as ClientUser).userId,
     });

@@ -40,5 +40,6 @@ export class updateUserDTO extends PartialType(createUserDTO) {
 
   @IsOptional()
   @IsDate()
+  @Transform(({ value }: { value: string }) => new Date(value))
   deletedAt?: Date;
 }

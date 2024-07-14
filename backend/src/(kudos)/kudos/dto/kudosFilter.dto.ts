@@ -27,7 +27,7 @@ export class KudosFilterDTO {
 
   @IsOptional()
   @IsString()
-  companyId?: string;
+  companyCode?: string;
 
   @IsOptional()
   @IsString()

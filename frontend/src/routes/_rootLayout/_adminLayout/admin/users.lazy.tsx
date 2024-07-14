@@ -12,7 +12,7 @@ export const Route = createLazyFileRoute('/_rootLayout/_adminLayout/admin/users'
 function UsersAdminPage() {
   const { user } = useAuth().state;
   const { data: users, isLoading } = useGetCompanyUsers({
-    companyId: user?.companyId as string,
+    companyCode: user?.companyCode as string,
     roles: [Role.USER, Role.ADMIN, Role.COMPANY_OWNER],
   });
 

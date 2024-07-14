@@ -43,7 +43,7 @@ export default function CommentComponent(comment: Comment) {
             {canSeeDropDown && (
               <CommentDropDownMenu
                 commentId={comment.id}
-                companyId={currentUser?.companyId as string}
+                companyCode={currentUser?.companyCode as string}
                 parentId={comment.parentId}
                 setEditMode={setEditMode}
                 canEdit={canEdit}

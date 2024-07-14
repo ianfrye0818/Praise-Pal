@@ -23,11 +23,16 @@ export const ApiRoutes = {
   users: {
     baseUrl: '/user',
     findAll: (query?: UserQueryParams) => `/user?${generateQueryString(query)}`,
-    findOneById: (companyId: string, userId: string) => `/users/${userId}?companyId=${companyId}`,
-    updateUserById: (companyId: string, userId: string) => `/user/${userId}?companyId=${companyId}`,
-    deleteUserById: (companyId: string, userId: string) => `/user/${userId}?companyId=${companyId}`,
+    findOneById: (companyCode: string, userId: string) =>
+      `/users/${userId}?companyCode=${companyCode}`,
+    updateUserById: (companyCode: string, userId: string) =>
+      `/user/${userId}?companyCode=${companyCode}`,
+    deleteUserById: (companyCode: string, userId: string) =>
+      `/user/${userId}?companyCode=${companyCode}`,
+    restoreUserById: (companyCode: string, userId: string) =>
+      `/user/${userId}/restore?companyCode=${companyCode}`,
   },
-  userLikes: {
+  kudoLikes: {
     baseUrl: '/likes',
     createLike: (kudosId: string) => `/likes/${kudosId}`,
     deleteLike: (kudosId: string) => `/likes/${kudosId}`,
@@ -35,23 +40,24 @@ export const ApiRoutes = {
   kudos: {
     baseUrl: '/kudos',
     findAll: (query: KudosQueryParams) => `/kudos?${generateQueryString(query)}`,
-    findOneById: (companyId: string, kudosId: string) => `/kudos/${kudosId}?companyId=${companyId}`,
-    createKudo: (companyId: string) => `/kudos?companyId=${companyId}`,
-    updateKudoById: (companyId: string, kudosId: string) =>
-      `/kudos/${kudosId}?companyId=${companyId}`,
-    deleteKudoById: (companyId: string, kudosId: string) =>
-      `/kudos/${kudosId}?companyId=${companyId}`,
+    findOneById: (companyCode: string, kudosId: string) =>
+      `/kudos/${kudosId}?companyCode=${companyCode}`,
+    createKudo: (companyCode: string) => `/kudos?companyCode=${companyCode}`,
+    updateKudoById: (companyCode: string, kudosId: string) =>
+      `/kudos/${kudosId}?companyCode=${companyCode}`,
+    deleteKudoById: (companyCode: string, kudosId: string) =>
+      `/kudos/${kudosId}?companyCode=${companyCode}`,
   },
   comments: {
     baseUrl: '/comments',
     findAll: (query?: CommentQueryParams) => `/comments?${generateQueryString(query)}`,
-    findOneById: (companyId: string, commentId: string) =>
-      `/comments/${commentId}?companyId=${companyId}`,
-    createComment: (companyId: string) => `/comments?companyId=${companyId}`,
-    updateCommentById: (companyId: string, commentId: string) =>
-      `/comments/${commentId}?companyId=${companyId}`,
-    deleteCommentById: (companyId: string, commentId: string) =>
-      `/comments/${commentId}?companyId=${companyId}`,
+    findOneById: (companyCode: string, commentId: string) =>
+      `/comments/${commentId}?companyCode=${companyCode}`,
+    createComment: (companyCode: string) => `/comments?companyCode=${companyCode}`,
+    updateCommentById: (companyCode: string, commentId: string) =>
+      `/comments/${commentId}?companyCode=${companyCode}`,
+    deleteCommentById: (companyCode: string, commentId: string) =>
+      `/comments/${commentId}?companyCode=${companyCode}`,
   },
   commentLikes: {
     base: '/comment-likes',
@@ -61,11 +67,11 @@ export const ApiRoutes = {
   company: {
     baseUrl: '/company',
     findAll: (query?: CompanyQueryParams) => `/company?${generateQueryString(query)}`,
-    findOneById: (companyId: string) => `/company/${companyId}`,
-    updateCompanyById: (companyId: string) => `/company/${companyId}`,
+    findOneById: (companyCode: string) => `/company/${companyCode}`,
+    updateCompanyById: (companyCode: string) => `/company/${companyCode}`,
     // will be added to SUPERADMIN panel
     // createCompany: () => '/company',
-    // deleteCompanyById: (companyId: string) => `/company/${companyId}`,
+    // deleteCompanyById: (companyCode: string) => `/company/${companyCode}`,
   },
   userNotifications: {
     baseUrl: '/user-notifications',

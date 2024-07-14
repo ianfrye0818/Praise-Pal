@@ -38,6 +38,11 @@ export class UserController {
     return await this.userService.updateUserById(id, data);
   }
 
+  @Patch(':id/restore')
+  async restoreUserById(@Param('id') id: string) {
+    return await this.userService.restoreUserById(id);
+  }
+
   @UseGuards(UpdateUserGuard)
   @Delete(':id')
   async deleteUserById(@Param('id') id: string) {

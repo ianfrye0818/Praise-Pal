@@ -22,7 +22,7 @@ function Component() {
   const { errorToast } = useErrorToast();
 
   const { data: kudo, isLoading } = useGetSingleKudo({
-    companyId: currentUser?.companyId as string,
+    companyCode: currentUser?.companyCode as string,
     kudoId: kudosId,
     queryKey: QueryKeys.singleKudo(kudosId),
   });

@@ -29,9 +29,9 @@ export class CompanyController {
   }
 
   @UseGuards(CompanyGuard)
-  @Get(':companyId')
-  async findOneById(@Param('companyId') companyId: string) {
-    return await this.companyService.findOneById(companyId);
+  @Get(':companyCode')
+  async findOneById(@Param('companyCode') companyCode: string) {
+    return await this.companyService.findOneById(companyCode);
   }
 
   @UseGuards(SuperAdminGuard)
@@ -41,17 +41,17 @@ export class CompanyController {
   }
 
   @UseGuards(CompanyOwnerGuard)
-  @Patch(':companyId')
+  @Patch(':companyCode')
   async updateCompanyById(
-    @Param('companyId') companyId: string,
+    @Param('companyCode') companyCode: string,
     @Body() data: UpdateCompanyDTO,
   ) {
-    return await this.companyService.updateCompany(companyId, data);
+    return await this.companyService.updateCompany(companyCode, data);
   }
 
   @UseGuards(SuperAdminGuard)
-  @Delete(':companyId')
-  async deleteCompanyById(@Param('companyId') companyId: string) {
-    return await this.companyService.softDeleteCompany(companyId);
+  @Delete(':companyCode')
+  async deleteCompanyById(@Param('companyCode') companyCode: string) {
+    return await this.companyService.softDeleteCompany(companyCode);
   }
 }

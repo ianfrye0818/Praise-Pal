@@ -3,11 +3,14 @@ import { ActionType, Role } from '@prisma/client';
 export interface ClientUser {
   email: string;
   userId: string;
-  companyId: string;
+  companyCode: string;
   role: Role;
   firstName: string;
   lastName: string;
   isActive: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+  deletedAt: Date;
 }
 export interface ClientComment {
   id: string;

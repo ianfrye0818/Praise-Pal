@@ -22,13 +22,13 @@ export class UpdateUserGuard implements CanActivate {
       return true;
     }
 
-    const companyId = request.params.companyId || request.query.companyId;
+    const companyCode = request.params.companyCode || request.query.companyCode;
     const userId = request.params.id || request.query.userId;
 
     // Company owner can update anything in their company except their own role
     if (
       jwtUser.role === Role.COMPANY_OWNER &&
-      jwtUser.companyId === companyId
+      jwtUser.companyCode === companyCode
     ) {
       if (jwtUser.userId !== userId) {
         return true;
@@ -45,7 +45,7 @@ export class UpdateUserGuard implements CanActivate {
     }
 
     // Company admin can update user info except roles
-    if (jwtUser.role === Role.ADMIN && jwtUser.companyId === companyId) {
+    if (jwtUser.role === Role.ADMIN && jwtUser.companyCode === companyCode) {
       return true;
     }
 

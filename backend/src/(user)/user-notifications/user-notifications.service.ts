@@ -13,7 +13,7 @@ export class UserNotificationsService {
   ) {}
 
   async getNotifications(userId: string, filter: FilterUserNotificationsDTO) {
-    const { limit, offset, sort, actionTypes, ...otherFilters } = filter;
+    const { take, skip, sort, actionTypes, ...otherFilters } = filter;
 
     return this.prismaservice.userNotifications.findMany({
       where: {
@@ -23,8 +23,8 @@ export class UserNotificationsService {
         ...otherFilters,
       },
       orderBy: { createdAt: sort || 'desc' },
-      take: limit,
-      skip: offset,
+      take,
+      skip: skip || 0,
       select: {
         kudosId: true,
         actionType: true,

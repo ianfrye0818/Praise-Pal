@@ -28,10 +28,10 @@ export class CompanyService {
     }
   }
 
-  async findOneById(id: string) {
+  async findOneById(companyCode: string) {
     try {
       const company = await this.prismaService.company.findUnique({
-        where: { id },
+        where: { companyCode },
       });
 
       if (company === null) throw new NotFoundException('Company not found');
@@ -88,10 +88,13 @@ export class CompanyService {
     return this.createCompanyRecursive(data, retries);
   }
 
-  async updateCompany(id: string, data: UpdateCompanyDTO): Promise<Company> {
+  async updateCompany(
+    companyCode: string,
+    data: UpdateCompanyDTO,
+  ): Promise<Company> {
     try {
       const company = await this.prismaService.company.update({
-        where: { id },
+        where: { companyCode },
         data,
       });
       return company;
@@ -104,10 +107,10 @@ export class CompanyService {
     }
   }
 
-  async softDeleteCompany(id: string) {
+  async softDeleteCompany(companyCode: string) {
     try {
       return await this.prismaService.company.update({
-        where: { id },
+        where: { companyCode },
         data: { deletedAt: new Date() },
       });
     } catch (error) {

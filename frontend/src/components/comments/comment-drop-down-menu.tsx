@@ -11,7 +11,7 @@ import { QueryKeys } from '@/constants';
 import { useSingleKudoContext } from '@/hooks/useSingleKudoContext';
 
 interface CommentDropDownMenuProps {
-  companyId: string;
+  companyCode: string;
   commentId: string;
   parentId?: string;
   setEditMode: React.Dispatch<React.SetStateAction<boolean>>;
@@ -21,7 +21,7 @@ interface CommentDropDownMenuProps {
 
 export default function CommentDropDownMenu({
   commentId,
-  companyId,
+  companyCode,
   parentId,
   setEditMode,
   children,
@@ -30,7 +30,7 @@ export default function CommentDropDownMenu({
   const kudo = useSingleKudoContext();
   const [open, setOpen] = useState(false);
   const { mutateAsync: deleteComment } = useDeleteComment({
-    companyId,
+    companyCode,
     commentQueryKey: QueryKeys.comments,
     kudosQueryKey: QueryKeys.singleKudo(kudo.id),
   });

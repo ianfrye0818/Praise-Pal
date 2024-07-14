@@ -68,7 +68,7 @@ export default function KudosTable({ kudos, showKudosNumber = true }: UsersTable
                       checked={kudo.isHidden}
                       onCheckedChange={async (isHidden: boolean) =>
                         await showHideKudo({
-                          companyId: currentUser?.companyId as string,
+                          companyCode: currentUser?.companyCode as string,
                           payload: {
                             isHidden,
                             id: kudo.id,

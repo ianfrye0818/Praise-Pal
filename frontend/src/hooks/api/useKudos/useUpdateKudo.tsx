@@ -11,8 +11,14 @@ export default function useUpdateKudo(queryKey: QueryKey = QueryKeys.allKudos) {
   const { errorToast } = useErrorToast();
 
   const mutation = useMutation({
-    mutationFn: async ({ companyId, payload }: { companyId: string; payload: UpdateKudoProps }) => {
-      await patchUpdateKudo(companyId, payload);
+    mutationFn: async ({
+      companyCode,
+      payload,
+    }: {
+      companyCode: string;
+      payload: UpdateKudoProps;
+    }) => {
+      await patchUpdateKudo(companyCode, payload);
     },
     onMutate: async ({ payload }) => {
       await queryClient.cancelQueries(KUDOS_QUERY_OPTIONS);

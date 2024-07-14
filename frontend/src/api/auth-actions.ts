@@ -25,8 +25,8 @@ const AuthActions = {
   register: async (signUpPaylaod: SignUpFormProps) => {
     return await postRegisterUser(signUpPaylaod);
   },
-  update: async (companyId: string, userId: string, updateUserPayload: UpdateUserProps) => {
-    return await patchUpdateUser(companyId, userId, updateUserPayload);
+  update: async (companyCode: string, userId: string, updateUserPayload: UpdateUserProps) => {
+    return await patchUpdateUser(companyCode, userId, updateUserPayload);
   },
   logout: async () => {
     const authTokens = getAuthTokens();
@@ -89,13 +89,13 @@ export const logout = async (dispatch: Dispatch<AuthAction>) => {
 
 export async function updateCurrentUser(
   dispatch: Dispatch<AuthAction>,
-  companyId: string,
+  companyCode: string,
   userId: string,
   updateUserPayload: UpdateUserProps
 ) {
   dispatch({ type: ActionType.UPDATE_REQUEST });
   try {
-    const data = await AuthActions.update(companyId, userId, updateUserPayload);
+    const data = await AuthActions.update(companyCode, userId, updateUserPayload);
     if (!data) throw new Error('Error updating user');
     dispatch({
       type: ActionType.UPDATE_SUCCESS,

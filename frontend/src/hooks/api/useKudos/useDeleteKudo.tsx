@@ -6,7 +6,7 @@ import { TKudos } from '@/types';
 import { QueryKey, useMutation, useQueryClient } from '@tanstack/react-query';
 
 interface DeleteKudoProps {
-  companyId: string;
+  companyCode: string;
   kudoId: string;
 }
 
@@ -17,8 +17,8 @@ export default function useDeleteKudo(queryKey: QueryKey = QueryKeys.allKudos) {
   const { errorToast } = useErrorToast();
   const { successToast } = useSuccessToast();
   const mutation = useMutation({
-    mutationFn: async ({ companyId, kudoId }: DeleteKudoProps) =>
-      await deleteSingleKudo(companyId, kudoId),
+    mutationFn: async ({ companyCode, kudoId }: DeleteKudoProps) =>
+      await deleteSingleKudo(companyCode, kudoId),
     onMutate: async ({ kudoId }) => {
       await queryClient.cancelQueries(KUDOS_QUERY_OPTIONS);
       const previousData = queryClient.getQueriesData(KUDOS_QUERY_OPTIONS);

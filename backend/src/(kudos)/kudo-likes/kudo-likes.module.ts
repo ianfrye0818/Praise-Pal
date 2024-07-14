@@ -1,25 +1,25 @@
 import { Module } from '@nestjs/common';
-import { UserLikesController } from './user-likes.controller';
-import { UserLikesService } from './user-likes.service';
-import { KudosService } from '../../kudos/kudos.service';
+import { KudoLikesController } from './kudo-likes.controller';
+import { KudoLikesService } from './kudo-likes.service';
 import { PrismaService } from '../../core-services/prisma.service';
 import { EmailService } from '../../core-services/email.service';
-import { UserService } from '../user/user.service';
+import { UserService } from '../../(user)/user/user.service';
 import { SkipThrottle } from '@nestjs/throttler';
-import { UserNotificationsModule } from '../user-notifications/user-notifications.module';
+import { UserNotificationsModule } from '../../(user)/user-notifications/user-notifications.module';
 import { CommentsService } from 'src/(comments)/comments/comments.service';
+import { KudosService } from '../kudos/kudos.service';
 @SkipThrottle()
 @Module({
   imports: [UserNotificationsModule],
-  controllers: [UserLikesController],
+  controllers: [KudoLikesController],
   providers: [
-    UserLikesService,
+    KudoLikesService,
     KudosService,
     PrismaService,
     EmailService,
     UserService,
     CommentsService,
   ],
-  exports: [UserLikesService],
+  exports: [KudoLikesService],
 })
 export class UserLikesModule {}

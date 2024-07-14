@@ -1,6 +1,7 @@
 import { Role, User } from '@/types';
 import { type ClassValue, clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
+import qs from 'query-string';
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -14,7 +15,9 @@ export const createRefreshHeader = (refreshToken: string) => ({
 
 export function generateQueryString(query?: any) {
   if (!query || isObjEmpty(query)) return '';
+
   return Object.keys(query)
+    .filter((key) => query[key] !== undefined)
     .map((key) => `${key}=${query[key]}`)
     .join('&');
 }
@@ -51,6 +54,8 @@ export function timeAgo(date: string) {
 
 export function capitalizeString(str: string) {
   try {
+    str = str.replace(/[^a-zA-Z0-9\s]/g, ' ');
+
     return str
       .trim()
       .split(' ')
@@ -70,6 +75,48 @@ export function getRoleDropDownOptions() {
     }));
 }
 
+interface UrlQueryParams {
+  params: string;
+  key: string;
+  value: string;
+  resetPage?: boolean;
+}
+export function formUrlQuery({ params, key, value, resetPage = true }: UrlQueryParams) {
+  const currentUrl = qs.parse(params);
+
+  currentUrl[key] = value;
+
+  if (resetPage) {
+    currentUrl.page = '1';
+  }
+
+  return qs.stringifyUrl(
+    {
+      url: window.location.pathname,
+      query: currentUrl,
+    },
+    { skipNull: true }
+  );
+}
+
 export function getUserDisplayName(user: User) {
   return user.firstName && user.lastName ? `${user.firstName} ${user.lastName}` : '';
+}
+
+export function sortUsersByCompanyOwnerThenName(users: User[]) {
+  users.sort((a, b) => {
+    if (a.role === Role.COMPANY_OWNER && b.role !== Role.COMPANY_OWNER) {
+      return -1;
+    }
+    if (a.role !== Role.COMPANY_OWNER && b.role === Role.COMPANY_OWNER) {
+      return 1;
+    }
+    if (a.firstName < b.firstName) {
+      return -1;
+    }
+    if (a.firstName > b.firstName) {
+      return 1;
+    }
+    return 0;
+  });
 }

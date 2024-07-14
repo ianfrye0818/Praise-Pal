@@ -13,7 +13,7 @@ function KudosAdminPage() {
   const { user } = useAuth().state;
   const { data: kudos, isLoading } = useGetCompanyKudos(
     {
-      companyId: user?.companyId as string,
+      companyCode: user?.companyCode as string,
     },
     QueryKeys.allKudos
   );

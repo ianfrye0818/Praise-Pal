@@ -4,6 +4,7 @@ import UsersTable from './tables/user-table';
 import { User } from '@/types';
 
 export default function UsersDashboardCard({ users }: { users: User[] }) {
+  console.log(users);
   return (
     <div className='w-full'>
       <div className='flex items-center'>

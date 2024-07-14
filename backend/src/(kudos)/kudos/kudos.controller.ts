@@ -8,16 +8,14 @@ import {
   Patch,
   Delete,
   Query,
-  Req,
 } from '@nestjs/common';
-import { JwtGuard } from '../auth/guards/jwt.guard';
 import { KudosService } from './kudos.service';
-import { CompanyGuard } from '../core-guards/company.guard';
 import { createKudosDTO, UpdateKudosDTO } from './dto/createKudos.dto';
 import { KudosFilterDTO } from './dto/kudosFilter.dto';
 import { SkipThrottle } from '@nestjs/throttler';
 import { EditKudosGuard } from './guards/update-kudos.guard';
-import { Request } from 'express';
+import { JwtGuard } from 'src/auth/guards/jwt.guard';
+import { CompanyGuard } from 'src/core-guards/company.guard';
 
 @SkipThrottle()
 @UseGuards(JwtGuard)
@@ -28,7 +26,7 @@ export class KudosController {
   // @UseGuards(SuperAdminGuard)
   @UseGuards(CompanyGuard)
   @Get()
-  async findAll(@Query() query: KudosFilterDTO, @Req() req: Request) {
+  async findAll(@Query() query: KudosFilterDTO) {
     console.log('requested');
     const kudos = await this.kudosService.getAllKudos(query);
 

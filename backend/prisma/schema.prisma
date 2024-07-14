@@ -21,8 +21,8 @@ model User {
   email         String              @unique
   password      String
   role          Role                @default(USER)
-  companyId     String
-  company       Company             @relation(fields: [companyId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  companyCode   String
+  company       Company             @relation(fields: [companyCode], references: [companyCode], onDelete: Cascade, onUpdate: Cascade)
   notifications UserNotifications[] @relation("user")
   newUser       UserNotifications[] @relation("newUser")
   settings      UserSettings[]
@@ -31,7 +31,7 @@ model User {
   deletedAt     DateTime?
   sentKudos     Kudos[]             @relation(name: "SentKudos")
   receivedKudos Kudos[]             @relation(name: "ReceivedKudos")
-  userLikes     User_Like[]
+  kudoLikes     Kudo_Like[]
   refreshTokens RefreshToken[]
   comments      Comment[]
   commentLkes   Comment_Like[]
@@ -39,14 +39,13 @@ model User {
 }
 
 model Company {
-  id          String    @id @default(cuid())
+  companyCode String    @id
   name        String
   address     String?
   city        String?
   state       String?
   zip         String?
   phone       String?
-  companyCode String    @unique
   users       User[]
   kudos       Kudos[]
   createdAt   DateTime  @default(now())
@@ -58,7 +57,7 @@ model Kudos {
   id                String              @id @default(cuid())
   senderId          String
   receiverId        String
-  companyId         String
+  companyCode       String
   message           String
   title             String?
   createdAt         DateTime            @default(now())
@@ -70,8 +69,8 @@ model Kudos {
   comments          Comment[]
   sender            User                @relation(fields: [senderId], references: [userId], name: "SentKudos")
   receiver          User                @relation(fields: [receiverId], references: [userId], name: "ReceivedKudos")
-  company           Company             @relation(fields: [companyId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  userLikes         User_Like[]
+  company           Company             @relation(fields: [companyCode], references: [companyCode], onDelete: Cascade, onUpdate: Cascade)
+  kudoLikes         Kudo_Like[]
   userNotifications UserNotifications[]
 }
 
@@ -93,7 +92,7 @@ model Comment {
   usernotifications UserNotifications[]
 }
 
-model User_Like {
+model Kudo_Like {
   userId  String
   kudosId String
   likedAt DateTime @default(now())
@@ -120,8 +119,8 @@ model UserNotifications {
   user       User       @relation(fields: [userId], references: [userId], name: "user")
   actionType ActionType
   message    String
-  newUserId String?
-  newUser   User?       @relation(fields: [newUserId], references: [userId], name: "newUser")
+  newUserId  String?
+  newUser    User?      @relation(fields: [newUserId], references: [userId], name: "newUser")
   kudosId    String?
   commentId  String?
   comment    Comment?   @relation(fields: [commentId], references: [id], onDelete: Cascade)

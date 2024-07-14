@@ -8,7 +8,7 @@ import { PrismaService } from '../../core-services/prisma.service';
 import { createUserDTO, updateUserDTO } from './dto/createUser.dto';
 import * as bcrypt from 'bcryptjs';
 import { Cron } from '@nestjs/schedule';
-import { ActionType, Prisma, Role, User } from '@prisma/client';
+import { ActionType, Prisma, Role } from '@prisma/client';
 import { EmailService } from '../../core-services/email.service';
 import { generateClientSideUserProperties } from '../../utils';
 import { ClientUser } from '../../types';
@@ -23,24 +23,26 @@ export class UserService {
     private notificationService: UserNotificationsService,
   ) {}
 
-  async findAllUsers(filter: FilterUserDTO): Promise<ClientUser[]> {
-    const { limit, offset, sort, roles, cursor, ...otherFilters } = filter;
+  async findAllUsers(filter: FilterUserDTO) {
+    const { take, skip, sort, roles, cursor, ...otherFilters } = filter;
     try {
+      const companyOwner = await this.prismaService.user.findFirst({
+        where: { role: Role.COMPANY_OWNER },
+      });
       const users = await this.prismaService.user.findMany({
         where: {
-          deletedAt: filter.deletedAt || null,
           role: { in: roles },
           ...otherFilters,
         },
-        orderBy: [{ createdAt: sort || 'asc' }, { userId: 'asc' }],
-        take: limit,
-        skip: offset ? offset : 0,
+        orderBy: [{ lastName: sort || 'asc' }, { userId: 'asc' }],
+        take,
+        skip: skip || 0,
         cursor: cursor ? { userId: cursor } : undefined,
       });
-      const clientUsers = users.map((user) =>
-        generateClientSideUserProperties(user),
-      );
-
+      const clientUsers = [
+        companyOwner,
+        ...users.map((user) => generateClientSideUserProperties(user)),
+      ];
       return clientUsers;
     } catch (error) {
       console.error(error);
@@ -49,12 +51,12 @@ export class UserService {
   }
 
   async findAllByCompany(
-    companyId: string,
+    companyCode: string,
     deletedUsers?: boolean,
   ): Promise<ClientUser[]> {
     try {
       const users = await this.findAllUsers({
-        companyId,
+        companyCode,
         deletedAt: deletedUsers ? new Date() : null,
       });
       return users;
@@ -64,7 +66,7 @@ export class UserService {
     }
   }
 
-  async findOneById(userId: string): Promise<ClientUser> {
+  async findOneById(userId: string) {
     try {
       const user = await this.prismaService.user.findUnique({
         where: { userId },
@@ -82,7 +84,7 @@ export class UserService {
     }
   }
 
-  async findOneByEmail(email: string): Promise<User> {
+  async findOneByEmail(email: string) {
     try {
       return await this.prismaService.user.findUnique({ where: { email } });
     } catch (error) {
@@ -108,7 +110,7 @@ export class UserService {
     const newUser = await this.prismaService.user.create({
       data: {
         ...userData,
-        companyId: company.id,
+        companyCode,
         password: hashedPassword,
         email: formattedEmail,
       },
@@ -134,10 +136,7 @@ export class UserService {
     throw new HttpException('Something went wrong', 500);
   }
 
-  async updateUserById(
-    userId: string,
-    data: updateUserDTO,
-  ): Promise<ClientUser> {
+  async updateUserById(userId: string, data: updateUserDTO) {
     try {
       await this.findOneById(userId);
 
@@ -160,10 +159,7 @@ export class UserService {
     }
   }
 
-  async updateByEmail(
-    email: string,
-    data: Prisma.UserUpdateInput,
-  ): Promise<ClientUser> {
+  async updateByEmail(email: string, data: Prisma.UserUpdateInput) {
     if (data.password) {
       data.password = await bcrypt.hash(data.password as string, 10);
     }
@@ -176,8 +172,12 @@ export class UserService {
     return generateClientSideUserProperties(updatedUser);
   }
 
-  async softDeleteUserById(id: string): Promise<ClientUser> {
+  async softDeleteUserById(id: string) {
     return this.updateUserById(id, { deletedAt: new Date() });
+  }
+
+  async restoreUserById(id: string) {
+    return this.updateUserById(id, { deletedAt: null });
   }
 
   @Cron('0 0 * * *') // Run every night at midnight

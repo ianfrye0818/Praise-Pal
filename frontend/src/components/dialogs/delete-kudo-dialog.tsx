@@ -81,7 +81,7 @@ export function DeleteKudoDialog({ setMenuOpen, kudo, children, queryKey }: Dial
               disabled={isPending}
               className='bg-red-500 hover:bg-red-600'
               onClick={async () => {
-                deleteKudo({ kudoId: kudo.id, companyId: currentUser?.companyId as string });
+                deleteKudo({ kudoId: kudo.id, companyCode: currentUser?.companyCode as string });
                 if (pathname.startsWith('/kudos')) {
                   navigate({ to: '/' });
                 }

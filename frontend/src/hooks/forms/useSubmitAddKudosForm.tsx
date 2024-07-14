@@ -17,7 +17,7 @@ export default function useSubmitAddKudosForm(
       await mutateAsync({
         ...data,
         senderId: user.userId,
-        companyId: user.companyId,
+        companyCode: user.companyCode,
       });
       // setOpen(false);
     } catch (error) {

@@ -3,31 +3,30 @@ import { LucideProps } from 'lucide-react';
 import { ForwardRefExoticComponent, RefAttributes } from 'react';
 import { Control, FieldPath } from 'react-hook-form';
 import { AxiosRequestConfig } from 'axios';
+import { addUserSchema } from '@/zodSchemas';
 
 export interface SignInFormProps {
   email: string;
   password: string;
 }
 
-export interface SignUpFormProps extends SignInFormProps {
-  confirmPassword: string;
-  firstName: string;
-  lastName: string;
-  companyCode: string;
-}
+export type SignUpFormProps = z.infer<typeof addUserSchema>;
 
 export interface User {
   email: string;
   userId: string;
-  companyId: string;
+  companyCode: string;
   role: Role;
   firstName: string;
   lastName: string;
-  verified: boolean;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt: string | null;
 }
 
-export type UpdateUserProps = Partial<Omit<User, 'companyId' | 'userId' | 'role'>>;
-export type AdminUpdateUserProps = Partial<Omit<User, 'companyId' | 'userId'>>;
+export type UpdateUserProps = Partial<Omit<User, 'userId'>>;
+export type AdminUpdateUserProps = Partial<Omit<User, 'companyCode' | 'userId'>>;
 
 export enum Role {
   ADMIN = 'ADMIN',
@@ -49,7 +48,7 @@ export type SidebarLink = {
 
 export type TKudos = {
   id: string;
-  companyId: string;
+  companyCode: string;
   message: string;
   title?: string;
   likes: number;
@@ -57,7 +56,7 @@ export type TKudos = {
   isHidden: boolean;
   sender: User;
   receiver: User;
-  userLikes: UserLike[];
+  kudoLikes: KudoLike[];
   comments?: Comment[];
   createdAt: string;
 };
@@ -65,7 +64,7 @@ export type TKudos = {
 export interface CreateKudoFormProps {
   senderId: string;
   receiverId: string;
-  companyId: string;
+  companyCode: string;
   message: string;
   title?: string | null;
   isAnonymous: boolean;
@@ -78,12 +77,12 @@ export interface CreateCommentFormProps {
   userId: string;
 }
 
-export type UpdateKudoProps = Partial<Omit<CreateKudoFormProps, 'senderId' | 'companyId'>> & {
+export type UpdateKudoProps = Partial<Omit<CreateKudoFormProps, 'senderId' | 'companyCode'>> & {
   id: string;
   isHidden?: boolean;
 };
 
-export interface UserLike {
+export interface KudoLike {
   kudoId: string;
   userId: string;
 }
@@ -94,14 +93,13 @@ export interface CommentLike {
 }
 
 export interface Company {
-  id: string;
+  companyCode: string;
   name: string;
   address?: string;
   city?: string;
   state?: string;
   zip?: string;
   phone?: string;
-  companyCode: string;
   users: User[];
   kudos: TKudos[];
   createdAt?: EpochTimeStamp;
@@ -110,7 +108,7 @@ export interface Company {
 }
 
 export type UpdateCompanyProps = Partial<
-  Omit<Company, 'companyCode' | 'users' | 'kudos' | 'createdAt' | 'updatedAt' | 'deletedAt'>
+  Omit<Company, 'users' | 'kudos' | 'createdAt' | 'updatedAt' | 'deletedAt'>
 >;
 
 export interface Comment {
@@ -142,16 +140,16 @@ interface QueryParams {
   deletedAt?: Date;
   createdAt?: Date;
   updatedAt?: Date;
-  limit?: number;
+  take?: number;
   sortBy?: 'ASC' | 'DESC';
-  offset?: number;
+  skip?: number;
   page?: number;
 }
 
 export interface UserQueryParams extends QueryParams {
   userId?: string;
   email?: string;
-  companyId?: string;
+  companyCode?: string;
   firstName?: string;
   lastName?: string;
   roles?: Role | Role[];
@@ -165,7 +163,7 @@ export interface KudosQueryParams extends QueryParams {
   receiverId?: string;
   message?: string;
   title?: string;
-  companyId: string;
+  companyCode: string;
   id?: string;
 }
 
@@ -178,14 +176,13 @@ export interface CommentQueryParams extends QueryParams {
 }
 
 export interface CompanyQueryParams extends QueryParams {
-  companyId?: string;
+  companyCode?: string;
   name?: string;
   address?: string;
   city?: string;
   state?: string;
   zip?: string;
   phone?: string;
-  companyCode?: string;
 }
 
 export interface UserNotificationQueryParams extends QueryParams {

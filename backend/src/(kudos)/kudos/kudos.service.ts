@@ -3,12 +3,9 @@ import {
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
-import { PrismaService } from '../core-services/prisma.service';
 import { createKudosDTO, UpdateKudosDTO } from './dto/createKudos.dto';
-import { EmailService } from '../core-services/email.service';
 import { ActionType, Kudos, Prisma } from '@prisma/client';
 import { KudosFilterDTO } from './dto/kudosFilter.dto';
-import { UserNotificationsService } from '../(user)/user-notifications/user-notifications.service';
 import {
   commentSelectOptions,
   kudoSelectOptions,
@@ -17,12 +14,13 @@ import {
 import { CommentsService } from 'src/(comments)/comments/comments.service';
 import { getDisplayName } from 'src/utils';
 import { UserService } from 'src/(user)/user/user.service';
+import { PrismaService } from 'src/core-services/prisma.service';
+import { UserNotificationsService } from 'src/(user)/user-notifications/user-notifications.service';
 
 @Injectable()
 export class KudosService {
   constructor(
     private prismaService: PrismaService,
-    private emailService: EmailService,
     private userNotificationsService: UserNotificationsService,
     private commentService: CommentsService,
     private userService: UserService,

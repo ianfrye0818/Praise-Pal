@@ -7,7 +7,7 @@ import { QueryKey, useMutation, useQueryClient } from '@tanstack/react-query';
 
 interface UseGetUserProps {
   userId: string;
-  companyId: string;
+  companyCode: string;
 }
 
 export default function useDeleteCompanyUser({
@@ -18,17 +18,17 @@ export default function useDeleteCompanyUser({
   const { errorToast } = useErrorToast();
   const { successToast } = useSuccessToast();
   const mutation = useMutation({
-    mutationFn: async ({ companyId, userId }: UseGetUserProps) =>
-      await deleteSingleUser(companyId, userId),
-    //optimistic update
+    mutationFn: async ({ companyCode, userId }: UseGetUserProps) =>
+      await deleteSingleUser(companyCode, userId),
+
     onMutate: async (newData: Partial<User>) => {
       await queryClient.cancelQueries(USER_QUERY_OPTIONS);
 
       const previousData = queryClient.getQueryData(['companyUsers']);
 
       queryClient.setQueriesData(USER_QUERY_OPTIONS, (old: any) => {
-        return old.filter((user: User) => {
-          user.userId !== newData.userId;
+        return old.map((user: User) => {
+          user.userId === newData.userId ? { ...user, deletedAt: new Date() } : user;
         });
       });
       return { previousData };

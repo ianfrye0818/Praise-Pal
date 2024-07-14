@@ -1,7 +1,8 @@
-import UpdateUserDialog from '@/components/dialogs/update-user-dialog';
+import FormDialog from '@/components/dialogs/form-dialog';
+import AddUpdateUserForm from '@/components/forms/add-update-user-form';
+import ToggleActiveSwitch from '@/components/switches-and-buttons/toggle-user-active-switch';
+import UserTableActionButtons from '@/components/switches-and-buttons/user-table-action-buttons';
 import { Button } from '@/components/ui/button';
-import { Switch } from '@/components/ui/switch';
-
 import {
   Table,
   TableBody,
@@ -11,30 +12,42 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import UserAvitar from '@/components/UserAvitar';
-import { QueryKeys } from '@/constants';
-import useUpdateCompanyUser from '@/hooks/api/useCompayUsers/useUpdateCompanyUser';
-import { useAuth } from '@/hooks/useAuth';
-import { getUserDisplayName } from '@/lib/utils';
+import { capitalizeString, getUserDisplayName } from '@/lib/utils';
 import { User } from '@/types';
+import { IoArrowBackSharp } from 'react-icons/io5';
+import { Link } from '@tanstack/react-router';
 
 interface UsersTableProps {
-  limit?: number;
-  page?: number;
+  skip?: number;
   search?: string;
   users: User[];
-
-  showUserNumber?: boolean;
+  showUserAmount?: boolean;
 }
 
-export default function UsersTable({ users, showUserNumber = true, limit }: UsersTableProps) {
-  const { user: currentUser } = useAuth().state;
-  const { mutateAsync: toggleVerified } = useUpdateCompanyUser({
-    queryKey: limit ? QueryKeys.limitUsers(limit) : QueryKeys.allUsers,
-  });
-
+export default function UsersTable({ users, showUserAmount = true, skip }: UsersTableProps) {
   return (
     <div className=''>
-      {showUserNumber && <p className=' p-2 text-lg'>Total Users: {users.length}</p>}
+      {showUserAmount && (
+        <div className='flex items-center justify-between py-3 pr-4'>
+          <div className='flex flex-col gap-3'>
+            <Link
+              to='/admin/dashboard'
+              className='flex items-center font-semibold gap-1 max-w-max'
+            >
+              <IoArrowBackSharp size={25} /> Go back
+            </Link>
+            <p className=' p-2 text-lg font-bold'>Total Users: {users.length}</p>
+          </div>
+          <FormDialog
+            description='Add a new user'
+            title='Add User'
+            form={AddUpdateUserForm}
+            formProps={{ type: 'add' }}
+          >
+            <Button variant={'confirm'}>Add User</Button>
+          </FormDialog>
+        </div>
+      )}
       <div className='border shadow-sm rounded-lg'>
         <Table>
           <TableHeader>
@@ -42,7 +55,7 @@ export default function UsersTable({ users, showUserNumber = true, limit }: User
               <TableHead>Name</TableHead>
               <TableHead>Email</TableHead>
               <TableHead>Role</TableHead>
-              <TableHead>Verified</TableHead>
+              <TableHead>Acivated</TableHead>
               <TableHead>Actions</TableHead>
             </TableRow>
           </TableHeader>
@@ -58,35 +71,26 @@ export default function UsersTable({ users, showUserNumber = true, limit }: User
                   </div>
                 </TableCell>
                 <TableCell>{user.email}</TableCell>
-                <TableCell>{user.role}</TableCell>
+                <TableCell>{capitalizeString(user.role)}</TableCell>
                 <TableCell>
-                  <Switch
-                    disabled={user.role === 'COMPANY_OWNER'}
-                    checked={user.verified}
-                    onCheckedChange={async (checked: boolean) =>
-                      await toggleVerified({
-                        companyId: user.companyId,
-                        userToUpdateId: user.userId,
-                        currentUser: currentUser as User,
-                        payload: { verified: checked },
-                      })
-                    }
+                  <ToggleActiveSwitch
+                    user={user}
+                    limit={skip}
                   />
                 </TableCell>
                 <TableCell>
-                  <UpdateUserDialog
-                    disabled={user.role === 'COMPANY_OWNER'}
-                    currentUser={currentUser as User}
-                    updatingUser={user}
-                  >
-                    <Button
-                      disabled={user.role === 'COMPANY_OWNER'}
-                      size={'sm'}
-                      variant={'secondary'}
+                  <>
+                    <FormDialog
+                      description='Edit user information'
+                      title='Edit User'
+                      form={AddUpdateUserForm}
+                      formProps={{ type: 'update', updatingUser: user }}
                     >
-                      Edit
-                    </Button>
-                  </UpdateUserDialog>
+                      <Button variant={'outline'}>Edit</Button>
+                    </FormDialog>
+
+                    <UserTableActionButtons updatingUser={user as User} />
+                  </>
                 </TableCell>
               </TableRow>
             ))}

@@ -1,5 +1,4 @@
 import {
-  // Body,
   Controller,
   Delete,
   Get,
@@ -12,7 +11,6 @@ import {
 import { UserNotificationsService } from './user-notifications.service';
 import { JwtGuard } from '../../auth/guards/jwt.guard';
 import { FilterUserNotificationsDTO } from './dto/filterUserNotifications.dto';
-// @UseGuards(UserNotificationsGuard)
 @UseGuards(JwtGuard)
 @Controller('user-notifications')
 export class UserNotificationsController {

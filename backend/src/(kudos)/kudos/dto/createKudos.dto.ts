@@ -26,7 +26,7 @@ export class createKudosDTO {
   isAnonymous?: boolean;
 
   @IsString()
-  companyId: string;
+  companyCode: string;
 }
 
 export class UpdateKudosDTO extends PartialType(createKudosDTO) {

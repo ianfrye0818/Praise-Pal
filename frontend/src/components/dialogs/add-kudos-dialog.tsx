@@ -35,14 +35,14 @@ export default function AddKudosDialog({
   const [open, setOpen] = useState(false);
   const { user } = useAuth().state;
   const { data: users } = useGetCompanyUsers({
-    companyId: user?.companyId,
+    companyCode: user?.companyCode,
   });
 
   const form = useForm<z.infer<typeof addKudoFormSchema>>({
     resolver: zodResolver(addKudoFormSchema),
     defaultValues: ADD_KUDOS_DIALOG_FORM_DEFAULT_VALUES(
       user?.userId as string,
-      user?.companyId as string
+      user?.companyCode as string
     ),
   });
 

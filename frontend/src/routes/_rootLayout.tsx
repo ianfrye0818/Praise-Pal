@@ -1,8 +1,9 @@
-import AddKudosDialog from '@/components/dialogs/add-kudos-dialog';
-import MobileNavSheet from '@/components/mobile-nav/mobile-nav-sheet';
-import NotificationsDropDown from '@/components/sidebar/notifications-dropdown';
-import Sidebar from '@/components/sidebar/sidebar';
+import AddKudosDialog from '@/components/dialogs-and-menus/add-kudos-dialog';
+import NotificationsDropDown from '@/components/dialogs-and-menus/notifications-dropdown';
+import MobileNavSheet from '@/components/pages-and-sections/mobile-nav-sheet';
+import Sidebar from '@/components/pages-and-sections/sidebar';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Button } from '@/components/ui/button';
 import useGetUserNotifications from '@/hooks/api/userNotifications/useGetUserNotifications';
 import useAdminMode from '@/hooks/useAdminMode';
 import { useAuth } from '@/hooks/useAuth';
@@ -62,7 +63,9 @@ function Header() {
             </div>
           )}
         </div>
-        <AddKudosDialog />
+        <AddKudosDialog>
+          <Button>Add Kudos</Button>
+        </AddKudosDialog>
       </div>
     </header>
   );

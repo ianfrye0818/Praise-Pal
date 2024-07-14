@@ -67,10 +67,12 @@ export function capitalizeString(str: string) {
 }
 
 export const getRoleOptions = () =>
-  Object.values(Role).map((role) => ({
-    label: capitalizeString(role),
-    value: role,
-  }));
+  Object.values(Role)
+    .filter((role) => role !== Role.SUPER_ADMIN)
+    .map((role) => ({
+      label: capitalizeString(role),
+      value: role,
+    }));
 
 interface UrlQueryParams {
   params: string;

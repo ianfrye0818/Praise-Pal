@@ -13,14 +13,17 @@ import {
   removeAuthTokens,
   removeUserToken,
   setAuthTokens,
-  setErrorMessage,
   setUserToken,
 } from '@/lib/localStorage';
 import { CustomError } from '@/errors';
 
 const AuthActions = {
   login: async (signInPayload: SignInFormProps) => {
-    return await postLoginUser(signInPayload);
+    {
+      const data = await postLoginUser(signInPayload);
+      console.log('returned data: ', data);
+      return data;
+    }
   },
   register: async (signUpPaylaod: SignUpFormProps) => {
     return await postRegisterUser(signUpPaylaod);
@@ -44,6 +47,7 @@ const AuthActions = {
 };
 
 export const login = async (dispatch: Dispatch<AuthAction>, signInPayload: SignInFormProps) => {
+  console.log({ signInPayload });
   dispatch({ type: ActionType.LOGIN_REQUEST });
   try {
     const data = await AuthActions.login(signInPayload);
@@ -114,7 +118,6 @@ export async function updateCurrentUser({
 
 export function errorLogout(errorMessage?: string) {
   localStorage.clear();
-  setErrorMessage(errorMessage || 'Session expired. Please sign in again.');
   sessionStorage.clear();
   window.location.pathname !== '/sign-in' && window.location.replace('/sign-in');
 }

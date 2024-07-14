@@ -220,6 +220,7 @@ export enum ActionTypes {
   KUDOS_COMMENT = 'KUDOS_COMMENT',
   KUDOS_LIKE = 'KUDOS_LIKE',
   KUDOS = 'KUDOS',
+  NEW_USER = 'NEW_USER',
 }
 
 export interface VerifyTokenAndResetPasswordProps {

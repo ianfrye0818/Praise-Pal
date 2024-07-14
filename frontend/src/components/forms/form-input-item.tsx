@@ -1,14 +1,17 @@
-import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '../ui/form';
-import { Input } from '../ui/input';
+'use client';
 import { Control, FieldPath, useController } from 'react-hook-form';
 import { z } from 'zod';
+import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '../ui/form';
+import { Input } from '../ui/input';
+import { HTMLInputTypeAttribute, useState } from 'react';
+import ShowPasswordButton from '../switches-and-buttons/show-password-button';
 
 export interface FormInputItemProps<T extends z.ZodTypeAny>
   extends React.InputHTMLAttributes<HTMLInputElement> {
   control: Control<z.infer<T>, any>;
   name: FieldPath<z.infer<T>>;
   label?: string;
-  type?: string;
+  type?: HTMLInputTypeAttribute;
   onChange?: (...event: any[]) => void;
 }
 
@@ -21,6 +24,8 @@ export function FormInputItem<T extends z.ZodTypeAny>({
   type = 'text',
   ...props
 }: FormInputItemProps<T>) {
+  const obsureText = type === 'password';
+  const [isVisable, setIsVisable] = useState<boolean>(!obsureText);
   const { field } = useController({
     name,
     control,
@@ -52,13 +57,21 @@ export function FormInputItem<T extends z.ZodTypeAny>({
         <FormItem>
           {label && <FormLabel>{label}</FormLabel>}
           <FormControl>
-            <Input
-              type={type}
-              placeholder={placeholder}
-              {...field}
-              {...customField}
-              {...props}
-            />
+            <div className='relative'>
+              <Input
+                type={isVisable ? 'text' : type}
+                placeholder={placeholder}
+                {...field}
+                {...customField}
+                {...props}
+              />
+              {obsureText && (
+                <ShowPasswordButton
+                  setIsVisable={setIsVisable}
+                  isVisable={isVisable}
+                />
+              )}
+            </div>
           </FormControl>
           <FormMessage />
         </FormItem>

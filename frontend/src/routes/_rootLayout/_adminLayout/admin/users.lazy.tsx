@@ -1,5 +1,5 @@
-import UsersTable from '@/components/admin/tables/user-table';
-import DataLoader from '@/components/data-loader';
+import UsersTable from '@/components/tables/user-table';
+import DataLoader from '@/components/ui/data-loader';
 import useGetCompanyUsers from '@/hooks/api/useCompayUsers/useGetCompanyUsers';
 import { useAuth } from '@/hooks/useAuth';
 import { Role } from '@/types';

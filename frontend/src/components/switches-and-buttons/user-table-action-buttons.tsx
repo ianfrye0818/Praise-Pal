@@ -1,5 +1,5 @@
 import { Button } from '@/components/ui/button';
-import ConfirmationDialog from '../dialogs/confirmation-dialog';
+import ConfirmationDialog from '../dialogs-and-menus/confirmation-dialog';
 import useRestoreCompanyUser from '@/hooks/api/useCompayUsers/useRestoreCompanyUser';
 import { User } from '@/types';
 import useDeleteCompanyUser from '@/hooks/api/useCompayUsers/useDeleteCompanyUser';

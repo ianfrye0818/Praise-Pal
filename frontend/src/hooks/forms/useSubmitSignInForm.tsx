@@ -1,18 +1,18 @@
-import * as z from 'zod';
 import { login } from '@/api/auth-actions';
-import { signInFormSchema } from '@/zodSchemas';
 import { useNavigate } from '@tanstack/react-router';
 import { useAuth } from '../useAuth';
 import useErrorToast from '../useErrorToast';
 import { isCustomError } from '@/errors';
-import VerifyEmailAction from '@/components/dialogs/verify-email-action-toast';
+import VerifyEmailAction from '@/components/dialogs-and-menus/verify-email-action-toast';
+import { SignInFormProps } from '@/types';
 
 export default function useSubmitSignInForm() {
   const navigate = useNavigate();
   const { dispatch } = useAuth();
   const { errorToast } = useErrorToast();
 
-  async function onSubmit(data: z.infer<typeof signInFormSchema>) {
+  async function onSubmit(data: SignInFormProps) {
+    console.log('data from useSubmitSignInForm', data);
     try {
       await login(dispatch, data);
       await navigate({ to: '/' });

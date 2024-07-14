@@ -1,5 +1,5 @@
-import KudosTable from '@/components/admin/tables/kudos-table';
-import DataLoader from '@/components/data-loader';
+import KudosTable from '@/components/tables/kudos-table';
+import DataLoader from '@/components/ui/data-loader';
 import { QueryKeys } from '@/constants';
 import useGetCompanyKudos from '@/hooks/api/useKudos/useGetCompanyKudos';
 import { useAuth } from '@/hooks/useAuth';

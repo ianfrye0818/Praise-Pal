@@ -1,10 +1,10 @@
 import { createLazyFileRoute } from '@tanstack/react-router';
-import KudosCard from '@/components/kudos-card/kudos-card';
 import { useAuth } from '@/hooks/useAuth';
 import useGetCompanyKudos from '@/hooks/api/useKudos/useGetCompanyKudos';
-import AddKudosDialog from '@/components/dialogs/add-kudos-dialog';
+import AddKudosDialog from '@/components/dialogs-and-menus/add-kudos-dialog';
 import { QueryKeys } from '@/constants';
-import DataLoader from '@/components/data-loader';
+import DataLoader from '@/components/ui/data-loader';
+import KudosCard from '@/components/cards/kudos-card';
 
 export const Route = createLazyFileRoute('/_rootLayout/kudos/sent')({
   component: () => <SentPage />,

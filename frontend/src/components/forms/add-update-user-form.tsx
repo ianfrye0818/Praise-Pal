@@ -1,7 +1,7 @@
 import * as z from 'zod';
 import { useForm } from 'react-hook-form';
 import { Button } from '@/components/ui/button';
-import { capitalizeString, cn, getRoleOptions } from '@/lib/utils';
+import { cn, getRoleOptions } from '@/lib/utils';
 import { Role, User } from '@/types';
 import { addUserSchema, updateUserSchema } from '@/zodSchemas';
 import { useAuth } from '@/hooks/useAuth';
@@ -9,7 +9,7 @@ import { DialogFooter } from '@/components/ui/dialog';
 import { Form } from '@/components/ui/form';
 import { FormInputItem } from '@/components/forms/form-input-item';
 import FormSelectItem from '@/components/forms/form-select-item';
-import DeleteConfirmDialog from '../dialogs/delete-account-confirmation';
+import DeleteConfirmDialog from '../dialogs-and-menus/delete-account-confirmation';
 import useSubmitAddUpdateCompanyUserForm from '@/hooks/forms/useSubmitUpdateUserForm';
 import useDeleteCompanyUser from '@/hooks/api/useCompayUsers/useDeleteCompanyUser';
 

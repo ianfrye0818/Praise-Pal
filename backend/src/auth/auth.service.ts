@@ -75,7 +75,7 @@ export class AuthService {
           ignoreExpiration: false,
         });
         response = {
-          payload,
+          ...payload,
           message: 'Email token is valid',
           status: HttpStatus.OK,
           type: 'NEW_USER',
@@ -230,6 +230,9 @@ export class AuthService {
       });
 
       const url = `${env.CLIENT_URL}/admin/verify-user/${token}`;
+      console.log(url);
+      console.log('owner email: ', newUserEmailOwner(url, newUserFullName));
+      console.log('user email: ', newUserEmailUser(newUserFullName));
 
       // if (companyOwnerEmail) {
       //   await this.emailService.sendEmail({

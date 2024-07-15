@@ -4,6 +4,7 @@ import { CustomError, handleApiError } from '@/errors';
 import { APIProps } from '@/types';
 import { BASE_API_URL, MAX_API_RETRY_REQUESTS } from '@/constants';
 import { getAuthTokens } from '@/lib/localStorage';
+import { ObjectKeys } from 'node_modules/react-hook-form/dist/types/path/common';
 
 let retries = 0;
 
@@ -15,10 +16,17 @@ export const apiClient = axios.create({
   withCredentials: true,
 });
 
+export const verifyClient = axios.create({
+  baseURL: `${BASE_API_URL}/auth`,
+});
+
 const clients = {
   AUTH: authClient,
   API: apiClient,
+  VERIFY: verifyClient,
 };
+
+export type HTTPClients = ObjectKeys<typeof clients>;
 
 apiClient.interceptors.request.use((config) => {
   const authTokens = getAuthTokens();

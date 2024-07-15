@@ -23,7 +23,6 @@ export default function useUpdateCurrentUser({
 
   const mutation = useMutation({
     mutationFn: async ({ payload, currentUser, companyCode }: UseUpdateCurrentUserProps) => {
-      console.log({ payload });
       const { companyCode: _, role: __, createdAt: ___, updatedAt: ____, ...rest } = payload;
 
       return await updateCurrentUser({

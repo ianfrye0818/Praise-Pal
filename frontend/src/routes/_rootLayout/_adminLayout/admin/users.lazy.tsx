@@ -1,3 +1,4 @@
+import AddUserDialog from '@/components/dialogs-and-menus/add-user-dialog';
 import UsersTable from '@/components/tables/user-table';
 import DataLoader from '@/components/ui/data-loader';
 import useGetCompanyUsers from '@/hooks/api/useCompayUsers/useGetCompanyUsers';
@@ -26,9 +27,12 @@ function UsersAdminPage() {
     <div className='w-full py-5 p-1 md:p-4 h-full'>
       <div className='flex items-baseline justify-between'>
         <h2 className='font-semibold text-lg md:text-2xl my-4'>Users</h2>
-        <p className='text-sm italic'>
-          Deleted users can be restored for up to 30 days since they were deleted
-        </p>
+        <div className='flex gap-3 items-center'>
+          <p className='text-sm italic'>
+            Deleted users can be restored for up to 30 days since they were deleted
+          </p>
+          <AddUserDialog />
+        </div>
       </div>
       <UsersTable users={users} />
     </div>

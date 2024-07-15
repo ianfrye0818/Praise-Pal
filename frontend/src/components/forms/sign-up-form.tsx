@@ -25,6 +25,23 @@ export default function SignUpForm() {
         onSubmit={form.handleSubmit(onSubmit)}
         className='flex flex-col gap-5'
       >
+        <div className='flex justify-between'>
+          <FormInputItem<typeof addUserSchema>
+            control={form.control}
+            name='firstName'
+            label='First Name'
+            placeholder='Enter your first name'
+            type='text'
+          />
+
+          <FormInputItem<typeof addUserSchema>
+            control={form.control}
+            name='lastName'
+            label='Last Name'
+            placeholder='Enter your last name'
+            type='text'
+          />
+        </div>
         <FormInputItem<typeof addUserSchema>
           control={form.control}
           name='email'
@@ -57,23 +74,7 @@ export default function SignUpForm() {
           maxLength={4}
           minLength={4}
         />
-        <div className='flex justify-between'>
-          <FormInputItem<typeof addUserSchema>
-            control={form.control}
-            name='firstName'
-            label='First Name'
-            placeholder='Enter your first name'
-            type='text'
-          />
 
-          <FormInputItem<typeof addUserSchema>
-            control={form.control}
-            name='lastName'
-            label='Last Name'
-            placeholder='Enter your last name'
-            type='text'
-          />
-        </div>
         {globalError && <p className='italic text-lg text-red-500'>{globalError?.message}</p>}
         <Button
           disabled={isSubmitting}

@@ -7,16 +7,19 @@ import useCreateCompanyUser from '../api/useCompayUsers/useCreateCompanyUser';
 import { addUserSchema, updateUserSchema } from '@/zodSchemas';
 import { isCustomError } from '@/errors';
 import useUpdateCurrentUser from '../api/useCompayUsers/useUpdateCurrentUser';
+import { UseFormReturn } from 'react-hook-form';
 
 interface SubmitUpdateCompanyUserFormProps {
   formSchema: z.ZodObject<any, any>;
   type: 'add' | 'update';
   updatingUser?: User;
   currentUser: User;
+  form?: UseFormReturn<z.infer<typeof addUserSchema>>;
 }
 
 export default function useSubmitAddUpdateCompanyUserForm({
   formSchema,
+  form,
   type,
   updatingUser,
   currentUser,
@@ -30,6 +33,10 @@ export default function useSubmitAddUpdateCompanyUserForm({
   const onSubmit = async (data: z.infer<typeof formSchema>) => {
     try {
       if (type === 'add') {
+        if (data.password !== data.confirmPassword) {
+          form?.setError('confirmPassword', { message: 'Passwords do not match' });
+          return;
+        }
         await createUser(data as z.infer<typeof addUserSchema>);
         successToast({ title: 'Success', message: 'User created successfully' });
       }

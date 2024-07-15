@@ -12,7 +12,6 @@ export default function useSubmitSignInForm() {
   const { errorToast } = useErrorToast();
 
   async function onSubmit(data: SignInFormProps) {
-    console.log('data from useSubmitSignInForm', data);
     try {
       await login(dispatch, data);
       await navigate({ to: '/' });

@@ -23,7 +23,7 @@ import { Route as AuthLayoutSignInImport } from './routes/_authLayout/sign-in'
 import { Route as VerificationLayoutVerifyEmailTokenImport } from './routes/_verification-layout/verify-email/$token'
 import { Route as VerificationLayoutResetPasswordTokenImport } from './routes/_verification-layout/reset-password/$token'
 import { Route as RootLayoutAdminLayoutAdminDashboardImport } from './routes/_rootLayout/_adminLayout/admin/dashboard'
-import { Route as RootLayoutAdminLayoutAdminVerifyUserTokenImport } from './routes/_rootLayout/_adminLayout/admin/verify-user.$token'
+import { Route as RootLayoutAdminLayoutAdminVerifyUserTokenImport } from './routes/_rootLayout/_adminLayout/admin/verify-user/$token'
 
 // Create Virtual Routes
 
@@ -384,7 +384,7 @@ export const routeTree = rootRoute.addChildren({
       "parent": "/_rootLayout/_adminLayout"
     },
     "/_rootLayout/_adminLayout/admin/verify-user/$token": {
-      "filePath": "_rootLayout/_adminLayout/admin/verify-user.$token.tsx",
+      "filePath": "_rootLayout/_adminLayout/admin/verify-user/$token.tsx",
       "parent": "/_rootLayout/_adminLayout"
     }
   }

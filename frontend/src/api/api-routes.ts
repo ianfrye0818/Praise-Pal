@@ -3,6 +3,7 @@ import {
   CommentQueryParams,
   CompanyQueryParams,
   KudosQueryParams,
+  TokenType,
   UserNotificationQueryParams,
   UserQueryParams,
 } from '@/types';
@@ -16,15 +17,17 @@ export const ApiRoutes = {
     logout: '/logout',
     sendResetPasswordEmail: '/reset-password',
     sendVerifyEmailEmail: '/verify-email',
-    verifyToken: (token: string) => `/verify-token/${token}`,
+    verifyToken: (token: string, type: TokenType) => `/verify-token/${token}?type=${type}`,
     verifyAndUpdatePasswordWithToken: (token: string) => `/update-password/${token}`,
     verifyEmailWithToken: (token: string) => `/verify-email/${token}`,
   },
   users: {
     baseUrl: '/user',
     findAll: (query?: UserQueryParams) => `/user?${generateQueryString(query)}`,
+    findAllByCompany: (companyCode: string, query?: Omit<UserQueryParams, 'companyCode'>) =>
+      `/user/company/${companyCode}?${generateQueryString(query)}`,
     findOneById: (companyCode: string, userId: string) =>
-      `/users/${userId}?companyCode=${companyCode}`,
+      `/user/${userId}?companyCode=${companyCode}`,
     updateUserById: (companyCode: string, userId: string) =>
       `/user/${userId}?companyCode=${companyCode}`,
     deleteUserById: (companyCode: string, userId: string) =>

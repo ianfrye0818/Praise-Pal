@@ -8,10 +8,10 @@ datasource db {
 }
 
 enum Role {
-  USER
-  ADMIN
   SUPER_ADMIN
   COMPANY_OWNER
+  ADMIN
+  USER
 }
 
 model User {

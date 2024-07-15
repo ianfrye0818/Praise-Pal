@@ -4,6 +4,7 @@ import { ForwardRefExoticComponent, RefAttributes } from 'react';
 import { Control, FieldPath } from 'react-hook-form';
 import { AxiosRequestConfig } from 'axios';
 import { addUserSchema } from '@/zodSchemas';
+import { HTTPClients } from '@/api/axios';
 
 export interface SignInFormProps {
   email: string;
@@ -134,8 +135,6 @@ export interface UserNotification {
   kudosId: string;
 }
 
-export type HTTPClients = 'AUTH' | 'API';
-
 interface QueryParams {
   deletedAt?: Date;
   createdAt?: Date;
@@ -149,7 +148,7 @@ interface QueryParams {
 export interface UserQueryParams extends QueryParams {
   userId?: string;
   email?: string;
-  companyCode?: string;
+  companyCode: string;
   firstName?: string;
   lastName?: string;
   roles?: Role | Role[];
@@ -226,4 +225,11 @@ export enum ActionTypes {
 export interface VerifyTokenAndResetPasswordProps {
   message: string;
   status: number;
+  payload: {
+    fullName: string;
+    userId: string;
+    email: string;
+  };
 }
+
+export type TokenType = 'NEW_USER' | 'PASSWORD';

@@ -14,6 +14,7 @@ import {
   UserNotification,
   UserNotificationQueryParams,
   VerifyTokenAndResetPasswordProps,
+  TokenType,
 } from '@/types';
 import { ApiRoutes } from './api-routes';
 import { deleter, fetcher, patcher, poster } from './axios';
@@ -48,11 +49,12 @@ export const postLogout = async (refreshToken: string) =>
     config: { headers: createRefreshHeader(refreshToken) },
   });
 
-export const getVerifyToken = async (token: string) =>
-  await fetcher<VerifyTokenAndResetPasswordProps>({
-    client: 'AUTH',
-    url: ApiRoutes.auth.verifyToken(token),
+export const getVerifyToken = async (token: string, type: TokenType) => {
+  return await fetcher<VerifyTokenAndResetPasswordProps>({
+    client: 'VERIFY',
+    url: ApiRoutes.auth.verifyToken(token, type),
   });
+};
 
 export const postSendResetPasswordEmail = async (email: string) =>
   await poster<{ email: string }, VerifyTokenAndResetPasswordProps>({
@@ -84,8 +86,16 @@ export const postVerifyEmailWithToken = async (token: string) =>
 
 //users actions
 
-export const getCompanyUsers = async (queryParams: UserQueryParams) =>
+export const getAllUsers = async (queryParams: UserQueryParams) =>
   await fetcher<User[]>({ url: ApiRoutes.users.findAll(queryParams) });
+
+export const getCompanyUsers = async (query: UserQueryParams) => {
+  const { companyCode, ...rest } = query;
+  const users = await fetcher<User[]>({
+    url: ApiRoutes.users.findAllByCompany(companyCode, rest),
+  });
+  return users;
+};
 
 export const getSingleCompanyUser = async (companyCode: string, userId: string) =>
   await fetcher<User>({ url: ApiRoutes.users.findOneById(companyCode, userId) });

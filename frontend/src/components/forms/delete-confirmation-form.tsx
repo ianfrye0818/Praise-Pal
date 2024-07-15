@@ -1,27 +1,81 @@
-import { Input } from '../ui/input';
-import { Label } from '../ui/label';
+import { useForm } from 'react-hook-form';
+import { Button } from '../ui/button';
+import { DialogFooter } from '../ui/dialog';
+import { Form } from '../ui/form';
+import * as z from 'zod';
+import { FormInputItem } from './form-input-item';
+import { zodResolver } from '@hookform/resolvers/zod';
+import useDeleteCompanyUser from '@/hooks/api/useCompayUsers/useDeleteCompanyUser';
 
 interface DeleteConfirmationFormProps {
   email: string;
-  verifyEmail: string;
-  setVerifyEmail: React.Dispatch<React.SetStateAction<string>>;
+  userId: string;
+  companyCode: string;
+  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
+const formSchema = z.object({
+  verifiedEmail: z.string().email(),
+});
+
 export default function DeleteConfirmationForm({
+  setOpen,
   email,
-  verifyEmail,
-  setVerifyEmail,
+  companyCode,
+  userId,
 }: DeleteConfirmationFormProps) {
+  const form = useForm<z.infer<typeof formSchema>>({
+    defaultValues: {
+      verifiedEmail: '',
+    },
+    resolver: zodResolver(formSchema),
+  });
+  const { mutateAsync: deleteUser } = useDeleteCompanyUser();
+
+  const onSubmit = async (data: z.infer<typeof formSchema>) => {
+    if (data.verifiedEmail === email) {
+      await deleteUser({ companyCode, userId });
+
+      setOpen(false);
+    } else {
+      form.setError('verifiedEmail', { message: 'Email does not match' });
+    }
+  };
+
   return (
-    <form>
-      <Label htmlFor='verifyEmail'>
-        Enter <span className='italic text-red-500'>{email}</span> to continue
-      </Label>
-      <Input
-        id='verifyEmail'
-        onChange={(e) => setVerifyEmail(e.target.value)}
-        value={verifyEmail}
-      />
-    </form>
+    <Form {...form}>
+      <form
+        onSubmit={form.handleSubmit(onSubmit)}
+        className='flex flex-col gap-3 items-center'
+      >
+        <p>
+          Please enter <span className='text-sm text-red-600 italic'>{email}</span> to confirm.
+        </p>
+        <div className='w-full'>
+          <FormInputItem<typeof formSchema>
+            control={form.control}
+            name='verifiedEmail'
+            placeholder='Verified Email'
+          />
+        </div>
+
+        <DialogFooter className='w-full gap-2'>
+          <Button
+            type='button'
+            variant='outline'
+            onClick={() => setOpen(false)}
+          >
+            Cancel
+          </Button>
+          <Button
+            disabled={!form.formState.isValid}
+            type='submit'
+            variant={'destructive'}
+          >
+            Delete
+          </Button>
+        </DialogFooter>
+      </form>
+    </Form>
   );
 }

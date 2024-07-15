@@ -102,20 +102,20 @@ export function getUserDisplayName(user: User) {
   return user.firstName && user.lastName ? `${user.firstName} ${user.lastName}` : '';
 }
 
-export function sortUsersByCompanyOwnerThenName(users: User[]) {
-  users.sort((a, b) => {
-    if (a.role === Role.COMPANY_OWNER && b.role !== Role.COMPANY_OWNER) {
-      return -1;
-    }
-    if (a.role !== Role.COMPANY_OWNER && b.role === Role.COMPANY_OWNER) {
-      return 1;
-    }
-    if (a.firstName < b.firstName) {
-      return -1;
-    }
-    if (a.firstName > b.firstName) {
-      return 1;
-    }
-    return 0;
-  });
-}
+// export function sortUsersByCompanyOwnerThenName(users: User[]) {
+//   users.sort((a, b) => {
+//     if (a.role === Role.COMPANY_OWNER && b.role !== Role.COMPANY_OWNER) {
+//       return -1;
+//     }
+//     if (a.role !== Role.COMPANY_OWNER && b.role === Role.COMPANY_OWNER) {
+//       return 1;
+//     }
+//     if (a.firstName < b.firstName) {
+//       return -1;
+//     }
+//     if (a.firstName > b.firstName) {
+//       return 1;
+//     }
+//     return 0;
+//   });
+// }

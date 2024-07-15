@@ -18,6 +18,8 @@ export class CompanyGuard implements CanActivate {
     const request = context.switchToHttp().getRequest();
     const user = request.user as ClientUser;
 
+    console.log({ user, query: request.query, params: request.params });
+
     if (!user) {
       throw new UnauthorizedException(
         'Must be logged in to access this resource',
@@ -26,7 +28,7 @@ export class CompanyGuard implements CanActivate {
 
     const companyCode = request.params.companyCode || request.query.companyCode;
     if (!companyCode) {
-      throw new HttpException('Company ID is required', 400);
+      throw new HttpException('Company Code is required', 400);
     }
     if (user.role === Role.SUPER_ADMIN) {
       return true;

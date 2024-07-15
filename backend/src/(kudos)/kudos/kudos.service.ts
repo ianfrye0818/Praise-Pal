@@ -159,7 +159,7 @@ export class KudosService {
         const likingUser = await this.userService.findOneById(userId);
 
         if (likingUser) {
-          const displayName = getDisplayName(likingUser);
+          const displayName = getDisplayName(likingUser[0]);
 
           await this.userNotificationsService.createNotification({
             userId: updatedKudo.senderId,

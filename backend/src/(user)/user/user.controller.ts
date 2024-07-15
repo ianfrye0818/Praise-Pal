@@ -7,13 +7,15 @@ import {
   Patch,
   Query,
   UseGuards,
+  Post,
 } from '@nestjs/common';
 import { UserService } from './user.service';
-import { updateUserDTO } from './dto/createUser.dto';
+import { createUserDTO, updateUserDTO } from './dto/createUser.dto';
 import { JwtGuard } from '../../auth/guards/jwt.guard';
 import { CompanyGuard } from '../../core-guards/company.guard';
 import { FilterUserDTO } from './dto/filterUser.dto';
 import { UpdateUserGuard } from './guards/update-user.guard';
+import { AdminGuard } from 'src/core-guards/admin.guard';
 
 @UseGuards(JwtGuard)
 @Controller('user')
@@ -27,9 +29,24 @@ export class UserController {
   }
 
   @UseGuards(CompanyGuard)
-  @Get(':id')
-  async findOneById(@Param('id') userId: string) {
+  @Get('/company/:companyCode')
+  async findAllByCompany(
+    @Param('companyCode') companyCode: string,
+    @Query() query: FilterUserDTO,
+  ) {
+    return await this.userService.findAllByCompany(companyCode, query);
+  }
+
+  @UseGuards(CompanyGuard)
+  @Get(':userId')
+  async findOneById(@Param('userId') userId: string) {
     return await this.userService.findOneById(userId);
+  }
+
+  @UseGuards(AdminGuard)
+  @Post('/create')
+  async createUser(@Body() data: createUserDTO) {
+    return await this.userService.create(data);
   }
 
   @UseGuards(UpdateUserGuard)

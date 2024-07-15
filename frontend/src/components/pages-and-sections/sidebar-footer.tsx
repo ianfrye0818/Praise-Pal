@@ -1,10 +1,10 @@
 import LogoutButton from '../switches-and-buttons/logout-button';
 import { useAuth } from '@/hooks/useAuth';
 import FormDialog from '../dialogs-and-menus/form-dialog';
-import AddUpdateUserForm from '../forms/add-update-user-form';
 import { Button } from '../ui/button';
 import UserAvitar from '../ui/user-avatar';
 import { getUserDisplayName } from '@/lib/utils';
+import UpdateUserForm from '../forms/update-user-form';
 
 export default function SideBarFooter() {
   const { user: currentUser } = useAuth().state;
@@ -16,7 +16,7 @@ export default function SideBarFooter() {
         <FormDialog
           description='Edit user information'
           title='Edit User'
-          form={AddUpdateUserForm}
+          form={UpdateUserForm}
           formProps={{ type: 'update', updatingUser: currentUser }}
         >
           <Button

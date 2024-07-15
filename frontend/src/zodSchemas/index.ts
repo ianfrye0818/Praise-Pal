@@ -29,7 +29,8 @@ export const addUserSchema = z.object({
     .max(4, 'Company code must be 4 characters')
     .transform((value) => value.toUpperCase()),
   password: z.string().min(6, 'Password must be at least 6 characters'),
-  confirmPassword: z.string().optional(),
+  confirmPassword: z.string(),
+  isActive: z.boolean().optional(),
 });
 
 export const updateUserSchema = addUserSchema.partial();

@@ -42,7 +42,6 @@ export class AuthController {
 
   @Post('logout')
   async logout(@Request() req) {
-    console.log(req.headers);
     const refreshToken = req.headers.authorization.split(' ')[1];
     return this.authService.logout(refreshToken);
   }

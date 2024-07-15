@@ -1,14 +1,9 @@
-import AddKudosDialog from '@/components/dialogs-and-menus/add-kudos-dialog';
-import NotificationsDropDown from '@/components/dialogs-and-menus/notifications-dropdown';
+import Header from '@/components/pages-and-sections/layout-header';
 import MobileNavSheet from '@/components/pages-and-sections/mobile-nav-sheet';
 import Sidebar from '@/components/pages-and-sections/sidebar';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { Button } from '@/components/ui/button';
-import useGetUserNotifications from '@/hooks/api/userNotifications/useGetUserNotifications';
 import useAdminMode from '@/hooks/useAdminMode';
 import { useAuth } from '@/hooks/useAuth';
 import { createFileRoute, Outlet, Navigate } from '@tanstack/react-router';
-import { BellIcon } from 'lucide-react';
 
 export const Route = createFileRoute('/_rootLayout')({
   component: () => <RootLayout />,
@@ -38,35 +33,5 @@ export function RootLayout() {
         <MobileNavSheet />
       </div>
     </main>
-  );
-}
-
-function Header() {
-  const { data: notifications } = useGetUserNotifications();
-  const unreadLength = notifications?.filter((n) => !n.isRead).length || 0;
-  const showNotifcationAmount = notifications && unreadLength > 0;
-
-  return (
-    <header className='flex p-2 items-center justify-end'>
-      <div className='ml-auto flex gap-4 items-center'>
-        <div className='relative'>
-          <Avatar>
-            <AvatarFallback className='bg-midnightGreen'>
-              <NotificationsDropDown notifications={notifications || []}>
-                <BellIcon />
-              </NotificationsDropDown>
-            </AvatarFallback>
-          </Avatar>
-          {showNotifcationAmount && (
-            <div className='absolute -top-2 -right-2 p-2 w-6 h-6 flex items-center justify-center rounded-full bg-destructive text-primary-foreground'>
-              {unreadLength}
-            </div>
-          )}
-        </div>
-        <AddKudosDialog>
-          <Button>Add Kudos</Button>
-        </AddKudosDialog>
-      </div>
-    </header>
   );
 }

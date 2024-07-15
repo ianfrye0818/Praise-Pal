@@ -20,9 +20,7 @@ import { CustomError } from '@/errors';
 const AuthActions = {
   login: async (signInPayload: SignInFormProps) => {
     {
-      const data = await postLoginUser(signInPayload);
-      console.log('returned data: ', data);
-      return data;
+      return await postLoginUser(signInPayload);
     }
   },
   register: async (signUpPaylaod: SignUpFormProps) => {
@@ -47,7 +45,6 @@ const AuthActions = {
 };
 
 export const login = async (dispatch: Dispatch<AuthAction>, signInPayload: SignInFormProps) => {
-  console.log({ signInPayload });
   dispatch({ type: ActionType.LOGIN_REQUEST });
   try {
     const data = await AuthActions.login(signInPayload);
@@ -66,16 +63,13 @@ export const login = async (dispatch: Dispatch<AuthAction>, signInPayload: SignI
   }
 };
 
-export const register = async (dispatch: Dispatch<AuthAction>, signUpPayload: SignUpFormProps) => {
-  // dispatch({ type: ActionType.REGISTER_REQUEST });
+export const register = async (signUpPayload: SignUpFormProps) => {
   try {
     const data = await AuthActions.register(signUpPayload);
-    // dispatch({
-    //   type: ActionType.REGISTER_SUCCESS,
-    // });
+
     return data;
   } catch (error) {
-    dispatch({ type: ActionType.REGISTER_FAILURE });
+    console.error(error);
   }
 };
 
@@ -116,7 +110,11 @@ export async function updateCurrentUser({
   }
 }
 
-export function errorLogout(errorMessage?: string) {
+export async function errorLogout() {
+  const refreshToken = getAuthTokens()?.refreshToken;
+  if (refreshToken) {
+    await postLogout(refreshToken);
+  }
   localStorage.clear();
   sessionStorage.clear();
   window.location.pathname !== '/sign-in' && window.location.replace('/sign-in');

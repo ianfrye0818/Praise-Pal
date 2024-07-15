@@ -1,5 +1,5 @@
 import { useAuth } from '@/hooks/useAuth';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { MailIcon, PhoneIcon } from 'lucide-react';
 import { Button } from '../ui/button';
 import FormDialog from '../dialogs-and-menus/form-dialog';
@@ -15,27 +15,28 @@ export default function CompanyCard({ company }: { company: Company }) {
     <>
       <Card className='w-full'>
         <CardHeader>
-          <CardTitle className='flex justify-between items-center'>
+          <div className='flex flex-col md:flex-row  md:items-center md:justify-between gap-4'>
+            <div className='space-y-4'>
+              <CardTitle className='flex justify-between items-center'>{company.name}</CardTitle>
+              <CardDescription>CompanyCode: {company.companyCode}</CardDescription>
+            </div>
             {canEditCompany && (
-              <FormDialog
-                form={UpdateCompanyForm}
-                formProps={{ updatingCompany: company }}
-                title='Edit Company'
-                description='Edit company details'
-              >
-                <Button variant={'secondary'}>Edit</Button>
-              </FormDialog>
+              <div>
+                <FormDialog
+                  form={UpdateCompanyForm}
+                  formProps={{ updatingCompany: company }}
+                  title='Edit Company'
+                  description='Edit company details'
+                >
+                  <Button variant={'secondary'}>Edit</Button>
+                </FormDialog>
+              </div>
             )}
-          </CardTitle>
+          </div>
         </CardHeader>
         <CardContent>
           <div className='grid gap-4'>
-            <div className='flex items-center gap-4'>
-              <div>
-                <h3 className='font-semibold'>{company.name}</h3>
-                <p className='text-muted-foreground'>Company code: {company.companyCode}</p>
-              </div>
-            </div>
+            <div className='flex items-center gap-4'></div>
             <div className='flex flex-col gap-5'>
               <div className='flex items-center gap-2'>
                 <PhoneIcon className='w-4 h-4 text-muted-foreground' />

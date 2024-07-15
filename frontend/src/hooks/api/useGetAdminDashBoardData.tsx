@@ -3,7 +3,6 @@ import { Role } from '@/types';
 import { QueryKeys } from '@/constants';
 import { useQueries } from '@tanstack/react-query';
 import { getCompany, getCompanyKudos, getCompanyUsers } from '@/api/api-handlers';
-import { sortUsersByCompanyOwnerThenName } from '@/lib/utils';
 
 export default function useGetAdminDashBoardData(take: number = 10) {
   const { user } = useAuth().state;
@@ -25,7 +24,6 @@ export default function useGetAdminDashBoardData(take: number = 10) {
             take: 10,
           });
           if (users) {
-            sortUsersByCompanyOwnerThenName(users);
             return users;
           } else return [];
         },
@@ -41,7 +39,7 @@ export default function useGetAdminDashBoardData(take: number = 10) {
   const [companyResult, usersResult, kudosResult] = results;
 
   if (usersResult.isError || kudosResult.isError || companyResult.isError) {
-    console.log({
+    console.error({
       userError: usersResult.error,
       kudosError: kudosResult.error,
       companyError: companyResult.error,

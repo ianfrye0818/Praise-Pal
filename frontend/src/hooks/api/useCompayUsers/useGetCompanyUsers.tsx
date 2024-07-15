@@ -1,6 +1,5 @@
 import { getCompanyUsers } from '@/api/api-handlers';
 import { QueryKeys } from '@/constants';
-import { sortUsersByCompanyOwnerThenName } from '@/lib/utils';
 import { UserQueryParams } from '@/types';
 import { QueryKey, useQuery } from '@tanstack/react-query';
 
@@ -13,7 +12,6 @@ export default function useGetCompanyUsers(
     queryFn: async () => {
       const users = await getCompanyUsers(queryParams);
       if (users) {
-        sortUsersByCompanyOwnerThenName(users);
         return users;
       } else return [];
     },

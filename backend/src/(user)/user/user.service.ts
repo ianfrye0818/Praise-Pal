@@ -26,25 +26,21 @@ export class UserService {
   async findAllUsers(filter: FilterUserDTO) {
     const { take, skip, sort, roles, cursor, ...otherFilters } = filter;
     try {
-      const companyOwner = await this.prismaService.user.findFirst({
-        where: { role: Role.COMPANY_OWNER },
-      });
       const users = await this.prismaService.user.findMany({
         where: {
           role: { in: roles },
-          NOT: { role: Role.COMPANY_OWNER },
           ...otherFilters,
         },
-        orderBy: [{ lastName: sort || 'asc' }, { userId: 'asc' }],
+        orderBy: [
+          { role: sort || 'desc' },
+          { lastName: 'asc' },
+          { userId: 'asc' },
+        ],
         take,
         skip: skip || 0,
         cursor: cursor ? { userId: cursor } : undefined,
       });
-      const clientUsers = [
-        companyOwner,
-        ...users.map((user) => generateClientSideUserProperties(user)),
-      ];
-      return clientUsers;
+      return users.map((user) => generateClientSideUserProperties(user));
     } catch (error) {
       console.error(error);
       throw new HttpException('Something went wrong', 500);
@@ -53,14 +49,10 @@ export class UserService {
 
   async findAllByCompany(
     companyCode: string,
-    deletedUsers?: boolean,
+    query?: FilterUserDTO,
   ): Promise<ClientUser[]> {
     try {
-      const users = await this.findAllUsers({
-        companyCode,
-        deletedAt: deletedUsers ? new Date() : null,
-      });
-      return users;
+      return await this.findAllUsers({ ...query, companyCode });
     } catch (error) {
       console.error(error);
       throw new HttpException('Something went wrong', 500);
@@ -72,7 +64,6 @@ export class UserService {
       const user = await this.prismaService.user.findUnique({
         where: { userId },
       });
-      if (!user) throw new NotFoundException('User not found');
       return generateClientSideUserProperties(user);
     } catch (error) {
       console.error(error);

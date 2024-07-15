@@ -1,5 +1,4 @@
 import FormDialog from '@/components/dialogs-and-menus/form-dialog';
-import AddUpdateUserForm from '@/components/forms/add-update-user-form';
 import ToggleActiveSwitch from '@/components/switches-and-buttons/toggle-user-active-switch';
 import UserTableActionButtons from '@/components/switches-and-buttons/user-table-action-buttons';
 import { Button } from '@/components/ui/button';
@@ -17,6 +16,7 @@ import { IoArrowBackSharp } from 'react-icons/io5';
 import { Link } from '@tanstack/react-router';
 import { useAuth } from '@/hooks/useAuth';
 import UserAvitar from '../ui/user-avatar';
+import UpdateUserForm from '../forms/update-user-form';
 
 interface UsersTableProps {
   skip?: number;
@@ -44,7 +44,7 @@ export default function UsersTable({ users, showUserAmount = false, take }: User
           <FormDialog
             description='Add a new user'
             title='Add User'
-            form={AddUpdateUserForm}
+            form={UpdateUserForm}
             formProps={{ type: 'add' }}
           >
             <Button variant={'confirm'}>Add User</Button>
@@ -92,7 +92,7 @@ export default function UsersTable({ users, showUserAmount = false, take }: User
                       <FormDialog
                         description='Edit user information'
                         title='Edit User'
-                        form={AddUpdateUserForm}
+                        form={UpdateUserForm}
                         formProps={{ type: 'update', updatingUser: user }}
                       >
                         <Button

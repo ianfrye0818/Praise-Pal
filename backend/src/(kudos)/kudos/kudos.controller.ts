@@ -27,7 +27,6 @@ export class KudosController {
   @UseGuards(CompanyGuard)
   @Get()
   async findAll(@Query() query: KudosFilterDTO) {
-    console.log('requested');
     const kudos = await this.kudosService.getAllKudos(query);
 
     return kudos;

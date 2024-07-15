@@ -76,6 +76,7 @@ export const SIGN_UP_FORM_DEFAULT_VALUES = {
   password: '',
   confirmPassword: '',
   companyCode: '',
+  isActive: false,
 };
 
 export const SIGN_IN_FORM_DEFAULT_VALUES = {

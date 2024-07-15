@@ -1,12 +1,12 @@
 import { register } from '@/api/auth-actions';
 import { UseFormReturn } from 'react-hook-form';
-import { useAuth } from '../useAuth';
 import useErrorToast from '../useErrorToast';
 import { SignUpFormProps } from '@/types';
+import useSuccessToast from '../useSuccessToast';
 
 export default function useSubmitSignUpForm(form: UseFormReturn<SignUpFormProps>) {
-  const { dispatch } = useAuth();
   const { errorToast } = useErrorToast();
+  const { successToast } = useSuccessToast();
 
   async function onSubmit(data: SignUpFormProps) {
     if (data.password !== data.confirmPassword) {
@@ -14,7 +14,12 @@ export default function useSubmitSignUpForm(form: UseFormReturn<SignUpFormProps>
       return;
     }
     try {
-      await register(dispatch, data);
+      await register(data);
+      form.reset();
+      successToast({
+        title: 'Registered Successfully',
+        message: 'You have been registered and are waiting approval from an admin',
+      });
     } catch (error) {
       console.error(['signInFormError'], error);
       errorToast({ message: 'An error occured while signing up.' });

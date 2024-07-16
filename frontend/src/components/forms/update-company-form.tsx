@@ -11,7 +11,13 @@ import useUpdateCompany from '@/hooks/api/useCompany/useUpdateCompany';
 import useErrorToast from '@/hooks/useErrorToast';
 import { DialogFooter } from '../ui/dialog';
 
-export function UpdateCompanyForm({ updatingCompany }: { updatingCompany: Company }) {
+export function UpdateCompanyForm({
+  updatingCompany,
+  setOpen,
+}: {
+  updatingCompany: Company;
+  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
+}) {
   const { errorToast } = useErrorToast();
   const form = useForm<z.infer<typeof updateCompanyFormSchema>>({
     resolver: zodResolver(updateCompanyFormSchema),
@@ -23,6 +29,7 @@ export function UpdateCompanyForm({ updatingCompany }: { updatingCompany: Compan
   async function onSubmit(values: z.infer<typeof updateCompanyFormSchema>) {
     try {
       await updateCompany({ ...values, companyCode: updatingCompany.companyCode });
+      setOpen(false);
     } catch (error) {
       console.error(['updateCompanyError'], error);
       errorToast({ message: 'Error updating company', title: 'Error' });
@@ -89,6 +96,13 @@ export function UpdateCompanyForm({ updatingCompany }: { updatingCompany: Compan
           />
         </div>
         <DialogFooter className='flex justify-end'>
+          <Button
+            type='button'
+            variant={'outline'}
+            onClick={() => setOpen(false)}
+          >
+            Cancel
+          </Button>
           <Button
             disabled={!form.formState.isValid}
             type='submit'

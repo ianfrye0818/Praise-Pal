@@ -12,6 +12,7 @@ import KudoCardDropDownMenu from '../dialogs-and-menus/kudo-card-dropdown-menu';
 export default function SingleKudosPage() {
   const { user: currentUser } = useAuth().state;
   const kudo = useSingleKudoContext();
+  console.log('kudofrom context', kudo);
 
   const { sender, receiver } = kudo;
   const senderDisplayName = getUserDisplayName(sender);

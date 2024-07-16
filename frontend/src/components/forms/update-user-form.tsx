@@ -70,8 +70,9 @@ export default function UpdateUserForm({ setOpen, updatingUser }: UpdateUserForm
     }
   };
 
-  const disableUpdateRole =
-    currentUser?.role !== Role.COMPANY_OWNER || updatingUser?.userId === currentUser?.userId;
+  const isCompanyOwner = currentUser?.role === Role.COMPANY_OWNER;
+  const isCurrentUser = updatingUser?.userId === currentUser?.userId;
+  const disableUpdateRole = !isCompanyOwner || isCurrentUser;
   const disableCompanyCode = currentUser?.role !== Role.SUPER_ADMIN;
 
   useEffect(() => {
@@ -110,13 +111,19 @@ export default function UpdateUserForm({ setOpen, updatingUser }: UpdateUserForm
           label='Email'
           placeholder='Email'
         />
+
         <FormSelectItem
           control={form.control}
           name='role'
-          options={getRoleOptions()}
+          options={
+            isCompanyOwner && isCurrentUser
+              ? [{ label: 'Company Owner', value: Role.COMPANY_OWNER }]
+              : getRoleOptions()
+          }
           label='Role'
           disabled={disableUpdateRole}
         />
+
         <FormInputItem
           control={form.control}
           name='companyCode'
@@ -137,6 +144,7 @@ export default function UpdateUserForm({ setOpen, updatingUser }: UpdateUserForm
               }}
             >
               <Button
+                disabled={isCompanyOwner}
                 type='button'
                 variant={'destructive'}
               >
@@ -144,22 +152,7 @@ export default function UpdateUserForm({ setOpen, updatingUser }: UpdateUserForm
               </Button>
             </FormDialog>
           </div>
-          {/* <div className='mr-auto'>
-            <DeleteConfirmDialog
-              action={async () => {
-                await deleteUser({
-                  companyCode: updatingUser?.companyCode as string,
-                  userId: updatingUser?.userId as string,
-                });
-                setOpen(false);
-              }}
-              currentUser={currentUser as User}
-              setOpen={setOpen}
-              submitting={form.formState.isSubmitting}
-              user={updatingUser as User}
-            />
-          </div> */}
-          <div>
+          <div className='space-x-2'>
             <Button
               onClick={() => setOpen(false)}
               type='button'
@@ -171,7 +164,11 @@ export default function UpdateUserForm({ setOpen, updatingUser }: UpdateUserForm
               type='submit'
               disabled={!form.formState.isValid || form.formState.isSubmitting}
             >
-              Update User
+              {form.formState.isSubmitting
+                ? 'Updating...'
+                : isCurrentUser
+                  ? 'Update'
+                  : 'Update User'}
             </Button>
           </div>
         </DialogFooter>

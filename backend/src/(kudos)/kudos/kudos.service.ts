@@ -157,15 +157,18 @@ export class KudosService {
 
       if (updatedKudo.senderId !== userId) {
         const likingUser = await this.userService.findOneById(userId);
-
         if (likingUser) {
-          const displayName = getDisplayName(likingUser[0]);
+          console.log(likingUser);
+          const displayName = getDisplayName(
+            likingUser,
+            updatedKudo.isAnonymous,
+          );
 
           await this.userNotificationsService.createNotification({
             userId: updatedKudo.senderId,
             actionType: ActionType.KUDOS_LIKE,
             kudosId: updatedKudo.id,
-            message: `${displayName} liked your kudos`,
+            message: `${likingUser.firstName} liked your kudos`,
           });
         }
       }

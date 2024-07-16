@@ -11,9 +11,9 @@ import FormSelectItem from '@/components/forms/form-select-item';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useEffect } from 'react';
 import useSuccessToast from '@/hooks/useSuccessToast';
-import useErrorToast from '@/hooks/useErrorToast';
 import useCreateCompanyUser from '@/hooks/api/useCompayUsers/useCreateCompanyUser';
 import { getRoleOptions } from '@/lib/utils';
+import { isCustomError, isError } from '@/errors';
 
 const defaultAddValues = (currentUser: User) => ({
   email: '',
@@ -26,7 +26,7 @@ const defaultAddValues = (currentUser: User) => ({
 });
 
 interface AddUserFormProps {
-  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  setOpen?: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export default function AddUserForm({ setOpen }: AddUserFormProps) {
@@ -36,9 +36,8 @@ export default function AddUserForm({ setOpen }: AddUserFormProps) {
     resolver: zodResolver(addUserSchema),
   });
   const { successToast } = useSuccessToast();
-  const { errorToast } = useErrorToast();
 
-  const { mutateAsync: createUser } = useCreateCompanyUser();
+  const { mutateAsync: createUser, isSuccess } = useCreateCompanyUser();
 
   const onSubmit = async (data: z.infer<typeof addUserSchema>) => {
     try {
@@ -50,15 +49,22 @@ export default function AddUserForm({ setOpen }: AddUserFormProps) {
       successToast({ title: 'Success', message: 'User created successfully' });
     } catch (error) {
       console.error(['addUserForm'], error);
-      errorToast({ message: 'Error creating user' });
+      form.setError('root', {
+        message: isCustomError(error) || isError(error) ? error.message : 'An error occurred',
+      });
     }
   };
 
+  const isSubmitting = form.formState.isSubmitting;
+  const isGlobalError = form.formState.errors.root;
+  const isFormValid = form.formState.isValid;
+
   useEffect(() => {
-    if (form.formState.isSubmitSuccessful) {
-      setOpen(false);
+    console.log('rendersuccess');
+    if (isSuccess) {
+      setOpen && setOpen(false);
     }
-  }, [form.formState.isSubmitSuccessful, setOpen]);
+  }, [isSuccess, setOpen]);
 
   return (
     <Form {...form}>
@@ -117,9 +123,10 @@ export default function AddUserForm({ setOpen }: AddUserFormProps) {
           placeholder='Company Code'
           disabled={currentUser?.role !== Role.SUPER_ADMIN}
         />
+        {isGlobalError && <p className='text-red-600 italic text-sm'>{isGlobalError.message}</p>}
         <DialogFooter className='mt-3'>
           <Button
-            onClick={() => setOpen(false)}
+            onClick={() => setOpen && setOpen(false)}
             type='button'
             variant={'outline'}
           >
@@ -127,9 +134,9 @@ export default function AddUserForm({ setOpen }: AddUserFormProps) {
           </Button>
           <Button
             type='submit'
-            disabled={!form.formState.isValid || form.formState.isSubmitting}
+            disabled={!isFormValid || isSubmitting}
           >
-            Add User
+            {isSubmitting ? 'Adding...' : 'Add User'}
           </Button>
         </DialogFooter>
       </form>

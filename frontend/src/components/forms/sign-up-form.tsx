@@ -22,66 +22,61 @@ export default function SignUpForm() {
   return (
     <Form {...form}>
       <form
+        className='flex flex-col gap-3'
         onSubmit={form.handleSubmit(onSubmit)}
-        className='flex flex-col gap-5'
       >
-        <div className='flex justify-between'>
-          <FormInputItem<typeof addUserSchema>
-            control={form.control}
-            name='firstName'
-            label='First Name'
-            placeholder='Enter your first name'
-            type='text'
-          />
-
-          <FormInputItem<typeof addUserSchema>
-            control={form.control}
-            name='lastName'
-            label='Last Name'
-            placeholder='Enter your last name'
-            type='text'
-          />
+        <div className='flex items-center gap-2 '>
+          <div className='flex-1'>
+            <FormInputItem
+              control={form.control}
+              name='firstName'
+              label='First Name'
+              placeholder='First Name'
+            />
+          </div>
+          <div className='flex-1'>
+            <FormInputItem
+              control={form.control}
+              name='lastName'
+              label='Last Name'
+              placeholder='Last Name'
+            />
+          </div>
         </div>
-        <FormInputItem<typeof addUserSchema>
+        <FormInputItem
           control={form.control}
           name='email'
           label='Email'
-          placeholder='Enter your email'
-          type='email'
+          placeholder='Email'
         />
-        <div className='grid grid-cols-2 gap-4'>
-          <FormInputItem<typeof addUserSchema>
-            control={form.control}
-            name='password'
-            label='Password'
-            placeholder='Enter your password'
-            type='password'
-          />
-          <FormInputItem<typeof addUserSchema>
-            control={form.control}
-            name='confirmPassword'
-            label='Confirm Password'
-            placeholder='Confirm your password'
-            type='password'
-          />
-        </div>
-        <FormInputItem<typeof addUserSchema>
+        <FormInputItem
+          control={form.control}
+          name='password'
+          label='Password'
+          placeholder='Password'
+          type='password'
+        />
+        <FormInputItem
+          control={form.control}
+          name='confirmPassword'
+          label='Confirm Password'
+          placeholder='Confirm Password'
+          type='password'
+        />
+        <FormInputItem
           control={form.control}
           name='companyCode'
           label='Company Code'
-          placeholder='Enter your company code'
-          type='text'
+          placeholder='Company Code'
           maxLength={4}
-          minLength={4}
         />
-
-        {globalError && <p className='italic text-lg text-red-500'>{globalError?.message}</p>}
         <Button
+          type='submit'
           disabled={isSubmitting}
-          className='w-full'
         >
-          {isSubmitting ? 'Submitting....' : 'Sign Up'}
+          Add User
         </Button>
+        {globalError && <p className='text-red-600 italic text-sm '>{globalError.message}</p>}
       </form>
     </Form>
   );

@@ -2,9 +2,10 @@ import { useState } from 'react';
 import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
 import { ScrollArea } from '../ui/scroll-area';
 import { Link } from '@tanstack/react-router';
-import useMarkAllNotificationsAsRead from '@/hooks/api/userNotifications/useMarkAllNotificationAsRead';
-import { UserNotification } from '@/types';
+import { ActionTypes, UserNotification } from '@/types';
 import { getNotificationIcon } from '@/lib/getNotificationIcons';
+import { cn } from '@/lib/utils';
+import useMarkSingleNotificationAsRead from '@/hooks/api/userNotifications/useMarkSingleNotificationAsRead';
 
 export default function NotificationsDropDown({
   children,
@@ -14,18 +15,16 @@ export default function NotificationsDropDown({
   notifications?: UserNotification[];
 }) {
   const [open, setOpen] = useState(false);
-  const canPerformActions = notifications && notifications?.length > 0;
+  // const canPerformActions = notifications && notifications?.length > 0;
 
-  const { mutateAsync: markAllAsRead } = useMarkAllNotificationsAsRead();
+  console.log(notifications);
 
   return (
     <Popover
       open={open}
-      onOpenChange={(open) => {
-        canPerformActions ? setOpen(open) : setOpen(false);
-      }}
+      onOpenChange={setOpen}
     >
-      <PopoverTrigger onClick={canPerformActions ? async () => markAllAsRead() : undefined}>
+      <PopoverTrigger>
         <div className='relative'>{children}</div>
       </PopoverTrigger>
       {
@@ -36,13 +35,17 @@ export default function NotificationsDropDown({
         >
           <ScrollArea>
             <div className='flex flex-col gap-2 h-[250px]'>
-              {notifications!.map((notification) => (
-                <NotificationCard
-                  key={notification.id}
-                  notification={notification}
-                  setOpen={setOpen}
-                />
-              ))}
+              {notifications && notifications.length > 0 ? (
+                notifications.map((notification) => (
+                  <NotificationCard
+                    key={notification.id}
+                    notification={notification}
+                    setOpen={setOpen}
+                  />
+                ))
+              ) : (
+                <div className='h-full flex justify-center items-center'>🎉 No Notifications</div>
+              )}
             </div>
           </ScrollArea>
         </PopoverContent>
@@ -58,12 +61,30 @@ function NotificationCard({
   notification: UserNotification;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
+  const { mutateAsync: markAsRead } = useMarkSingleNotificationAsRead();
+  const notificationLink =
+    notification.actionType === ActionTypes.NEW_USER
+      ? '/admin/verify-user/$token'
+      : '/kudos/$kudosId';
+  const notificationParams =
+    notification.actionType === ActionTypes.NEW_USER
+      ? { token: notification.newUserId }
+      : { kudosId: notification.kudosId };
+
   return (
-    <div className='px-2 py-4 flex flex-col justify-center border shadow-sm rounded-md'>
+    <div
+      className={cn(
+        'px-2 py-4 flex flex-col justify-center border rounded-md',
+        !notification.isRead && 'bg-gray-50 shadow-none'
+      )}
+    >
       <Link
-        onClick={() => setOpen(false)}
-        to='/kudos/$kudosId'
-        params={{ kudosId: notification.kudosId }}
+        onClick={async () => {
+          await markAsRead(notification.id);
+          setOpen(false);
+        }}
+        to={notificationLink}
+        params={notificationParams as any}
         className=''
       >
         <div className='flex gap-2'>

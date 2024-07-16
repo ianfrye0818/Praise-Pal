@@ -1,11 +1,13 @@
+import * as z from 'zod';
 import { useForm } from 'react-hook-form';
 import { Button } from '../ui/button';
 import { DialogFooter } from '../ui/dialog';
 import { Form } from '../ui/form';
-import * as z from 'zod';
 import { FormInputItem } from './form-input-item';
 import { zodResolver } from '@hookform/resolvers/zod';
 import useDeleteCompanyUser from '@/hooks/api/useCompayUsers/useDeleteCompanyUser';
+import useErrorToast from '@/hooks/useErrorToast';
+import { isCustomError } from '@/errors';
 
 interface DeleteConfirmationFormProps {
   email: string;
@@ -24,6 +26,7 @@ export default function DeleteConfirmationForm({
   companyCode,
   userId,
 }: DeleteConfirmationFormProps) {
+  const { errorToast } = useErrorToast();
   const form = useForm<z.infer<typeof formSchema>>({
     defaultValues: {
       verifiedEmail: '',
@@ -33,12 +36,17 @@ export default function DeleteConfirmationForm({
   const { mutateAsync: deleteUser } = useDeleteCompanyUser();
 
   const onSubmit = async (data: z.infer<typeof formSchema>) => {
-    if (data.verifiedEmail === email) {
-      await deleteUser({ companyCode, userId });
+    try {
+      if (data.verifiedEmail === email) {
+        await deleteUser({ companyCode, userId });
 
-      setOpen(false);
-    } else {
-      form.setError('verifiedEmail', { message: 'Email does not match' });
+        setOpen(false);
+      } else {
+        form.setError('verifiedEmail', { message: 'Email does not match' });
+      }
+    } catch (error) {
+      console.log(['Error deleting user', error]);
+      errorToast({ message: isCustomError(error) ? error.message : 'Error deleting user' });
     }
   };
 

@@ -38,25 +38,25 @@ apiClient.interceptors.request.use((config) => {
   return config;
 });
 
-authClient.interceptors.response.use(
-  (response) => response,
-  async (error) => {
-    const { response } = error;
-    if (!response || !response.status) {
-      return Promise.reject(new CustomError('Cannot connect to server', 503));
-    }
+// authClient.interceptors.response.use(
+//   (response) => response,
+//   async (error) => {
+//     const { response } = error;
+//     if (!response || !response.status) {
+//       return Promise.reject(new CustomError('Cannot connect to server', 503));
+//     }
 
-    if (
-      error.response.status &&
-      (error.response.status === 401 ||
-        error.response.status === 403 ||
-        error.response.status === 500)
-    ) {
-      errorLogout(error.response.data.message);
-    }
-    return Promise.reject(error);
-  }
-);
+//     if (
+//       error.response.status &&
+//       (error.response.status === 401 ||
+//         error.response.status === 403 ||
+//         error.response.status === 500)
+//     ) {
+//       errorLogout();
+//     }
+//     return Promise.reject(error);
+//   }
+// );
 
 apiClient.interceptors.response.use(
   (response) => response,

@@ -37,10 +37,10 @@ const AuthActions = {
   refreshTokens: async () => {
     const authTokens = getAuthTokens();
     if (!authTokens || !authTokens.refreshToken) {
-      errorLogout();
       throw new CustomError('No auth tokens found', 401);
     }
-    setAuthTokens(await postRefreshTokens(authTokens.refreshToken));
+    const newTokens = await postRefreshTokens(authTokens.refreshToken);
+    setAuthTokens(newTokens);
   },
 };
 
@@ -64,13 +64,7 @@ export const login = async (dispatch: Dispatch<AuthAction>, signInPayload: SignI
 };
 
 export const register = async (signUpPayload: SignUpFormProps) => {
-  try {
-    const data = await AuthActions.register(signUpPayload);
-
-    return data;
-  } catch (error) {
-    console.error(error);
-  }
+  return await AuthActions.register(signUpPayload);
 };
 
 export const logout = async (dispatch: Dispatch<AuthAction>) => {
@@ -115,6 +109,7 @@ export async function errorLogout() {
   if (refreshToken) {
     await postLogout(refreshToken);
   }
+
   localStorage.clear();
   sessionStorage.clear();
   window.location.pathname !== '/sign-in' && window.location.replace('/sign-in');

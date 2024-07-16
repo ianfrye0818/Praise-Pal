@@ -3,7 +3,6 @@ import {
   CommentQueryParams,
   CompanyQueryParams,
   KudosQueryParams,
-  TokenType,
   UserNotificationQueryParams,
   UserQueryParams,
 } from '@/types';
@@ -17,7 +16,6 @@ export const ApiRoutes = {
     logout: '/logout',
     sendResetPasswordEmail: '/reset-password',
     sendVerifyEmailEmail: '/verify-email',
-    verifyToken: (token: string, type: TokenType) => `/verify-token/${token}?type=${type}`,
     verifyAndUpdatePasswordWithToken: (token: string) => `/update-password/${token}`,
     verifyEmailWithToken: (token: string) => `/verify-email/${token}`,
   },
@@ -81,6 +79,8 @@ export const ApiRoutes = {
     findAll: (query?: UserNotificationQueryParams) =>
       `/user-notifications?${generateQueryString(query)}`,
     markAllAsRead: () => `/user-notifications/mark-all-as-read`,
+    markSingleAsRead: (notificationId: string) =>
+      `/user-notifications/${notificationId}/mark-as-read`,
     deleteNotificationById: (notificationId: string) => `/user-notifications/${notificationId}`,
   },
 };

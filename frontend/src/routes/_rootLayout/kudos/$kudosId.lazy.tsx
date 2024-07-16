@@ -20,12 +20,13 @@ function Component() {
   const { user: currentUser } = useAuth().state;
   const router = useRouter();
   const { errorToast } = useErrorToast();
-
   const { data: kudo, isLoading } = useGetSingleKudo({
     companyCode: currentUser?.companyCode as string,
     kudoId: kudosId,
     queryKey: QueryKeys.singleKudo(kudosId),
   });
+
+  console.log(kudo);
 
   if (isLoading) {
     return <DataLoader />;

@@ -14,7 +14,6 @@ import {
   UserNotification,
   UserNotificationQueryParams,
   VerifyTokenAndResetPasswordProps,
-  TokenType,
 } from '@/types';
 import { ApiRoutes } from './api-routes';
 import { deleter, fetcher, patcher, poster } from './axios';
@@ -48,13 +47,6 @@ export const postLogout = async (refreshToken: string) =>
     url: ApiRoutes.auth.logout,
     config: { headers: createRefreshHeader(refreshToken) },
   });
-
-export const getVerifyToken = async (token: string, type: TokenType) => {
-  return await fetcher<VerifyTokenAndResetPasswordProps>({
-    client: 'VERIFY',
-    url: ApiRoutes.auth.verifyToken(token, type),
-  });
-};
 
 export const postSendResetPasswordEmail = async (email: string) =>
   await poster<{ email: string }, VerifyTokenAndResetPasswordProps>({
@@ -126,8 +118,10 @@ export const getCompanyKudos = async (queryPrams: KudosQueryParams) => {
   return await fetcher<TKudos[]>({ url });
 };
 
-export const getsingleKudo = async (companyCode: string, kudoId: string) =>
-  await fetcher<TKudos>({ url: ApiRoutes.kudos.findOneById(companyCode, kudoId) });
+export const getsingleKudo = async (companyCode: string, kudoId: string) => {
+  console.log({ companyCode, kudoId });
+  return await fetcher<TKudos>({ url: ApiRoutes.kudos.findOneById(companyCode, kudoId) });
+};
 
 export const postCreateKudo = async (payload: CreateKudoFormProps) =>
   await poster<CreateKudoFormProps, void>({
@@ -166,6 +160,11 @@ export const getUserNotifications = async (queryParams?: UserNotificationQueryPa
   return await fetcher<UserNotification[]>({
     url: ApiRoutes.userNotifications.findAll(queryParams),
   });
+};
+
+export const patchMarkSingleNotificationAsRead = async (notificationId: string) => {
+  console.log({ notificationId });
+  await patcher<void, void>({ url: ApiRoutes.userNotifications.markSingleAsRead(notificationId) });
 };
 
 export const patchMarkAllNotificationAsRead = async () => {

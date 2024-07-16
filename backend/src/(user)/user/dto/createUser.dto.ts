@@ -34,7 +34,9 @@ export class createUserDTO {
 
 export class updateUserDTO extends PartialType(createUserDTO) {
   @IsOptional()
-  @IsEnum(['ADMIN', 'USER'], { message: 'Role must be either Admin or User' })
+  @IsEnum(['ADMIN', 'USER', 'COMPANY_OWNER'], {
+    message: 'Role must be either Admin or User or Company Owner',
+  })
   @Transform(({ value }: { value: string }) => value.toUpperCase())
   role?: Role;
 

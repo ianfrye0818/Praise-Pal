@@ -38,7 +38,7 @@ export default function AddKudosForm({ queryKey, setOpen }: AddKudosFormProps) {
           <div className='grid gap-2'>
             <FormInputItem<typeof addKudoFormSchema>
               control={form.control}
-              label='Title'
+              label="What's this for?"
               placeholder='Great job on that project!'
               type='text'
               name='title'

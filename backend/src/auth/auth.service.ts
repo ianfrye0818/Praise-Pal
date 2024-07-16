@@ -9,7 +9,7 @@ import {
 import { UserService } from '../(user)/user/user.service';
 import * as bcrypt from 'bcryptjs';
 import { JwtService } from '@nestjs/jwt';
-import { ClientUser, TokenType } from '../types';
+import { ClientUser } from '../types';
 import { RefreshTokenService } from '../core-services/refreshToken.service';
 import { generateClientSideUserProperties } from '../utils';
 import { EmailService } from 'src/core-services/email.service';
@@ -53,51 +53,6 @@ export class AuthService {
     //create client side user properties and return
     if (user && (await bcrypt.compare(password, user.password))) {
       return generateClientSideUserProperties(user);
-    }
-  }
-
-  async verifyToken(type: TokenType, token: string) {
-    type = type.toUpperCase() as TokenType;
-    let response: {
-      message: string;
-      status: number;
-      type: TokenType;
-      payload?: any;
-    };
-
-    if (type !== 'NEW_USER' && type !== 'PASSWORD')
-      throw new HttpException('Invalid token type', 400);
-
-    try {
-      if (type === 'NEW_USER') {
-        const payload = this.jwtService.verify(token, {
-          secret: env.EMAIL_VERIFICATION_SECRET,
-          ignoreExpiration: false,
-        });
-        response = {
-          ...payload,
-          message: 'Email token is valid',
-          status: HttpStatus.OK,
-          type: 'NEW_USER',
-        };
-      }
-
-      if (type === 'PASSWORD') {
-        this.jwtService.verify(token, {
-          secret: env.PASSWORD_RESET_SECRET,
-          ignoreExpiration: false,
-        });
-        response = {
-          message: 'Password token is valid',
-          status: HttpStatus.OK,
-          type: 'PASSWORD',
-        };
-      }
-
-      return response;
-    } catch (error) {
-      console.error(['Verify Token Error'], error);
-      throw new UnauthorizedException('Invalid token');
     }
   }
 
@@ -207,7 +162,11 @@ export class AuthService {
       });
     } catch (error) {
       console.error(['Register User Error'], error);
-      throw new InternalServerErrorException('Could not register user');
+      if (error.code === 'P2002') {
+        throw new HttpException('User already exists', 400);
+      } else {
+        throw new InternalServerErrorException('Could not register user');
+      }
     }
   }
 
@@ -215,7 +174,6 @@ export class AuthService {
     newUserId,
     companyOwnerEmail,
     newUserFullName,
-    newUserEmail,
   }: {
     newUserId: string;
     companyOwnerEmail?: string;
@@ -223,16 +181,10 @@ export class AuthService {
     newUserEmail: string;
   }) {
     try {
-      const token = this.generateEmailVerificationToken({
-        fullName: newUserFullName,
-        userId: newUserId,
-        email: newUserEmail,
-      });
-
-      const url = `${env.CLIENT_URL}/admin/verify-user/${token}`;
-      console.log(url);
-      console.log('owner email: ', newUserEmailOwner(url, newUserFullName));
-      console.log('user email: ', newUserEmailUser(newUserFullName));
+      const url = `${env.CLIENT_URL}/admin/verify-user/${newUserId}`;
+      // console.log(url);
+      // console.log('owner email: ', newUserEmailOwner(url, newUserFullName));
+      // console.log('user email: ', newUserEmailUser(newUserFullName));
 
       // if (companyOwnerEmail) {
       //   await this.emailService.sendEmail({

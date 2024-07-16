@@ -18,7 +18,7 @@ class CustomError extends Error {
 }
 
 const handleApiError = (error: unknown, customMessage?: string): never => {
-  console.error('HandleApiError2222: ', error);
+  console.error('HandleApiError: ', error);
 
   if (isAxiosError(error)) {
     if (!error.response) {
@@ -26,7 +26,7 @@ const handleApiError = (error: unknown, customMessage?: string): never => {
     }
     const errorMessage =
       error.response?.data?.message || customMessage || 'Something went wrong with the request';
-    throw new CustomError(errorMessage, error.response?.status || 500);
+    throw new CustomError(errorMessage, error.response.status || 500);
   }
 
   if (isError(error)) {

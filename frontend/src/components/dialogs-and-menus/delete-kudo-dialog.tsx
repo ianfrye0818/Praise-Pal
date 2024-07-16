@@ -19,7 +19,7 @@ export function DeleteKudoDialog({ setMenuOpen, kudo, children, queryKey }: Dial
   const { pathname } = useLocation();
 
   const handleDeleteKudo = async () => {
-    await deleteKudo({ kudoId: kudo.id, companyCode: currentUser?.companyCode as string });
+    deleteKudo({ kudoId: kudo.id, companyCode: currentUser?.companyCode as string });
     if (pathname.startsWith('/kudos')) {
       navigate({ to: '/' });
     }

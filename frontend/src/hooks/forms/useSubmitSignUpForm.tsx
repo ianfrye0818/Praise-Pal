@@ -1,11 +1,10 @@
 import { register } from '@/api/auth-actions';
 import { UseFormReturn } from 'react-hook-form';
-import useErrorToast from '../useErrorToast';
 import { SignUpFormProps } from '@/types';
 import useSuccessToast from '../useSuccessToast';
+import { isCustomError, isError } from '@/errors';
 
 export default function useSubmitSignUpForm(form: UseFormReturn<SignUpFormProps>) {
-  const { errorToast } = useErrorToast();
   const { successToast } = useSuccessToast();
 
   async function onSubmit(data: SignUpFormProps) {
@@ -22,7 +21,9 @@ export default function useSubmitSignUpForm(form: UseFormReturn<SignUpFormProps>
       });
     } catch (error) {
       console.error(['signInFormError'], error);
-      errorToast({ message: 'An error occured while signing up.' });
+      form.setError('root', {
+        message: isCustomError(error) || isError(error) ? error.message : 'Error registering',
+      });
     }
   }
 

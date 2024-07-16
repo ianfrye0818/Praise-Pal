@@ -7,6 +7,7 @@ import { FormInputItem } from './form-input-item';
 import { Form } from '../ui/form';
 import { SIGN_IN_FORM_DEFAULT_VALUES } from '@/constants';
 import useSubmitSignInForm from '@/hooks/forms/useSubmitSignInForm';
+import { useEffect } from 'react';
 
 export default function SignInForm() {
   const form = useForm<z.infer<typeof signInFormSchema>>({
@@ -16,7 +17,18 @@ export default function SignInForm() {
   const isSubmitting = form.formState.isSubmitting;
   const globalError = form.formState.errors.root;
 
-  const onSubmit = useSubmitSignInForm();
+  useEffect(() => {
+    console.log('rendering');
+    const error = localStorage.getItem('error');
+    if (error) {
+      form.setError('root', {
+        message: error,
+      });
+      localStorage.removeItem('error');
+    }
+  }, [form.formState.isSubmitted]);
+
+  const onSubmit = useSubmitSignInForm({ form });
   return (
     <Form {...form}>
       <form
@@ -39,7 +51,9 @@ export default function SignInForm() {
           type='password'
         />
 
-        {globalError && <p className='italic text-lg text-red-500'>{globalError.message}</p>}
+        {globalError && (
+          <p className='italic text-lg text-center text-red-500'>{globalError.message}</p>
+        )}
         <Button
           disabled={isSubmitting}
           className='w-full'

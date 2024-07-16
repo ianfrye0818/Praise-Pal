@@ -13,7 +13,7 @@ import { env } from '@/zodSchemas/env';
 export const QueryKeys = {
   allKudos: ['kudos'],
   limitKudos: (limit: number) => ['kudos', { limit }],
-  singleKudo: (kudoId: string) => ['singleKudos', kudoId],
+  singleKudo: (kudoId: string) => ['kudos', kudoId],
   sentKudos: ['kudos', 'sent'],
   receivedKudos: ['kudos', 'received'],
   allUsers: ['users'],
@@ -72,6 +72,8 @@ export const BASE_API_URL = env.VITE_API_BASE_URL;
 console.log(BASE_API_URL);
 
 export const SIGN_UP_FORM_DEFAULT_VALUES = {
+  firstName: '',
+  lastName: '',
   email: '',
   password: '',
   confirmPassword: '',

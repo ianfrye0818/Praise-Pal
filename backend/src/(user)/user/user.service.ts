@@ -165,11 +165,11 @@ export class UserService {
   }
 
   async softDeleteUserById(id: string) {
-    return this.updateUserById(id, { deletedAt: new Date() });
+    return this.updateUserById(id, { deletedAt: new Date(), isActive: false });
   }
 
   async restoreUserById(id: string) {
-    return this.updateUserById(id, { deletedAt: null });
+    return this.updateUserById(id, { deletedAt: null, isActive: true });
   }
 
   @Cron('0 0 * * *') // Run every night at midnight

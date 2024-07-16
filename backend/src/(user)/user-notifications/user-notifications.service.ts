@@ -15,7 +15,7 @@ export class UserNotificationsService {
   async getNotifications(userId: string, filter: FilterUserNotificationsDTO) {
     const { take, skip, sort, actionTypes, ...otherFilters } = filter;
 
-    return this.prismaservice.userNotifications.findMany({
+    const data = await this.prismaservice.userNotifications.findMany({
       where: {
         userId,
         deletedAt: filter.deletedAt || null,
@@ -25,13 +25,13 @@ export class UserNotificationsService {
       orderBy: { createdAt: sort || 'desc' },
       take,
       skip: skip || 0,
-      select: {
-        kudosId: true,
-        actionType: true,
-        isRead: true,
-        message: true,
-      },
     });
+    const filteredData = data.map((notification) => {
+      const { createdAt, updatedAt, deletedAt, ...rest } = notification;
+      return rest;
+    });
+
+    return filteredData;
   }
 
   async getSingleNotificationById(id: string) {
@@ -43,6 +43,15 @@ export class UserNotificationsService {
   async createNotification(notificaitonData: CreateUserNotificationDTO) {
     return this.prismaservice.userNotifications.create({
       data: notificaitonData,
+    });
+  }
+
+  async markNotificationAsRead(id: string) {
+    return this.prismaservice.userNotifications.update({
+      where: { id },
+      data: {
+        isRead: true,
+      },
     });
   }
 

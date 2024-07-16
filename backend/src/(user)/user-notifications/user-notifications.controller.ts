@@ -29,6 +29,11 @@ export class UserNotificationsController {
     );
   }
 
+  @Patch(':id/mark-as-read')
+  async markNotificationAsRead(@Param('id') id: string) {
+    return await this.userNotificationService.markNotificationAsRead(id);
+  }
+
   @Patch('mark-all-as-read')
   async markAllNotificationAsRead(@Req() req: any) {
     return await this.userNotificationService.markAllNotificationAsRead(

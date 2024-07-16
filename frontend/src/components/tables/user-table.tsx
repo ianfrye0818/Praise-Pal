@@ -65,8 +65,9 @@ export default function UsersTable({ users, showUserAmount = false, take }: User
           <TableBody>
             {users.map((user) => {
               const disabled =
-                user.role === Role.SUPER_ADMIN ||
-                user.role === Role.COMPANY_OWNER ||
+                (user.role !== Role.USER &&
+                  currentUser?.role !== Role.COMPANY_OWNER &&
+                  currentUser?.role !== Role.SUPER_ADMIN) ||
                 currentUser?.userId === user.userId;
               return (
                 <TableRow key={user.userId}>

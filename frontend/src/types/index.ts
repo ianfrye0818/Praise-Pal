@@ -127,12 +127,16 @@ export interface Comment {
 export interface UserNotification {
   id: string;
   userId: string;
-  isRead: boolean;
-  createdAt: string;
   actionType: ActionTypes;
   message: string;
-  referenceId: string[];
-  kudosId: string;
+  newUserId?: string;
+  newUser?: User;
+  kudosId?: string;
+  commentId?: string;
+  comment?: Comment;
+  kudos?: TKudos;
+  isRead: boolean;
+  createdAt: string;
 }
 
 interface QueryParams {

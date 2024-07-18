@@ -1,10 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../core-services/prisma.service';
 import { CreateUserNotificationDTO } from './dto/createUserNotification.dto';
-import { Cron } from '@nestjs/schedule';
 import { EmailService } from 'src/core-services/email.service';
 import { FilterUserNotificationsDTO } from './dto/filterUserNotifications.dto';
-import { userNotificationSelectOptions } from 'src/utils/constants';
 import { Prisma } from '@prisma/client';
 
 @Injectable()
@@ -15,9 +13,9 @@ export class UserNotificationsService {
   ) {}
 
   async getNotifications(userId: string, filter: FilterUserNotificationsDTO) {
-    const { limit, offset, sort, actionTypes, ...otherFilters } = filter;
+    const { take, skip, sort, actionTypes, ...otherFilters } = filter;
 
-    return this.prismaservice.userNotifications.findMany({
+    const data = await this.prismaservice.userNotifications.findMany({
       where: {
         userId,
         deletedAt: filter.deletedAt || null,
@@ -25,15 +23,15 @@ export class UserNotificationsService {
         ...otherFilters,
       },
       orderBy: { createdAt: sort || 'desc' },
-      take: limit,
-      skip: offset,
-      select: {
-        kudosId: true,
-        actionType: true,
-        isRead: true,
-        message: true,
-      },
+      take,
+      skip: skip || 0,
     });
+    const filteredData = data.map((notification) => {
+      const { createdAt, updatedAt, deletedAt, ...rest } = notification;
+      return rest;
+    });
+
+    return filteredData;
   }
 
   async getSingleNotificationById(id: string) {
@@ -45,6 +43,15 @@ export class UserNotificationsService {
   async createNotification(notificaitonData: CreateUserNotificationDTO) {
     return this.prismaservice.userNotifications.create({
       data: notificaitonData,
+    });
+  }
+
+  async markNotificationAsRead(id: string) {
+    return this.prismaservice.userNotifications.update({
+      where: { id },
+      data: {
+        isRead: true,
+      },
     });
   }
 

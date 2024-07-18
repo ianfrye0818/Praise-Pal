@@ -2,7 +2,7 @@ import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '../ui/
 import { useController } from 'react-hook-form';
 import { z } from 'zod';
 import { Textarea } from '../ui/textarea';
-import { FormInputItemProps } from '@/types';
+import { FormInputItemProps } from './form-input-item';
 
 export function FormTextAreaItem<T extends z.ZodTypeAny>({
   control,

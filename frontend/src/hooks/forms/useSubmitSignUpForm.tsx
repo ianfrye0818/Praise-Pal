@@ -1,38 +1,29 @@
-import * as z from 'zod';
 import { register } from '@/api/auth-actions';
-import { signUpFormSchema } from '@/zodSchemas';
 import { UseFormReturn } from 'react-hook-form';
-import { isCustomError } from '@/errors';
-import { useAuth } from '../useAuth';
-import { isAxiosError } from 'axios';
-import useErrorToast from '../useErrorToast';
+import { SignUpFormProps } from '@/types';
 import useSuccessToast from '../useSuccessToast';
+import { isCustomError, isError } from '@/errors';
 
-export default function useSubmitSignUpForm(form: UseFormReturn<z.infer<typeof signUpFormSchema>>) {
-  const { dispatch } = useAuth();
-  const { errorToast } = useErrorToast();
+export default function useSubmitSignUpForm(form: UseFormReturn<SignUpFormProps>) {
   const { successToast } = useSuccessToast();
 
-  async function onSubmit(data: z.infer<typeof signUpFormSchema>) {
+  async function onSubmit(data: SignUpFormProps) {
     if (data.password !== data.confirmPassword) {
       form.setError('confirmPassword', { message: 'Passwords do not match' });
       return;
     }
     try {
-      const resp = await register(dispatch, data);
-      if (resp) {
-        successToast({ title: 'Account created', message: resp.message });
-      }
+      await register(data);
+      form.reset();
+      successToast({
+        title: 'Registered Successfully',
+        message: 'You have been registered and are waiting approval from an admin',
+      });
     } catch (error) {
       console.error(['signInFormError'], error);
-      if (isAxiosError(error))
-        errorToast({
-          title: 'Error logging in',
-          message: error.response?.data.message || 'An error occurred. Please try again.',
-        });
-      if (isCustomError(error)) errorToast({ title: 'Error loggin in', message: error.message });
-      else
-        errorToast({ message: 'An error occurred. Please try again.', title: 'Error logging in' });
+      form.setError('root', {
+        message: isCustomError(error) || isError(error) ? error.message : 'Error registering',
+      });
     }
   }
 

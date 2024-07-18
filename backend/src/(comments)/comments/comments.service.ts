@@ -23,14 +23,14 @@ export class CommentsService {
   ) {}
 
   async findAllComments(filter?: FilterCommentDTO) {
-    const { limit, offset, sort, ...otherFilters } = filter;
+    const { take, skip, sort, ...otherFilters } = filter;
     try {
       const comments = await this.prismaService.comment.findMany({
         where: { deletedAt: filter.deletedAt || null, ...otherFilters },
         orderBy: { createdAt: sort || 'asc' },
         select: commentSelectOptions,
-        take: limit,
-        skip: offset,
+        take,
+        skip: skip || 0,
       });
       if (!comments) throw new NotFoundException('No comments found');
       return comments;

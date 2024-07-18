@@ -1,6 +1,16 @@
-import { Injectable } from '@nestjs/common';
+import {
+  HttpStatus,
+  Injectable,
+  InternalServerErrorException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { Resend } from 'resend';
-import { cronErrorEmailHtml } from 'src/email-templates';
+import {
+  cronErrorEmailHtml,
+  newUserEmailOwner,
+  newUserEmailUser,
+  userVerifiedEmail,
+} from 'src/email-templates';
 import { env } from 'src/env';
 
 interface EmailData {
@@ -27,6 +37,60 @@ export class EmailService {
       to: ['ianfrye.dev@gmail.com'],
       subject: 'Error Notification',
       html: cronErrorEmailHtml(errorDetails, errorTitle),
+    });
+  }
+
+  async sendNewUserEmail({
+    newUserId,
+    companyOwnerEmail,
+    newUserFullName,
+    newUserEmail,
+  }: {
+    newUserId: string;
+    companyOwnerEmail?: string;
+    newUserFullName: string;
+    newUserEmail: string;
+  }) {
+    try {
+      const url = `${env.CLIENT_URL}/admin/verify-user/${newUserId}`;
+      if (companyOwnerEmail) {
+        await this.sendEmail({
+          html: newUserEmailOwner(url, newUserFullName),
+          subject: 'Verify New User',
+          to: [companyOwnerEmail],
+        });
+      }
+
+      await this.sendEmail({
+        html: newUserEmailUser(newUserFullName),
+        subject: 'Pending Verification',
+        to: [newUserEmail],
+      });
+      return {
+        message: 'Email sent successfully',
+        status: HttpStatus.OK,
+        url,
+      };
+    } catch (error) {
+      console.error(['Verify Email Error'], error);
+      if (error instanceof UnauthorizedException) throw error;
+      throw new InternalServerErrorException('Could not verify email');
+    }
+  }
+
+  async sendUserVerifiedEmail({
+    companyName,
+    newUserEmail,
+    newUserFirstName,
+  }: {
+    newUserFirstName: string;
+    newUserEmail: string;
+    companyName: string;
+  }) {
+    await this.sendEmail({
+      html: userVerifiedEmail(newUserFirstName, companyName),
+      subject: "You've been approved!",
+      to: [newUserEmail],
     });
   }
 

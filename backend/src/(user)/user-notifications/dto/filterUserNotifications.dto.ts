@@ -46,12 +46,12 @@ export class FilterUserNotificationsDTO {
   @IsOptional()
   @IsInt()
   @Type(() => Number)
-  limit?: number;
+  take?: number;
 
   @IsOptional()
   @IsInt()
   @Type(() => Number)
-  offset?: number;
+  skip?: number;
 
   @IsOptional()
   @IsEnum(['asc', 'desc'])

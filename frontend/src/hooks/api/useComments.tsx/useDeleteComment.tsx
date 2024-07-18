@@ -7,10 +7,10 @@ import { QueryKey, useMutation, useQueryClient } from '@tanstack/react-query';
 
 export default function useDeleteComment({
   commentQueryKey = QueryKeys.comments,
-  companyId,
+  companyCode,
   kudosQueryKey,
 }: {
-  companyId: string;
+  companyCode: string;
   commentQueryKey?: QueryKey;
   kudosQueryKey?: QueryKey;
 }) {
@@ -48,7 +48,7 @@ export default function useDeleteComment({
 
   const mutation = useMutation({
     mutationFn: async ({ commentId }: { commentId: string; parentId?: string }) =>
-      await deleteComment(companyId, commentId),
+      await deleteComment(companyCode, commentId),
     onMutate: async ({ commentId, parentId }) => {
       await queryClient.cancelQueries(COMMENT_QUERY_OPTIONS);
       await queryClient.cancelQueries(KUDOS_QUERY_OPTIONS);

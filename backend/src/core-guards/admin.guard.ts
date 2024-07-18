@@ -17,6 +17,7 @@ export class AdminGuard implements CanActivate {
 
     // have to be logged in to access any resources
     const user = request.user as ClientUser;
+
     if (!user)
       throw new UnauthorizedException(
         'Must be logged in to access this resource',
@@ -25,12 +26,12 @@ export class AdminGuard implements CanActivate {
     // Super admin can do anything
     if (user.role === Role.SUPER_ADMIN) return true;
 
-    const companyId = request.params.companyId || request.query.companyId;
+    const companyCode = request.params.companyCode || request.query.companyCode;
 
     // Company owner || admin can do anything within these bounds
     if (
       (user.role === Role.ADMIN || user.role === Role.COMPANY_OWNER) &&
-      user.companyId === companyId
+      user.companyCode === companyCode
     )
       return true;
 

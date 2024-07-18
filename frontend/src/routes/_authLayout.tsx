@@ -1,32 +1,37 @@
-import { useAuth } from '@/hooks/useAuth';
 import logo from '@/assets/logo.png';
-import { createFileRoute, Navigate, Outlet } from '@tanstack/react-router';
+import { useAuth } from '@/hooks/useAuth';
+import { createFileRoute, Outlet, Navigate, Link } from '@tanstack/react-router';
+import * as z from 'zod';
+
+const searchSchema = z.object({
+  redirectUrl: z.string().optional(),
+});
 
 export const Route = createFileRoute('/_authLayout')({
-  component: () => <AuthLayout />,
+  validateSearch: (search: Record<string, unknown>) => searchSchema.parse(search),
+  component: AuthLayout,
 });
 
 function AuthLayout() {
-  const { isAuthenticated } = useAuth().state;
+  const { loading, isAuthenticated } = useAuth().state;
   const lastPath = sessionStorage.getItem('lastPath') || null;
 
-  if (isAuthenticated) {
-    if (lastPath) {
-      return <Navigate to={lastPath} />;
-    }
-    return <Navigate to='/' />;
+  if (!loading && isAuthenticated) {
+    return <Navigate to={lastPath ?? '/'} />;
   }
 
   return (
     <main className='h-full w-full'>
       <header className='h-[96px]  p-1'>
-        <div className='container mx-auto '>
-          <img
-            src={logo}
-            alt='logo'
-            width={180}
-          />
-        </div>
+        <Link to='/sign-in'>
+          <div className='container mx-auto '>
+            <img
+              src={logo}
+              alt='logo'
+              width={180}
+            />
+          </div>
+        </Link>
       </header>
       <Outlet />
     </main>

@@ -9,8 +9,13 @@ export default function useGetCompanyUsers(
 ) {
   const query = useQuery({
     queryKey,
-    queryFn: async () => getCompanyUsers(queryParams),
-    enabled: !!queryParams.companyId,
+    queryFn: async () => {
+      const users = await getCompanyUsers(queryParams);
+      if (users) {
+        return users;
+      } else return [];
+    },
+    enabled: !!queryParams.companyCode,
   });
 
   return query;

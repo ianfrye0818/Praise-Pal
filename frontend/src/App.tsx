@@ -5,9 +5,9 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AuthProvider } from './providers/AuthReducerProvider';
 import AdminModeProvider from './providers/AdminModeProvider';
 import { InfinitySpin } from 'react-loader-spinner';
-import ErrorComponent from './components/error-component';
-import NotFoundComponent from './components/not-found-component';
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+import NotFoundComponent from './components/pages-and-sections/not-found-component';
+// import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+import ErrorComponent from './components/pages-and-sections/error-component';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -21,7 +21,7 @@ const queryClient = new QueryClient({
 });
 const router = createRouter({
   routeTree,
-  context: { state: undefined!, queryClient },
+  context: { state: undefined! },
   defaultNotFoundComponent: NotFoundComponent,
   defaultPendingComponent: () => (
     <div className='h-[100dvh] w-full flex justify-center items-center'>
@@ -56,7 +56,10 @@ export default function App() {
       <AuthProvider>
         <AdminModeProvider>
           <InnerApp />
+          {/* 
+
           <ReactQueryDevtools />
+          */}
         </AdminModeProvider>
       </AuthProvider>
     </QueryClientProvider>

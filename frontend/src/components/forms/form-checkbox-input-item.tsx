@@ -1,8 +1,8 @@
 import { useController } from 'react-hook-form';
 import { Checkbox } from '../ui/checkbox';
 import { z } from 'zod';
-import { FormInputItemProps } from '@/types';
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '../ui/form';
+import { FormInputItemProps } from './form-input-item';
 
 export function CheckBoxInputItem<T extends z.ZodTypeAny>({
   control,

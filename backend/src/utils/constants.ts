@@ -5,7 +5,7 @@ export const userSelectOptions = {
   firstName: true,
   lastName: true,
   email: true,
-  companyId: true,
+  companyCode: true,
   role: true,
   createdAt: true,
 };
@@ -44,7 +44,7 @@ export const singleCommentSelectOptions = {
   comments: commentSelectOptions,
 };
 
-export const userLikeSelectOptions = {
+export const kudoLikeSelectOptions = {
   userId: true,
   kudosId: true,
 };
@@ -67,15 +67,15 @@ export const kudoSelectOptions = {
   likes: true,
   isAnonymous: true,
   isHidden: true,
-  companyId: true,
+  companyCode: true,
   sender: {
     select: userSelectOptions,
   },
   receiver: {
     select: userSelectOptions,
   },
-  userLikes: {
-    select: userLikeSelectOptions,
+  kudoLikes: {
+    select: kudoLikeSelectOptions,
   },
 };
 
@@ -92,8 +92,8 @@ export const singleKudoSelectOptions = {
   receiver: {
     select: userSelectOptions,
   },
-  userLikes: {
-    select: userLikeSelectOptions,
+  kudoLikes: {
+    select: kudoLikeSelectOptions,
   },
 };
 
@@ -101,7 +101,7 @@ export const singleKudoSelectOptions = {
 export class ConstantsService {
   userSelectOptions = userSelectOptions;
   commentSelectOptions = commentSelectOptions;
-  userLikeSelectOptions = userLikeSelectOptions;
+  kudoLikeSelectOptions = kudoLikeSelectOptions;
   userNotificationSelectOptions = userNotificationSelectOptions;
   kudoSelectOptions = kudoSelectOptions;
   singleKudoSelectOptions = singleKudoSelectOptions;

@@ -13,7 +13,7 @@ import { env } from '@/zodSchemas/env';
 export const QueryKeys = {
   allKudos: ['kudos'],
   limitKudos: (limit: number) => ['kudos', { limit }],
-  singleKudo: (kudoId: string) => ['singleKudos', kudoId],
+  singleKudo: (kudoId: string) => ['kudos', kudoId],
   sentKudos: ['kudos', 'sent'],
   receivedKudos: ['kudos', 'received'],
   allUsers: ['users'],
@@ -72,10 +72,13 @@ export const BASE_API_URL = env.VITE_API_BASE_URL;
 console.log(BASE_API_URL);
 
 export const SIGN_UP_FORM_DEFAULT_VALUES = {
+  firstName: '',
+  lastName: '',
   email: '',
   password: '',
   confirmPassword: '',
   companyCode: '',
+  isActive: false,
 };
 
 export const SIGN_IN_FORM_DEFAULT_VALUES = {
@@ -83,8 +86,8 @@ export const SIGN_IN_FORM_DEFAULT_VALUES = {
   password: '',
 };
 
-export const ADD_KUDOS_DIALOG_FORM_DEFAULT_VALUES = (senderId: string, companyId: string) => {
-  return { title: '', message: '', isAnonymous: false, receiverId: '', senderId, companyId };
+export const ADD_KUDOS_DIALOG_FORM_DEFAULT_VALUES = (senderId: string, companyCode: string) => {
+  return { title: '', message: '', isAnonymous: false, receiverId: '', senderId, companyCode };
 };
 
 export function EDIT_KUDOS_DIALOG_FORM_DEFAULT_VALUES(kudo: TKudos) {
@@ -93,7 +96,7 @@ export function EDIT_KUDOS_DIALOG_FORM_DEFAULT_VALUES(kudo: TKudos) {
     message: kudo.message,
     isHidden: kudo.isHidden,
     id: kudo.id,
-    companyId: kudo.companyId,
+    companyCode: kudo.companyCode,
   };
 }
 

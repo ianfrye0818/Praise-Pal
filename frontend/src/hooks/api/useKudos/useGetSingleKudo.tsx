@@ -3,18 +3,18 @@ import { QueryKeys } from '@/constants';
 import { QueryKey, useQuery } from '@tanstack/react-query';
 
 export default function useGetSingleKudo({
-  companyId,
+  companyCode,
   kudoId,
   queryKey = QueryKeys.singleKudo(kudoId),
 }: {
-  companyId: string;
+  companyCode: string;
   kudoId: string;
   queryKey?: QueryKey;
 }) {
   const query = useQuery({
     queryKey,
-    queryFn: async () => getsingleKudo(companyId, kudoId),
-    enabled: !!companyId && !!kudoId,
+    queryFn: async () => getsingleKudo(companyCode, kudoId),
+    enabled: !!companyCode && !!kudoId,
   });
   return query;
 }

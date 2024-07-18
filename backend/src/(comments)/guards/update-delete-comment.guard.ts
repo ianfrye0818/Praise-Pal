@@ -19,7 +19,7 @@ export class EditCommentGuard implements CanActivate {
     const jwtUser = request.user as ClientUser;
 
     const method = request.method;
-    const companyId = jwtUser.companyId;
+    const companyCode = jwtUser.companyCode;
     const commentId = request.params.commentId || request.query.commentId;
 
     const comment = await this.commentService.findCommentById(
@@ -36,7 +36,7 @@ export class EditCommentGuard implements CanActivate {
     // Company owner and admin can delete comments in their company
     if (
       (jwtUser.role === Role.ADMIN || jwtUser.role === Role.COMPANY_OWNER) &&
-      jwtUser.companyId === companyId &&
+      jwtUser.companyCode === companyCode &&
       method === 'DELETE'
     ) {
       return true;

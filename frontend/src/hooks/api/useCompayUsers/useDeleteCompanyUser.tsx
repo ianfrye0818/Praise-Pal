@@ -1,47 +1,37 @@
 import { deleteSingleUser } from '@/api/api-handlers';
+import { errorLogout } from '@/api/auth-actions';
 import { QueryKeys } from '@/constants';
-import useErrorToast from '@/hooks/useErrorToast';
+import { CustomError } from '@/errors';
+import { useAuth } from '@/hooks/useAuth';
 import useSuccessToast from '@/hooks/useSuccessToast';
-import { User } from '@/types';
+import { Role } from '@/types';
 import { QueryKey, useMutation, useQueryClient } from '@tanstack/react-query';
 
 interface UseGetUserProps {
   userId: string;
-  companyId: string;
+  companyCode: string;
 }
 
 export default function useDeleteCompanyUser({
   queryKey = QueryKeys.allUsers,
 }: { queryKey?: QueryKey } = {}) {
+  const { user: currentUser } = useAuth().state;
   const USER_QUERY_OPTIONS = { queryKey, exact: false };
   const queryClient = useQueryClient();
-  const { errorToast } = useErrorToast();
   const { successToast } = useSuccessToast();
   const mutation = useMutation({
-    mutationFn: async ({ companyId, userId }: UseGetUserProps) =>
-      await deleteSingleUser(companyId, userId),
-    //optimistic update
-    onMutate: async (newData: Partial<User>) => {
-      await queryClient.cancelQueries(USER_QUERY_OPTIONS);
-
-      const previousData = queryClient.getQueryData(['companyUsers']);
-
-      queryClient.setQueriesData(USER_QUERY_OPTIONS, (old: any) => {
-        return old.filter((user: User) => {
-          user.userId !== newData.userId;
-        });
-      });
-      return { previousData };
+    mutationFn: async ({ companyCode, userId }: UseGetUserProps) => {
+      if (
+        currentUser?.userId === userId &&
+        (currentUser?.role === Role.SUPER_ADMIN || currentUser?.role === Role.COMPANY_OWNER)
+      ) {
+        throw new CustomError('This account cannot be deleted!');
+      }
+      await deleteSingleUser(companyCode, userId);
+      if (currentUser?.userId === userId) {
+        errorLogout();
+      }
     },
-    onError: (err, __, context) => {
-      console.error(['useDeleteCompanyUser'], err, context);
-      queryClient.setQueriesData(USER_QUERY_OPTIONS, context?.previousData);
-      errorToast({
-        message:
-          'Something went wrong updating user. If this happens again, please contact your administrator',
-      });
-    },
-
     onSuccess: () => {
       queryClient.invalidateQueries(USER_QUERY_OPTIONS);
       successToast({ message: 'User deleted successfully' });

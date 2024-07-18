@@ -14,7 +14,7 @@ export function generateCompanyCode() {
 }
 
 export function generateClientSideUserProperties(user: User) {
-  const { password, createdAt, deletedAt, updatedAt, ...rest } = user;
+  const { password, ...rest } = user;
   return rest;
 }
 

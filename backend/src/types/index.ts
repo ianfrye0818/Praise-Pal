@@ -3,11 +3,14 @@ import { ActionType, Role } from '@prisma/client';
 export interface ClientUser {
   email: string;
   userId: string;
-  companyId: string;
+  companyCode: string;
   role: Role;
   firstName: string;
   lastName: string;
-  verified: boolean;
+  isActive: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+  deletedAt: Date;
 }
 export interface ClientComment {
   id: string;
@@ -44,4 +47,4 @@ export interface JWTPayload extends ClientUser {
   exp: number;
 }
 
-export type TokenType = 'EMAIL' | 'PASSWORD';
+export type TokenType = 'NEW_USER' | 'PASSWORD';

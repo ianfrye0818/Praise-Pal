@@ -10,7 +10,7 @@ export default function useSubmitEditKudosForm(queryKey?: QueryKey) {
     try {
       await mutateAsync({
         payload: data,
-        companyId: data.companyId,
+        companyCode: data.companyCode,
       });
     } catch (error) {
       console.error(error);

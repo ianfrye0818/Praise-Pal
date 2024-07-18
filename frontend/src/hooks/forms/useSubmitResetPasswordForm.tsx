@@ -2,6 +2,7 @@ import { ErrorOption } from 'react-hook-form';
 import useResetPassword from '../api/useResetPassword';
 import * as z from 'zod';
 import { ResetPasswordFormSchema } from '@/zodSchemas';
+import { isCustomError, isError } from '@/errors';
 interface ResetPasswordFormProps {
   setError: (
     name: 'password' | 'confirmPassword' | 'token' | 'root' | `root.${string}`,
@@ -15,11 +16,21 @@ export default function useSubmitResetPasswordForm({ setError }: ResetPasswordFo
   const { mutateAsync: resetPassword } = useResetPassword({ type: 'verifyToken' });
 
   const onSubmit = async (data: z.infer<typeof ResetPasswordFormSchema>) => {
-    if (data.password !== data.confirmPassword) {
-      setError('confirmPassword', { message: 'Passwords do not match' });
-      return;
+    try {
+      if (data.password !== data.confirmPassword) {
+        setError('confirmPassword', { message: 'Passwords do not match' });
+        return;
+      }
+      await resetPassword({ token: data.token, password: data.password });
+    } catch (error) {
+      console.error(['error', error]);
+      setError('root', {
+        message:
+          isCustomError(error) || isError(error)
+            ? error.message
+            : 'An error occurred. Please try again.',
+      });
     }
-    await resetPassword({ token: data.token, password: data.password });
   };
 
   return onSubmit;

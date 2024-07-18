@@ -12,10 +12,10 @@ interface UpdateCommentProps {
 
 export default function useUpdateComment({
   commentQueryKey = QueryKeys.comments,
-  companyId,
+  companyCode,
   kudoQueryKey = QueryKeys.allKudos,
 }: {
-  companyId: string;
+  companyCode: string;
   commentQueryKey: QueryKey;
   kudoQueryKey: QueryKey;
 }) {
@@ -48,7 +48,7 @@ export default function useUpdateComment({
 
   return useMutation({
     mutationFn: async ({ commentId, content }: UpdateCommentProps) => {
-      await patchUpdateComment(companyId, commentId, content);
+      await patchUpdateComment(companyCode, commentId, content);
     },
     onMutate: async ({ commentId, content, parentId }) => {
       await queryClient.cancelQueries(COMMENT_QUERY_OPTIONS);

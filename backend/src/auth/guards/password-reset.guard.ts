@@ -1,4 +1,9 @@
-import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
+import {
+  CanActivate,
+  ExecutionContext,
+  HttpException,
+  Injectable,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { env } from 'src/env';
 
@@ -6,12 +11,12 @@ import { env } from 'src/env';
 export class PasswordResetGuard implements CanActivate {
   constructor(private jwtService: JwtService) {}
 
-  async canActivate(context: ExecutionContext) {
+  canActivate(context: ExecutionContext): boolean {
     const request = context.switchToHttp().getRequest();
     const token = request.params.token;
 
     if (!token) {
-      return false;
+      throw new HttpException('Token is required', 400);
     }
 
     try {
@@ -21,7 +26,7 @@ export class PasswordResetGuard implements CanActivate {
       request.email = payload.email;
       return true;
     } catch (error) {
-      return false;
+      throw new HttpException('Invalid Token', 400);
     }
   }
 }

@@ -13,20 +13,21 @@ import {
   removeAuthTokens,
   removeUserToken,
   setAuthTokens,
-  setErrorMessage,
   setUserToken,
 } from '@/lib/localStorage';
 import { CustomError } from '@/errors';
 
 const AuthActions = {
   login: async (signInPayload: SignInFormProps) => {
-    return await postLoginUser(signInPayload);
+    {
+      return await postLoginUser(signInPayload);
+    }
   },
   register: async (signUpPaylaod: SignUpFormProps) => {
     return await postRegisterUser(signUpPaylaod);
   },
-  update: async (companyId: string, userId: string, updateUserPayload: UpdateUserProps) => {
-    return await patchUpdateUser(companyId, userId, updateUserPayload);
+  update: async (companyCode: string, userId: string, updateUserPayload: UpdateUserProps) => {
+    return await patchUpdateUser(companyCode, userId, updateUserPayload);
   },
   logout: async () => {
     const authTokens = getAuthTokens();
@@ -36,10 +37,10 @@ const AuthActions = {
   refreshTokens: async () => {
     const authTokens = getAuthTokens();
     if (!authTokens || !authTokens.refreshToken) {
-      errorLogout();
       throw new CustomError('No auth tokens found', 401);
     }
-    setAuthTokens(await postRefreshTokens(authTokens.refreshToken));
+    const newTokens = await postRefreshTokens(authTokens.refreshToken);
+    setAuthTokens(newTokens);
   },
 };
 
@@ -62,17 +63,8 @@ export const login = async (dispatch: Dispatch<AuthAction>, signInPayload: SignI
   }
 };
 
-export const register = async (dispatch: Dispatch<AuthAction>, signUpPayload: SignUpFormProps) => {
-  dispatch({ type: ActionType.REGISTER_REQUEST });
-  try {
-    const data = await AuthActions.register(signUpPayload);
-    dispatch({
-      type: ActionType.REGISTER_SUCCESS,
-    });
-    return data;
-  } catch (error) {
-    dispatch({ type: ActionType.REGISTER_FAILURE });
-  }
+export const register = async (signUpPayload: SignUpFormProps) => {
+  return await AuthActions.register(signUpPayload);
 };
 
 export const logout = async (dispatch: Dispatch<AuthAction>) => {
@@ -87,15 +79,20 @@ export const logout = async (dispatch: Dispatch<AuthAction>) => {
   }
 };
 
-export async function updateCurrentUser(
-  dispatch: Dispatch<AuthAction>,
-  companyId: string,
-  userId: string,
-  updateUserPayload: UpdateUserProps
-) {
+export async function updateCurrentUser({
+  companyCode,
+  currentUserId,
+  dispatch,
+  payload,
+}: {
+  dispatch: Dispatch<AuthAction>;
+  currentUserId: string;
+  companyCode: string;
+  payload: UpdateUserProps;
+}) {
   dispatch({ type: ActionType.UPDATE_REQUEST });
   try {
-    const data = await AuthActions.update(companyId, userId, updateUserPayload);
+    const data = await AuthActions.update(companyCode, currentUserId, payload);
     if (!data) throw new Error('Error updating user');
     dispatch({
       type: ActionType.UPDATE_SUCCESS,
@@ -107,9 +104,13 @@ export async function updateCurrentUser(
   }
 }
 
-export function errorLogout(errorMessage?: string) {
+export async function errorLogout() {
+  const refreshToken = getAuthTokens()?.refreshToken;
+  if (refreshToken) {
+    await postLogout(refreshToken);
+  }
+
   localStorage.clear();
-  setErrorMessage(errorMessage || 'Session expired. Please sign in again.');
   sessionStorage.clear();
   window.location.pathname !== '/sign-in' && window.location.replace('/sign-in');
 }

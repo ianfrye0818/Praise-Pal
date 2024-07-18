@@ -8,38 +8,39 @@ import { PrismaService } from '../../core-services/prisma.service';
 import { createUserDTO, updateUserDTO } from './dto/createUser.dto';
 import * as bcrypt from 'bcryptjs';
 import { Cron } from '@nestjs/schedule';
-import { Prisma, User } from '@prisma/client';
+import { ActionType, Prisma, Role } from '@prisma/client';
 import { EmailService } from '../../core-services/email.service';
 import { generateClientSideUserProperties } from '../../utils';
 import { ClientUser } from '../../types';
 import { FilterUserDTO } from './dto/filterUser.dto';
+import { UserNotificationsService } from '../user-notifications/user-notifications.service';
 
 @Injectable()
 export class UserService {
   constructor(
     private prismaService: PrismaService,
     private emailService: EmailService,
+    private notificationService: UserNotificationsService,
   ) {}
 
-  async findAllUsers(filter: FilterUserDTO): Promise<ClientUser[]> {
-    const { limit, offset, sort, roles, cursor, ...otherFilters } = filter;
+  async findAllUsers(filter: FilterUserDTO) {
+    const { take, skip, sort, roles, cursor, ...otherFilters } = filter;
     try {
       const users = await this.prismaService.user.findMany({
         where: {
-          deletedAt: filter.deletedAt || null,
           role: { in: roles },
           ...otherFilters,
         },
-        orderBy: [{ createdAt: sort || 'asc' }, { userId: 'asc' }],
-        take: limit,
-        skip: offset ? offset : 0,
+        orderBy: [
+          { role: sort || 'desc' },
+          { lastName: 'asc' },
+          { userId: 'asc' },
+        ],
+        take,
+        skip: skip || 0,
         cursor: cursor ? { userId: cursor } : undefined,
       });
-      const clientUsers = users.map((user) =>
-        generateClientSideUserProperties(user),
-      );
-
-      return clientUsers;
+      return users.map((user) => generateClientSideUserProperties(user));
     } catch (error) {
       console.error(error);
       throw new HttpException('Something went wrong', 500);
@@ -47,27 +48,22 @@ export class UserService {
   }
 
   async findAllByCompany(
-    companyId: string,
-    deletedUsers?: boolean,
+    companyCode: string,
+    query?: FilterUserDTO,
   ): Promise<ClientUser[]> {
     try {
-      const users = await this.findAllUsers({
-        companyId,
-        deletedAt: deletedUsers ? new Date() : null,
-      });
-      return users;
+      return await this.findAllUsers({ ...query, companyCode });
     } catch (error) {
       console.error(error);
       throw new HttpException('Something went wrong', 500);
     }
   }
 
-  async findOneById(userId: string): Promise<ClientUser> {
+  async findOneById(userId: string) {
     try {
       const user = await this.prismaService.user.findUnique({
         where: { userId },
       });
-      if (!user) throw new NotFoundException('User not found');
       return generateClientSideUserProperties(user);
     } catch (error) {
       console.error(error);
@@ -80,7 +76,7 @@ export class UserService {
     }
   }
 
-  async findOneByEmail(email: string): Promise<User> {
+  async findOneByEmail(email: string) {
     try {
       return await this.prismaService.user.findUnique({ where: { email } });
     } catch (error) {
@@ -89,24 +85,30 @@ export class UserService {
     }
   }
 
-  async create(data: createUserDTO): Promise<User> {
+  async create(data: createUserDTO) {
     const { companyCode, password, ...userData } = data;
 
     const hashedPassword = await bcrypt.hash(password, 10);
     const formattedEmail = userData.email.toLowerCase();
     const company = await this.prismaService.company.findUnique({
       where: { companyCode },
+      include: {
+        users: {
+          where: { OR: [{ role: Role.ADMIN }, { role: Role.COMPANY_OWNER }] },
+        },
+      },
     });
     if (!company) throw new NotFoundException('Company not found');
     const newUser = await this.prismaService.user.create({
       data: {
         ...userData,
-        companyId: company.id,
+        companyCode,
         password: hashedPassword,
         email: formattedEmail,
       },
     });
-    return newUser;
+
+    return { newUser, company };
   }
   catch(error) {
     console.error(error);
@@ -117,10 +119,7 @@ export class UserService {
     throw new HttpException('Something went wrong', 500);
   }
 
-  async updateUserById(
-    userId: string,
-    data: updateUserDTO,
-  ): Promise<ClientUser> {
+  async updateUserById(userId: string, data: updateUserDTO) {
     try {
       await this.findOneById(userId);
 
@@ -143,10 +142,7 @@ export class UserService {
     }
   }
 
-  async updateByEmail(
-    email: string,
-    data: Prisma.UserUpdateInput,
-  ): Promise<ClientUser> {
+  async updateByEmail(email: string, data: Prisma.UserUpdateInput) {
     if (data.password) {
       data.password = await bcrypt.hash(data.password as string, 10);
     }
@@ -159,8 +155,12 @@ export class UserService {
     return generateClientSideUserProperties(updatedUser);
   }
 
-  async softDeleteUserById(id: string): Promise<ClientUser> {
-    return this.updateUserById(id, { deletedAt: new Date() });
+  async softDeleteUserById(id: string) {
+    return this.updateUserById(id, { deletedAt: new Date(), isActive: false });
+  }
+
+  async restoreUserById(id: string) {
+    return this.updateUserById(id, { deletedAt: null, isActive: true });
   }
 
   @Cron('0 0 * * *') // Run every night at midnight

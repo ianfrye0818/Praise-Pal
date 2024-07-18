@@ -1,5 +1,5 @@
-import KudosTable from '@/components/admin/tables/kudos-table';
-import DataLoader from '@/components/data-loader';
+import KudosTable from '@/components/tables/kudos-table';
+import DataLoader from '@/components/ui/data-loader';
 import { QueryKeys } from '@/constants';
 import useGetCompanyKudos from '@/hooks/api/useKudos/useGetCompanyKudos';
 import { useAuth } from '@/hooks/useAuth';
@@ -13,7 +13,7 @@ function KudosAdminPage() {
   const { user } = useAuth().state;
   const { data: kudos, isLoading } = useGetCompanyKudos(
     {
-      companyId: user?.companyId as string,
+      companyCode: user?.companyCode as string,
     },
     QueryKeys.allKudos
   );

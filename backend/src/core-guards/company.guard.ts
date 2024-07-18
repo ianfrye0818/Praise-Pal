@@ -24,15 +24,15 @@ export class CompanyGuard implements CanActivate {
       );
     }
 
-    const companyId = request.params.companyId || request.query.companyId;
-    if (!companyId) {
-      throw new HttpException('Company ID is required', 400);
+    const companyCode = request.params.companyCode || request.query.companyCode;
+    if (!companyCode) {
+      throw new HttpException('Company Code is required', 400);
     }
     if (user.role === Role.SUPER_ADMIN) {
       return true;
     }
 
-    if (user.companyId === companyId) {
+    if (user.companyCode === companyCode) {
       return true;
     }
 

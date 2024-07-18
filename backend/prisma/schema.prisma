@@ -8,47 +8,44 @@ datasource db {
 }
 
 enum Role {
-  USER
-  ADMIN
   SUPER_ADMIN
   COMPANY_OWNER
+  ADMIN
+  USER
 }
 
 model User {
-  userId                 String                  @id @default(cuid())
-  displayName            String?
-  firstName              String
-  lastName               String
-  email                  String                  @unique
-  password               String
-  role                   Role?                   @default(USER)
-  companyId              String
-  company                Company                 @relation(fields: [companyId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  notifications          UserNotifications[]
-  settings               UserSettings[]
-  createdAt              DateTime                @default(now())
-  updatedAt              DateTime                @updatedAt
-  deletedAt              DateTime?
-  sentKudos              Kudos[]                 @relation(name: "SentKudos")
-  receivedKudos          Kudos[]                 @relation(name: "ReceivedKudos")
-  userLikes              User_Like[]
-  refreshTokens          RefreshToken[]
-  comments               Comment[]
-  commentLkes            Comment_Like[]
-  verified               Boolean                 @default(false)
-  // passwordResetToken     PasswordResetToken?
-  // emailVerificationToken EmailVerificationToken?
+  userId        String              @id @default(cuid())
+  firstName     String
+  lastName      String
+  email         String              @unique
+  password      String
+  role          Role                @default(USER)
+  companyCode   String
+  company       Company             @relation(fields: [companyCode], references: [companyCode], onDelete: Cascade, onUpdate: Cascade)
+  notifications UserNotifications[] @relation("user")
+  newUser       UserNotifications[] @relation("newUser")
+  settings      UserSettings[]
+  createdAt     DateTime            @default(now())
+  updatedAt     DateTime            @updatedAt
+  deletedAt     DateTime?
+  sentKudos     Kudos[]             @relation(name: "SentKudos")
+  receivedKudos Kudos[]             @relation(name: "ReceivedKudos")
+  kudoLikes     Kudo_Like[]
+  refreshTokens RefreshToken[]
+  comments      Comment[]
+  commentLkes   Comment_Like[]
+  isActive      Boolean             @default(true)
 }
 
 model Company {
-  id          String    @id @default(cuid())
+  companyCode String    @id
   name        String
   address     String?
   city        String?
   state       String?
   zip         String?
   phone       String?
-  companyCode String    @unique
   users       User[]
   kudos       Kudos[]
   createdAt   DateTime  @default(now())
@@ -60,7 +57,7 @@ model Kudos {
   id                String              @id @default(cuid())
   senderId          String
   receiverId        String
-  companyId         String
+  companyCode       String
   message           String
   title             String?
   createdAt         DateTime            @default(now())
@@ -72,8 +69,8 @@ model Kudos {
   comments          Comment[]
   sender            User                @relation(fields: [senderId], references: [userId], name: "SentKudos")
   receiver          User                @relation(fields: [receiverId], references: [userId], name: "ReceivedKudos")
-  company           Company             @relation(fields: [companyId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  userLikes         User_Like[]
+  company           Company             @relation(fields: [companyCode], references: [companyCode], onDelete: Cascade, onUpdate: Cascade)
+  kudoLikes         Kudo_Like[]
   userNotifications UserNotifications[]
 }
 
@@ -95,7 +92,7 @@ model Comment {
   usernotifications UserNotifications[]
 }
 
-model User_Like {
+model Kudo_Like {
   userId  String
   kudosId String
   likedAt DateTime @default(now())
@@ -119,9 +116,11 @@ model Comment_Like {
 model UserNotifications {
   id         String     @id @default(cuid())
   userId     String
-  user       User       @relation(fields: [userId], references: [userId])
+  user       User       @relation(fields: [userId], references: [userId], name: "user")
   actionType ActionType
   message    String
+  newUserId  String?
+  newUser    User?      @relation(fields: [newUserId], references: [userId], name: "newUser")
   kudosId    String?
   commentId  String?
   comment    Comment?   @relation(fields: [commentId], references: [id], onDelete: Cascade)
@@ -157,24 +156,5 @@ enum ActionType {
   COMMENT_COMMENT
   KUDOS_COMMENT
   KUDOS
+  NEW_USER
 }
-
-// model PasswordResetToken {
-//   id        String   @id @default(cuid())
-//   userId    String   @unique
-//   user      User     @relation(fields: [userId], references: [userId], onDelete: Cascade, onUpdate: Cascade)
-//   token     String
-//   createdAt DateTime @default(now())
-//   expiresAt DateTime
-//   used      Boolean  @default(false)
-// }
-
-// model EmailVerificationToken {
-//   id        String   @id @default(cuid())
-//   userId    String   @unique
-//   user      User     @relation(fields: [userId], references: [userId], onDelete: Cascade, onUpdate: Cascade)
-//   token     String
-//   createdAt DateTime @default(now())
-//   expiresAt DateTime
-//   used      Boolean  @default(false)
-// }

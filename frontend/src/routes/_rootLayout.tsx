@@ -1,28 +1,27 @@
-import AddKudosDialog from '@/components/dialogs/add-kudos-dialog';
-import MobileNavSheet from '@/components/mobile-nav/mobile-nav-sheet';
-import NotificationsDropDown from '@/components/sidebar/notifications-dropdown';
-import Sidebar from '@/components/sidebar/sidebar';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import useGetUserNotifications from '@/hooks/api/userNotifications/useGetUserNotifications';
+import Header from '@/components/pages-and-sections/layout-header';
+import MobileNavSheet from '@/components/pages-and-sections/mobile-nav-sheet';
+import Sidebar from '@/components/pages-and-sections/sidebar';
 import useAdminMode from '@/hooks/useAdminMode';
 import { useAuth } from '@/hooks/useAuth';
-import { createFileRoute, Outlet, Navigate } from '@tanstack/react-router';
-import { BellIcon } from 'lucide-react';
+
+import { createFileRoute, Outlet, Navigate, useLocation } from '@tanstack/react-router';
 
 export const Route = createFileRoute('/_rootLayout')({
   component: () => <RootLayout />,
 });
 
 export function RootLayout() {
-  const { loading, isAuthenticated } = useAuth().state;
+  const { isAuthenticated, loading } = useAuth().state;
   const { adminMode } = useAdminMode();
+  const { pathname } = useLocation();
 
-  if (loading) {
-    return <div>Loading...</div>;
-  }
-
-  if (!isAuthenticated) {
-    return <Navigate to='/sign-in' />;
+  if (!loading && !isAuthenticated) {
+    return (
+      <Navigate
+        to='/sign-in'
+        search={{ redirectUrl: pathname }}
+      />
+    );
   }
 
   return (
@@ -37,33 +36,5 @@ export function RootLayout() {
         <MobileNavSheet />
       </div>
     </main>
-  );
-}
-
-function Header() {
-  const { data: notifications } = useGetUserNotifications();
-  const unreadLength = notifications?.filter((n) => !n.isRead).length || 0;
-  const showNotifcationAmount = notifications && unreadLength > 0;
-
-  return (
-    <header className='flex p-2 items-center justify-end'>
-      <div className='ml-auto flex gap-4 items-center'>
-        <div className='relative'>
-          <Avatar>
-            <AvatarFallback className='bg-midnightGreen'>
-              <NotificationsDropDown notifications={notifications || []}>
-                <BellIcon />
-              </NotificationsDropDown>
-            </AvatarFallback>
-          </Avatar>
-          {showNotifcationAmount && (
-            <div className='absolute -top-2 -right-2 p-2 w-6 h-6 flex items-center justify-center rounded-full bg-destructive text-primary-foreground'>
-              {unreadLength}
-            </div>
-          )}
-        </div>
-        <AddKudosDialog />
-      </div>
-    </header>
   );
 }

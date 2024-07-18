@@ -6,10 +6,10 @@ import { QueryKey, useMutation, useQueryClient } from '@tanstack/react-query';
 
 export default function useCreateComment({
   commentQueryKey = QueryKeys.comments,
-  companyId,
+  companyCode,
   kudoQueryKey = QueryKeys.allKudos,
 }: {
-  companyId: string;
+  companyCode: string;
   kudoQueryKey?: QueryKey;
   commentQueryKey?: QueryKey;
 }) {
@@ -44,7 +44,7 @@ export default function useCreateComment({
 
   return useMutation({
     mutationFn: async (payload: CreateCommentFormProps) =>
-      await postCreateComment(companyId, payload),
+      await postCreateComment(companyCode, payload),
     onMutate: async (payload) => {
       await queryClient.cancelQueries(COMMENT_QUERY_OPTIONS);
 
@@ -57,13 +57,16 @@ export default function useCreateComment({
           comments: [],
           likes: 0,
           user: {
-            companyId: companyId,
+            companyCode,
             email: 'test@test.com',
             role: Role.USER,
             userId: payload.userId,
             firstName: 'Test',
             lastName: 'User',
-            verified: true,
+            isActive: true,
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+            deletedAt: null,
           },
           commentLikes: [],
           createdAt: new Date().toISOString(),

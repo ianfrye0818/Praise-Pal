@@ -51,7 +51,7 @@ export default function SignInForm() {
         />
 
         {globalError && (
-          <p className='italic text-lg text-center text-red-500'>{globalError.message}</p>
+          <p className='italic text-sm text-center text-red-500'>{globalError.message}</p>
         )}
         <Button
           disabled={isSubmitting}

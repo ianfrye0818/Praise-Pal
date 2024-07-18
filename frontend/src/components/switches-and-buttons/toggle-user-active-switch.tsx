@@ -38,7 +38,7 @@ export default function ToggleActiveSwitch({ user, take, disabled }: ToggleActiv
   return (
     <>
       <Toggle
-        disabled={disabled}
+        disabled={disabled || user.deletedAt !== null}
         pressed={user.isActive}
         onPressedChange={handleToggleUserActiveStatus}
       >

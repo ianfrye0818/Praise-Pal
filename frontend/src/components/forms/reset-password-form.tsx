@@ -18,7 +18,7 @@ export default function ResetPasswordForm({ token }: { token: string }) {
 
   const submitting = form.formState.isSubmitting;
   const isValid = form.formState.isValid;
-  const globalError = 'Test';
+  const globalError = form.formState.errors?.root?.message;
 
   return (
     <Form {...form}>

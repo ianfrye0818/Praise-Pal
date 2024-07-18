@@ -45,7 +45,7 @@ export class AuthService {
     //make sure user is verified
     if (user && user.isActive === false)
       throw new UnauthorizedException(
-        'Please verify your email before logging in',
+        'Your account has been deactivated. Contact admin for access',
       );
 
     //create client side user properties and return

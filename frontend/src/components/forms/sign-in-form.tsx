@@ -55,7 +55,7 @@ export default function SignInForm() {
         )}
         <Button
           disabled={isSubmitting}
-          className='w-full'
+          className='w-full'  
         >
           {isSubmitting ? 'Submitting... ' : 'Sign In'}
         </Button>

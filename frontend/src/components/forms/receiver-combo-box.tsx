@@ -30,7 +30,9 @@ export default function ReceiverComboBox({ field, form }: ReceiverComboBox) {
 
   if (!data) return null;
 
-  const users = data.filter((r) => r.userId !== currentUser?.userId);
+  const users = data.filter(
+    (r) => r.userId !== currentUser?.userId && r.isActive === true && r.deletedAt === null
+  );
 
   return (
     <Popover

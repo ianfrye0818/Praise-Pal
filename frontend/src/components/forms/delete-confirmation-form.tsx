@@ -6,7 +6,6 @@ import { Form } from '../ui/form';
 import { FormInputItem } from './form-input-item';
 import { zodResolver } from '@hookform/resolvers/zod';
 import useDeleteCompanyUser from '@/hooks/api/useCompayUsers/useDeleteCompanyUser';
-import useErrorToast from '@/hooks/useErrorToast';
 import { isCustomError } from '@/errors';
 
 interface DeleteConfirmationFormProps {
@@ -14,6 +13,8 @@ interface DeleteConfirmationFormProps {
   userId: string;
   companyCode: string;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  setMenuOpen?: React.Dispatch<React.SetStateAction<boolean>>;
+  setCanSubmit?: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const formSchema = z.object({
@@ -25,8 +26,9 @@ export default function DeleteConfirmationForm({
   email,
   companyCode,
   userId,
+  setMenuOpen,
+  setCanSubmit,
 }: DeleteConfirmationFormProps) {
-  const { errorToast } = useErrorToast();
   const form = useForm<z.infer<typeof formSchema>>({
     defaultValues: {
       verifiedEmail: '',
@@ -37,24 +39,28 @@ export default function DeleteConfirmationForm({
 
   const onSubmit = async (data: z.infer<typeof formSchema>) => {
     try {
-      if (data.verifiedEmail === email) {
-        await deleteUser({ companyCode, userId });
-
-        setOpen(false);
-      } else {
+      if (data.verifiedEmail !== email) {
         form.setError('verifiedEmail', { message: 'Email does not match' });
+        return;
       }
+      await deleteUser({ companyCode, userId });
+
+      setOpen(false);
+      setMenuOpen && setMenuOpen(false);
+      setCanSubmit && setCanSubmit(true);
     } catch (error) {
       console.error(['Error deleting user', error]);
-      errorToast({ message: isCustomError(error) ? error.message : 'Error deleting user' });
+      form.setError('root', {
+        message: isCustomError(error) ? error.message : 'Error deleting user',
+      });
     }
   };
 
   return (
     <Form {...form}>
       <form
-        onSubmit={form.handleSubmit(onSubmit)}
         className='flex flex-col gap-3 items-center'
+        onSubmit={form.handleSubmit(onSubmit)}
       >
         <p>
           Please enter <span className='text-sm text-red-600 italic'>{email}</span> to confirm.
@@ -66,12 +72,18 @@ export default function DeleteConfirmationForm({
             placeholder='Verified Email'
           />
         </div>
+        {form.formState.errors.root && (
+          <p className='text-sm italic text-red-600'>{form.formState.errors.root.message}</p>
+        )}
 
         <DialogFooter className='w-full gap-2'>
           <Button
             type='button'
             variant='outline'
-            onClick={() => setOpen(false)}
+            onClick={() => {
+              setOpen(false);
+              setCanSubmit && setCanSubmit(true);
+            }}
           >
             Cancel
           </Button>

@@ -7,57 +7,55 @@ services:
     restart: unless-stopped
     shm_size: 128mb
     environment:
-      - POSTGRES_PASSWORD: postgres
-      - POSTGRES_USER: postgres
-      - POSTGRES_DB: praisepal
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_DB: praisepal
     ports:
       - 5432:5432
     volumes:
       - ./data:/var/lib/postgresql/data:rw
     networks:
-      - praisePal-default
+      - praisepal_default
 
   backend:
     container_name: praisepal-backend
+    restart: unless-stopped
     depends_on:
       - db
-    environment:
-      - DATABASE_URL=
-      - JWT_SECRET=
-      - JWT_REFRESH_SECRET=
-      - PASSWORD_RESET_SECRET=
-      - EMAIL_VERIFICATION_SECRET=
-      - CLIENT_URL=http://frontend:80
-      - PORT=3001
-      - NODE_ENV=
-      - RESEND_API_KEY=
+    env_file:
+      - ./backend/.env
     networks:
-      - praisePal-default
-    ports: 3001:3001
+      - praisepal_default
+    ports:
+      - 3001:3001
     volumes:
-      - ./backend:/app
+      - ./docker/backend:/app
     build:
       context: ./backend
       dockerfile: Dockerfile
+      args:
+        - tag=biggiefrye45/praisepal-backend:staging
 
   frontend:
     container_name: praisepal-frontend
+    restart: unless-stopped
     depends_on:
       - backend
-    environment:
-      - VITE_API_BASE_URL=http://backend:3001
-      - VITE_NODE_ENV=production
     networks:
-      - praisePal-default
-    ports: 3000:3000
+      - praisepal_default
+    ports:
+      - 8012:80
     volumes:
       - ./frontend:/app
     build:
       context: ./frontend
       dockerfile: Dockerfile
+      args:
+        - VITE_API_BASE_URL=http://localhost:3001
+        - tag=biggiefrye45/praisepal-frontend:staging
 
 networks:
-  praisePal-default:
+  praisepal_default:
     external: true
 
 volumes:

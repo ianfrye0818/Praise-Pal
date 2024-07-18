@@ -8,19 +8,17 @@ import { PrismaService } from '../../core-services/prisma.service';
 import { createUserDTO, updateUserDTO } from './dto/createUser.dto';
 import * as bcrypt from 'bcryptjs';
 import { Cron } from '@nestjs/schedule';
-import { ActionType, Prisma, Role } from '@prisma/client';
+import { Prisma, Role } from '@prisma/client';
 import { EmailService } from '../../core-services/email.service';
 import { generateClientSideUserProperties } from '../../utils';
 import { ClientUser } from '../../types';
 import { FilterUserDTO } from './dto/filterUser.dto';
-import { UserNotificationsService } from '../user-notifications/user-notifications.service';
 
 @Injectable()
 export class UserService {
   constructor(
     private prismaService: PrismaService,
     private emailService: EmailService,
-    private notificationService: UserNotificationsService,
   ) {}
 
   async findAllUsers(filter: FilterUserDTO) {
@@ -32,7 +30,7 @@ export class UserService {
           ...otherFilters,
         },
         orderBy: [
-          { role: sort || 'desc' },
+          { role: sort || 'asc' },
           { lastName: 'asc' },
           { userId: 'asc' },
         ],

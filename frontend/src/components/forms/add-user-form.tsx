@@ -67,10 +67,7 @@ export default function AddUserForm({ setOpen }: AddUserFormProps) {
 
   return (
     <Form {...form}>
-      <form
-        className='flex flex-col gap-3'
-        onSubmit={form.handleSubmit(onSubmit)}
-      >
+      <form className='flex flex-col gap-3'>
         <div className='flex items-center gap-2 '>
           <div className='flex-1'>
             <FormInputItem
@@ -132,7 +129,8 @@ export default function AddUserForm({ setOpen }: AddUserFormProps) {
             Cancel
           </Button>
           <Button
-            type='submit'
+            type='button'
+            onClick={form.handleSubmit(onSubmit)}
             disabled={!isFormValid || isSubmitting}
           >
             {isSubmitting ? 'Adding...' : 'Add User'}

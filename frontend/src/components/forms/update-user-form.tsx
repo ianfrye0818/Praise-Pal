@@ -9,7 +9,7 @@ import { Form } from '@/components/ui/form';
 import { FormInputItem } from '@/components/forms/form-input-item';
 import FormSelectItem from '@/components/forms/form-select-item';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import useSuccessToast from '@/hooks/useSuccessToast';
 import useErrorToast from '@/hooks/useErrorToast';
 import useUpdateCurrentUser from '@/hooks/api/useCompayUsers/useUpdateCurrentUser';
@@ -33,6 +33,7 @@ interface UpdateUserFormProps {
 
 export default function UpdateUserForm({ setOpen, updatingUser }: UpdateUserFormProps) {
   const { user: currentUser } = useAuth().state;
+  const [canSumbit, setCanSubmit] = useState(true);
 
   const form = useForm<z.infer<typeof updateUserSchema>>({
     defaultValues: defaultUpdateValues(updatingUser),
@@ -47,6 +48,7 @@ export default function UpdateUserForm({ setOpen, updatingUser }: UpdateUserForm
   const updatingCurrentUser = currentUser?.userId === updatingUser?.userId;
 
   const onSubmit = async (data: z.infer<typeof updateUserSchema>) => {
+    if (!canSumbit) return;
     try {
       if (updatingCurrentUser) {
         await updateCurrentUser({
@@ -76,10 +78,10 @@ export default function UpdateUserForm({ setOpen, updatingUser }: UpdateUserForm
   const disableCompanyCode = currentUser?.role !== Role.SUPER_ADMIN;
 
   useEffect(() => {
-    if (form.formState.isSubmitSuccessful) {
+    if (form.formState.isSubmitSuccessful && canSumbit) {
       setOpen(false);
     }
-  }, [form.formState.isSubmitSuccessful, setOpen]);
+  }, [form.formState.isSubmitSuccessful, setOpen, canSumbit]);
 
   return (
     <Form {...form}>
@@ -148,12 +150,15 @@ export default function UpdateUserForm({ setOpen, updatingUser }: UpdateUserForm
                 email: updatingUser!.email,
                 userId: updatingUser!.userId,
                 companyCode: currentUser?.companyCode,
+                setCanSubmit,
+                setMenuOpen: setOpen,
               }}
             >
               <Button
-                disabled={isCompanyOwner}
+                disabled={isCompanyOwner && isCurrentUser}
                 type='button'
                 variant={'destructive'}
+                onClick={() => setCanSubmit(false)}
               >
                 Delete Account
               </Button>
@@ -171,7 +176,7 @@ export default function UpdateUserForm({ setOpen, updatingUser }: UpdateUserForm
             <Button
               className='block w-full md:w-auto md:inline my-2 md:my-auto'
               type='submit'
-              disabled={!form.formState.isValid || form.formState.isSubmitting}
+              disabled={!canSumbit || !form.formState.isValid || form.formState.isSubmitting}
             >
               {form.formState.isSubmitting
                 ? 'Updating...'

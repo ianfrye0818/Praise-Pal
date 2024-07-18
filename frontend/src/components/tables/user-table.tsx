@@ -98,7 +98,7 @@ export default function UsersTable({ users, showUserAmount = false, take }: User
                       >
                         <Button
                           variant={'outline'}
-                          disabled={disabled}
+                          disabled={disabled || user.deletedAt !== null}
                         >
                           Edit
                         </Button>

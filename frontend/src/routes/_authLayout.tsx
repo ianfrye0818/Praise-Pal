@@ -1,5 +1,6 @@
 import logo from '@/assets/logo.png';
-import { createFileRoute, Outlet, redirect, Link } from '@tanstack/react-router';
+import { useAuth } from '@/hooks/useAuth';
+import { createFileRoute, Outlet, Navigate, Link } from '@tanstack/react-router';
 import * as z from 'zod';
 
 const searchSchema = z.object({
@@ -7,18 +8,18 @@ const searchSchema = z.object({
 });
 
 export const Route = createFileRoute('/_authLayout')({
-  beforeLoad: async ({ context }) => {
-    const { isAuthenticated, loading } = context.state;
-    if (isAuthenticated && !loading) {
-      const lastPath = sessionStorage.getItem('lastPath') || null;
-      throw redirect({ to: lastPath ?? '/' });
-    }
-  },
   validateSearch: (search: Record<string, unknown>) => searchSchema.parse(search),
   component: AuthLayout,
 });
 
 function AuthLayout() {
+  const { loading, isAuthenticated } = useAuth().state;
+  const lastPath = sessionStorage.getItem('lastPath') || null;
+
+  if (!loading && isAuthenticated) {
+    return <Navigate to={lastPath ?? '/'} />;
+  }
+
   return (
     <main className='h-full w-full'>
       <header className='h-[96px]  p-1'>

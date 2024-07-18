@@ -1,14 +1,14 @@
 version: '3.9'
 services:
   frontend:
-    container_name: praisepal-frontend
-    image: biggiefrye45/praisepal-frontend:latest
+    container_name: praisepal-frontend-staging
+    image: biggiefrye45/praisepal-frontend:staging
     env_file:
       - .env
     networks:
       - praisepal_default
     ports:
-      - 8011:80
+      - 8012:80
 
 networks:
   praisepal_default:

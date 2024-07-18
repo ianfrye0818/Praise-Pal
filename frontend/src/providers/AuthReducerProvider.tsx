@@ -92,7 +92,6 @@ const authReducer = (state: AuthState, action: AuthAction): AuthState => {
       return { ...state, loading: true };
     case ActionType.LOGIN_SUCCESS:
     case ActionType.UPDATE_SUCCESS:
-      console.log('success!!!');
       return {
         ...state,
         user: action.payload.user,

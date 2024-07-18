@@ -26,10 +26,10 @@ function UsersAdminPage() {
   return (
     <div className='w-full py-5 p-1 md:p-4 h-full'>
       <div className='flex items-baseline justify-between'>
-        <h2 className='font-semibold text-lg md:text-2xl my-4'>Users</h2>
+        <h2 className='font-semibold text-2xl md:text-2xl my-4'>Users</h2>
         <div className='flex gap-3 items-center'>
-          <p className='text-sm italic'>
-            Deleted users can be restored for up to 30 days since they were deleted
+          <p className='text-sm italic hidden md:block'>
+            Users accounts can be restored for up to 30 days after they are deleted
           </p>
           <AddUserDialog />
         </div>

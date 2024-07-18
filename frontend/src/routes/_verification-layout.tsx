@@ -7,12 +7,12 @@ export const Route = createFileRoute('/_verification-layout')({
 
 function VerificationLayout() {
   return (
-    <div>
+    <main className='p-2'>
       <VerificationHeader />
       <div className='w-full h-[calc(100vh-96px)] flex flex-col justify-center items-center'>
         <Outlet />
       </div>
-    </div>
+    </main>
   );
 }
 

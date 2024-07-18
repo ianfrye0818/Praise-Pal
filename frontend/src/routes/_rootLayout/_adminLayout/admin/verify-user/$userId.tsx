@@ -36,8 +36,10 @@ function AlertDialogTemplate({
     <AlertDialog defaultOpen>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>{title}</AlertDialogTitle>
-          {description && <AlertDialogDescription>{description}</AlertDialogDescription>}
+          <AlertDialogTitle className='text-left'>{title}</AlertDialogTitle>
+          {description && (
+            <AlertDialogDescription className='text-left'>{description}</AlertDialogDescription>
+          )}
         </AlertDialogHeader>
         {children}
       </AlertDialogContent>
@@ -127,6 +129,7 @@ function VerifyTokenPage() {
       <UserDetails user={user} />
       <AlertDialogFooter className='justify-end py-2 gap-3 items-center'>
         <Button
+          className='w-full md:w-auto'
           variant={'outline'}
           onClick={() => navigate({ to: '/admin/dashboard' })}
         >
@@ -139,7 +142,12 @@ function VerifyTokenPage() {
           actionButtonText='Verify'
           actionButtonVariant={'confirm'}
         >
-          <Button variant={'confirm'}>Verify</Button>
+          <Button
+            className='w-full md:w-auto'
+            variant={'confirm'}
+          >
+            Verify
+          </Button>
         </ConfirmationAlertDialog>
       </AlertDialogFooter>
     </AlertDialogTemplate>

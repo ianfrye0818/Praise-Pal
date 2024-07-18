@@ -26,6 +26,7 @@ export const ApiRoutes = {
     createUser(companyCode: string) {
       return `/user/create?companyCode=${companyCode}`;
     },
+
     updateUserById: (companyCode: string, userId: string) =>
       `/user/${userId}?companyCode=${companyCode}`,
     deleteUserById: (companyCode: string, userId: string) =>
@@ -33,7 +34,7 @@ export const ApiRoutes = {
     restoreUserById: (companyCode: string, userId: string) =>
       `/user/${userId}/restore?companyCode=${companyCode}`,
     verifyUser: (companyCode: string, userId: string) =>
-      `/verify-user/${userId}?companyCode=${companyCode}`,
+      `/verify/verify-user/${userId}?companyCode=${companyCode}`,
   },
   kudoLikes: {
     baseUrl: '/likes',
@@ -84,8 +85,7 @@ export const ApiRoutes = {
   },
   verify: {
     baseUrl: '/verify',
-    verifyUser: (companyCode: string, userId: string) =>
-      `/verify-user/${userId}?companyCode=${companyCode}`,
+
     verifyAndUpdatePasswordWithToken: (token: string) => `/update-password/${token}`,
   },
 };

@@ -123,7 +123,7 @@ export default function AddUserForm({ setOpen }: AddUserFormProps) {
           disabled={currentUser?.role !== Role.SUPER_ADMIN}
         />
         {isGlobalError && <p className='text-red-600 italic text-sm'>{isGlobalError.message}</p>}
-        <DialogFooter className='mt-3'>
+        <DialogFooter className='mt-3 gap-3'>
           <Button
             onClick={() => setOpen && setOpen(false)}
             type='button'

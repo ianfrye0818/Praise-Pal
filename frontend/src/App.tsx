@@ -6,7 +6,7 @@ import { AuthProvider } from './providers/AuthReducerProvider';
 import AdminModeProvider from './providers/AdminModeProvider';
 import { InfinitySpin } from 'react-loader-spinner';
 import NotFoundComponent from './components/pages-and-sections/not-found-component';
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+// import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import ErrorComponent from './components/pages-and-sections/error-component';
 
 const queryClient = new QueryClient({
@@ -56,7 +56,10 @@ export default function App() {
       <AuthProvider>
         <AdminModeProvider>
           <InnerApp />
+          {/* 
+
           <ReactQueryDevtools />
+          */}
         </AdminModeProvider>
       </AuthProvider>
     </QueryClientProvider>

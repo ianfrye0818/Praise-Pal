@@ -91,8 +91,8 @@ export default function UsersTable({ users, showUserAmount = false, take }: User
                   <TableCell>
                     <div className='flex items-center gap-2'>
                       <FormDialog
-                        description='Edit user information'
-                        title='Edit User'
+                        title='Update User'
+                        description='Update user information'
                         form={UpdateUserForm}
                         formProps={{ type: 'update', updatingUser: user }}
                       >

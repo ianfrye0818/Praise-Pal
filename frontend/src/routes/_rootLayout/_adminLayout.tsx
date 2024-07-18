@@ -7,14 +7,15 @@ export const Route = createFileRoute('/_rootLayout/_adminLayout')({
 });
 function AdminLayout() {
   const { isAdmin, loading } = useAuth().state;
-  if (!isAdmin && !loading) {
+
+  if (!loading && !isAdmin) {
     return <Navigate to='/' />;
   }
 
   return (
-    <div className='w-screen md:w-auto'>
+    <main className='w-screen md:w-auto'>
       <Header showAddKudos={false} />
       <Outlet />
-    </div>
+    </main>
   );
 }

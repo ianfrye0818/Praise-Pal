@@ -58,8 +58,7 @@ export const postSendResetPasswordEmail = async (email: string) =>
 //verify actions
 export const postVerifyUser = async (companyCode: string, userId: string) =>
   await poster<void, void>({
-    url: ApiRoutes.verify.verifyUser(companyCode, userId),
-    client: 'VERIFY',
+    url: ApiRoutes.users.verifyUser(companyCode, userId),
   });
 
 export const postVerifyAndUpdatePasswordWithToken = async (token: string, password: string) =>

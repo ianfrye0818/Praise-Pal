@@ -18,7 +18,7 @@ import { getRoleOptions } from '@/lib/utils';
 import FormDialog from '../dialogs-and-menus/form-dialog';
 import DeleteConfirmationForm from './delete-confirmation-form';
 
-const defaultUpdateValues = (updatingUser?: User) => ({
+const defaultUpdateValues = (updatingUser: User) => ({
   email: updatingUser?.email || '',
   firstName: updatingUser?.firstName || '',
   lastName: updatingUser?.lastName || '',
@@ -111,6 +111,13 @@ export default function UpdateUserForm({ setOpen, updatingUser }: UpdateUserForm
           label='Email'
           placeholder='Email'
         />
+        <FormInputItem
+          control={form.control}
+          name='password'
+          label='Password'
+          placeholder='Password'
+          type='password'
+        />
 
         <FormSelectItem
           control={form.control}
@@ -132,7 +139,7 @@ export default function UpdateUserForm({ setOpen, updatingUser }: UpdateUserForm
           disabled={disableCompanyCode}
         />
         <DialogFooter className='mt-3'>
-          <div className='mr-auto'>
+          <div className='w-full flex flex-col md:flex-row justify-between gap-2'>
             <FormDialog
               title={'Are you sure you want to delete?'}
               description='Are you sure you want to delete this account?'
@@ -152,8 +159,9 @@ export default function UpdateUserForm({ setOpen, updatingUser }: UpdateUserForm
               </Button>
             </FormDialog>
           </div>
-          <div className='space-x-2'>
+          <div className='flex flex-col md:flex-row items-center gap-2'>
             <Button
+              className='block w-full md:w-auto md:inline my-2 md:my-auto order-1 md:-order-1'
               onClick={() => setOpen(false)}
               type='button'
               variant={'outline'}
@@ -161,6 +169,7 @@ export default function UpdateUserForm({ setOpen, updatingUser }: UpdateUserForm
               Cancel
             </Button>
             <Button
+              className='block w-full md:w-auto md:inline my-2 md:my-auto'
               type='submit'
               disabled={!form.formState.isValid || form.formState.isSubmitting}
             >

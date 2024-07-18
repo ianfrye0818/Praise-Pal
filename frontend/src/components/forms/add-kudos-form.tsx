@@ -82,6 +82,7 @@ export default function AddKudosForm({ queryKey, setOpen }: AddKudosFormProps) {
         </div>
         <DialogFooter>
           <Button
+            type='button'
             variant='outline'
             className='md:mr-auto my-2 md:my-auto'
             onClick={() => {

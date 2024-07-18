@@ -95,7 +95,7 @@ export function UpdateCompanyForm({
             placeholder='Phone'
           />
         </div>
-        <DialogFooter className='flex justify-end'>
+        <DialogFooter className='flex justify-end gap-3'>
           <Button
             type='button'
             variant={'outline'}

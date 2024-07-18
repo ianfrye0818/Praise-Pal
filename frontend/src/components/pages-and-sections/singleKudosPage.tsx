@@ -22,7 +22,7 @@ export default function SingleKudosPage() {
     : false;
 
   return (
-    <section className='h-[calc(100dvh-48px)]  flex flex-col justify-between  text-foreground rounded-lg md:shadow-md p-6 space-y-6 container mx-auto md:mt-12 md:h-auto md:block overflow-x-auto'>
+    <section className='h-[calc(100dvh-96px)]  flex flex-col justify-between  text-foreground rounded-lg md:shadow-md p-6 space-y-6 container mx-auto md:mt-12 md:h-auto md:block overflow-x-auto'>
       <div>
         <div className='flex items-start space-x-4 mb-8'>
           <UserAvitar displayName={senderDisplayName} />

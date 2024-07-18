@@ -25,8 +25,8 @@ export default function CompanyCard({ company }: { company: Company }) {
                 <FormDialog
                   form={UpdateCompanyForm}
                   formProps={{ updatingCompany: company }}
-                  title='Edit Company'
-                  description='Edit company details'
+                  title='Update Company'
+                  description='Update company details'
                 >
                   <Button variant={'secondary'}>Edit</Button>
                 </FormDialog>

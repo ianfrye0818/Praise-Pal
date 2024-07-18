@@ -18,7 +18,6 @@ export default function SignInForm() {
   const globalError = form.formState.errors.root;
 
   useEffect(() => {
-    console.log('rendering');
     const error = localStorage.getItem('error');
     if (error) {
       form.setError('root', {

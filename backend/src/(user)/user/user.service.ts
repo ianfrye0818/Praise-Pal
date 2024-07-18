@@ -107,16 +107,7 @@ export class UserService {
         email: formattedEmail,
       },
     });
-    await Promise.all(
-      company.users.map((user) =>
-        this.notificationService.createNotification({
-          actionType: ActionType.NEW_USER,
-          message: `${newUser.firstName} ${newUser.lastName[0]} is waiting for your approval`,
-          userId: user.userId,
-          newUserId: newUser.userId,
-        }),
-      ),
-    );
+
     return { newUser, company };
   }
   catch(error) {

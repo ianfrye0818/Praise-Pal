@@ -15,9 +15,6 @@ export default function NotificationsDropDown({
   notifications?: UserNotification[];
 }) {
   const [open, setOpen] = useState(false);
-  // const canPerformActions = notifications && notifications?.length > 0;
-
-  console.log(notifications);
 
   return (
     <Popover

@@ -45,7 +45,7 @@ export default function DeleteConfirmationForm({
         form.setError('verifiedEmail', { message: 'Email does not match' });
       }
     } catch (error) {
-      console.log(['Error deleting user', error]);
+      console.error(['Error deleting user', error]);
       errorToast({ message: isCustomError(error) ? error.message : 'Error deleting user' });
     }
   };

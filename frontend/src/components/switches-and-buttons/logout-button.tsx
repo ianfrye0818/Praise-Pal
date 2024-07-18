@@ -12,7 +12,7 @@ export default function LogoutButton() {
   return (
     <Button
       variant={'ghost'}
-      size='default'
+      size='sm'
       onClick={async () => {
         await logout(dispatch);
         await navigate({ to: '/sign-in' });

@@ -5,8 +5,6 @@ import {
 import { useMutation } from '@tanstack/react-query';
 import { useNavigate } from '@tanstack/react-router';
 import useSuccessToast from '../useSuccessToast';
-import useErrorToast from '../useErrorToast';
-import { isCustomError } from '@/errors';
 
 interface ResetPasswordProps {
   email?: string;
@@ -15,7 +13,6 @@ interface ResetPasswordProps {
 }
 
 export default function useResetPassword({ type }: { type: 'sendResetPassword' | 'verifyToken' }) {
-  const { errorToast } = useErrorToast();
   const { successToast } = useSuccessToast();
   const navigate = useNavigate();
 
@@ -29,29 +26,18 @@ export default function useResetPassword({ type }: { type: 'sendResetPassword' |
         return await postVerifyAndUpdatePasswordWithToken(payload.token, payload.password);
       }
     },
-    onError(err) {
-      if (isCustomError(err)) {
-        errorToast({
-          title: 'Password reset error',
-          message: err.message || 'An error occurred. Please try again.',
-        });
-      } else
-        errorToast({
-          message: 'An error occurred. Please try again.',
-          title: 'Error sending reset password email',
-        });
-    },
-    onSuccess(data) {
+
+    async onSuccess(data) {
       if (type === 'sendResetPassword') {
         successToast({
           message: data?.message || 'Please check your email for password reset link',
         });
       }
       if (type === 'verifyToken') {
+        await navigate({ to: '/sign-in' });
         successToast({
-          message: data?.message || 'Password reset successfully! Please login.',
+          message: 'Password reset successfully! Please login with your new password',
         });
-        navigate({ to: '/sign-in' });
       }
     },
   });

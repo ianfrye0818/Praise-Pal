@@ -11,16 +11,13 @@ import * as bcrypt from 'bcryptjs';
 import { JwtService } from '@nestjs/jwt';
 import { ClientUser } from '../types';
 import { RefreshTokenService } from '../core-services/refreshToken.service';
-import { generateClientSideUserProperties } from '../utils';
+import { generateClientSideUserProperties, getDisplayName } from '../utils';
 import { EmailService } from 'src/core-services/email.service';
 import { env } from 'src/env';
-import {
-  newUserEmailOwner,
-  newUserEmailUser,
-  resetPasswordHtml,
-} from 'src/email-templates';
+import { resetPasswordHtml } from 'src/email-templates';
 import { createUserDTO } from 'src/(user)/user/dto/createUser.dto';
-import { Role } from '@prisma/client';
+import { ActionType, Role } from '@prisma/client';
+import { UserNotificationsService } from 'src/(user)/user-notifications/user-notifications.service';
 
 @Injectable()
 export class AuthService {
@@ -29,6 +26,7 @@ export class AuthService {
     private jwtService: JwtService,
     private refreshTokenService: RefreshTokenService,
     private emailService: EmailService,
+    private userNotificaitonService: UserNotificationsService,
   ) {}
 
   async validateUser(
@@ -134,27 +132,24 @@ export class AuthService {
     }
   }
 
-  async updatedVerifiedPassword(email: string, newPassword: string) {
-    try {
-      await this.userService.updateByEmail(email, {
-        password: newPassword,
-        firstName: 'Ian',
-      });
-      return { message: 'Password updated', status: HttpStatus.OK };
-    } catch (error) {
-      console.error(['Verify Password Reset Token Error'], error);
-      if (error instanceof UnauthorizedException) throw error;
-      throw new InternalServerErrorException('Could not verify token');
-    }
-  }
-
   async registerUser(data: createUserDTO) {
     try {
       const newUserData = await this.userService.create(data);
+
+      await Promise.all(
+        newUserData.company.users.map((user) =>
+          this.userNotificaitonService.createNotification({
+            actionType: ActionType.NEW_USER,
+            message: `${getDisplayName(newUserData.newUser)} is waiting for your approval`,
+            userId: user.userId,
+            newUserId: newUserData.newUser.userId,
+          }),
+        ),
+      );
       const companyOwnerEmail = newUserData.company.users.find(
         (user) => user.role === Role.COMPANY_OWNER,
       ).email;
-      return await this.sendNewUserEmail({
+      return await this.emailService.sendNewUserEmail({
         newUserEmail: newUserData.newUser.email,
         newUserFullName: `${newUserData.newUser.firstName} ${newUserData.newUser.lastName}`,
         newUserId: newUserData.newUser.userId,
@@ -164,60 +159,11 @@ export class AuthService {
       console.error(['Register User Error'], error);
       if (error.code === 'P2002') {
         throw new HttpException('User already exists', 400);
+      } else if (error instanceof NotFoundException) {
+        throw error;
       } else {
         throw new InternalServerErrorException('Could not register user');
       }
-    }
-  }
-
-  async sendNewUserEmail({
-    newUserId,
-    companyOwnerEmail,
-    newUserFullName,
-  }: {
-    newUserId: string;
-    companyOwnerEmail?: string;
-    newUserFullName: string;
-    newUserEmail: string;
-  }) {
-    try {
-      const url = `${env.CLIENT_URL}/admin/verify-user/${newUserId}`;
-      // console.log(url);
-      // console.log('owner email: ', newUserEmailOwner(url, newUserFullName));
-      // console.log('user email: ', newUserEmailUser(newUserFullName));
-
-      // if (companyOwnerEmail) {
-      //   await this.emailService.sendEmail({
-      //     html: newUserEmailOwner(url, newUserFullName),
-      //     subject: 'Verify New User',
-      //     to: [companyOwnerEmail],
-      //   });
-      // }
-
-      // await this.emailService.sendEmail({
-      //   html: newUserEmailUser(newUserFullName),
-      //   subject: 'Pending Verification',
-      //   to: [newUserEmail],
-      // });
-      return {
-        message: '',
-        status: HttpStatus.OK,
-        url,
-      };
-    } catch (error) {
-      console.error(['Verify Email Error'], error);
-      if (error instanceof UnauthorizedException) throw error;
-      throw new InternalServerErrorException('Could not verify email');
-    }
-  }
-
-  async verifyEmailToken(email: string) {
-    try {
-      await this.userService.updateByEmail(email, { isActive: true });
-      return { message: 'Email verified', status: HttpStatus.OK };
-    } catch (error) {
-      console.error(['Verify Email Token Error'], error);
-      throw new InternalServerErrorException('Could not verify token');
     }
   }
 
@@ -233,13 +179,6 @@ export class AuthService {
       expiresIn: '7d',
       secret: process.env.JWT_REFRESH_SECRET,
     });
-  }
-
-  private generateEmailVerificationToken(payload: any) {
-    return this.jwtService.sign(
-      { payload },
-      { secret: env.EMAIL_VERIFICATION_SECRET, expiresIn: '1d' },
-    );
   }
 
   private generatePasswordResetToken(email: string) {

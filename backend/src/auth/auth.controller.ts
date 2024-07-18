@@ -1,17 +1,9 @@
-import {
-  Controller,
-  Request,
-  UseGuards,
-  Post,
-  Body,
-  Req,
-} from '@nestjs/common';
+import { Controller, Request, UseGuards, Post, Body } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LocalAuthGuard } from './guards/local.guard';
 import { createUserDTO } from '../(user)/user/dto/createUser.dto';
 import { RefreshJwtGuard } from './guards/refresh.guard';
 import { SkipThrottle } from '@nestjs/throttler';
-import { PasswordResetGuard } from './guards/password-reset.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -20,7 +12,7 @@ export class AuthController {
   @UseGuards(LocalAuthGuard)
   @Post('login')
   async loginUser(@Request() req) {
-    return this.authService.login(req.user);
+    return await this.authService.login(req.user);
   }
 
   @SkipThrottle()
@@ -45,14 +37,5 @@ export class AuthController {
   @Post('reset-password')
   async updatePassword(@Body() data: { email: string }) {
     return await this.authService.sendUpdatePasswordEmail(data);
-  }
-
-  @UseGuards(PasswordResetGuard)
-  @Post('update-password/:token')
-  async verifyPasswordResetToken(
-    @Body() data: { password: string },
-    @Req() req: any,
-  ) {
-    await this.authService.updatedVerifiedPassword(req.email, data.password);
   }
 }

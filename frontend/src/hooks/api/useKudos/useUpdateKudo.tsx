@@ -1,5 +1,6 @@
 import { patchUpdateKudo } from '@/api/api-handlers';
 import { QueryKeys } from '@/constants';
+import { isCustomError, isError } from '@/errors';
 
 import useErrorToast from '@/hooks/useErrorToast';
 import { TKudos, UpdateKudoProps } from '@/types';
@@ -22,7 +23,7 @@ export default function useUpdateKudo(queryKey: QueryKey = QueryKeys.allKudos) {
     },
     onMutate: async ({ payload }) => {
       await queryClient.cancelQueries(KUDOS_QUERY_OPTIONS);
-      const previousData = queryClient.getQueriesData(KUDOS_QUERY_OPTIONS);
+      const previousData = queryClient.getQueryData(['kudos']);
 
       queryClient.setQueriesData(KUDOS_QUERY_OPTIONS, (old: any) => {
         return Array.isArray(old)
@@ -40,10 +41,15 @@ export default function useUpdateKudo(queryKey: QueryKey = QueryKeys.allKudos) {
       return { previousData };
     },
 
-    onError: (err, __, context) => {
+    onError: (err) => {
       console.error(['useUpdateKudo', err]);
-      queryClient.setQueriesData(KUDOS_QUERY_OPTIONS, context?.previousData);
-      errorToast({ message: 'Something went wrong updating kudo - please try again.' });
+      queryClient.invalidateQueries(KUDOS_QUERY_OPTIONS);
+      errorToast({
+        message:
+          isCustomError(err) || isError(err)
+            ? err.message
+            : 'Something went wrong updating this Kudo',
+      });
     },
     onSuccess: () => {
       queryClient.invalidateQueries(KUDOS_QUERY_OPTIONS);

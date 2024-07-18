@@ -13,6 +13,7 @@ import { ThrottlerModule } from '@nestjs/throttler';
 import { CommentLikesModule } from './(comments)/comment_likes/comment_likes.module';
 import { CommentsModule } from './(comments)/comments/comments.module';
 import { KudosModule } from './(kudos)/kudos/kudos.module';
+import { VerifyModule } from './verify/verify.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { KudosModule } from './(kudos)/kudos/kudos.module';
     ]),
     CommentsModule,
     CommentLikesModule,
+    VerifyModule,
   ],
   controllers: [AppController],
   providers: [

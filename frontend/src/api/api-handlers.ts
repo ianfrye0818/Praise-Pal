@@ -55,29 +55,21 @@ export const postSendResetPasswordEmail = async (email: string) =>
     data: { email },
   });
 
-export const postSendVerifyEmail = async (email: string) =>
-  await poster<{ email: string }, VerifyTokenAndResetPasswordProps>({
-    client: 'AUTH',
-    url: ApiRoutes.auth.sendVerifyEmailEmail,
-    data: { email },
+//verify actions
+export const postVerifyUser = async (companyCode: string, userId: string) =>
+  await poster<void, void>({
+    url: ApiRoutes.verify.verifyUser(companyCode, userId),
+    client: 'VERIFY',
   });
 
 export const postVerifyAndUpdatePasswordWithToken = async (token: string, password: string) =>
-  poster<{ password: string }, VerifyTokenAndResetPasswordProps>({
-    client: 'AUTH',
-    url: ApiRoutes.auth.verifyAndUpdatePasswordWithToken(token),
+  await poster<{ password: string }, VerifyTokenAndResetPasswordProps>({
+    url: ApiRoutes.verify.verifyAndUpdatePasswordWithToken(token),
     data: { password },
-  });
-
-export const postVerifyEmailWithToken = async (token: string) =>
-  await poster<{ token: string }, VerifyTokenAndResetPasswordProps>({
-    client: 'AUTH',
-    url: ApiRoutes.auth.verifyEmailWithToken(token),
-    data: { token },
+    client: 'VERIFY',
   });
 
 //users actions
-
 export const getAllUsers = async (queryParams: UserQueryParams) =>
   await fetcher<User[]>({ url: ApiRoutes.users.findAll(queryParams) });
 
@@ -91,6 +83,13 @@ export const getCompanyUsers = async (query: UserQueryParams) => {
 
 export const getSingleCompanyUser = async (companyCode: string, userId: string) =>
   await fetcher<User>({ url: ApiRoutes.users.findOneById(companyCode, userId) });
+
+export const postCreateUser = async (payload: SignUpFormProps) => {
+  return await poster<SignUpFormProps, User>({
+    url: ApiRoutes.users.createUser(payload.companyCode),
+    data: payload,
+  });
+};
 
 export const patchUpdateUser = async (
   companyCode: string,
@@ -119,7 +118,6 @@ export const getCompanyKudos = async (queryPrams: KudosQueryParams) => {
 };
 
 export const getsingleKudo = async (companyCode: string, kudoId: string) => {
-  console.log({ companyCode, kudoId });
   return await fetcher<TKudos>({ url: ApiRoutes.kudos.findOneById(companyCode, kudoId) });
 };
 
@@ -163,7 +161,6 @@ export const getUserNotifications = async (queryParams?: UserNotificationQueryPa
 };
 
 export const patchMarkSingleNotificationAsRead = async (notificationId: string) => {
-  console.log({ notificationId });
   await patcher<void, void>({ url: ApiRoutes.userNotifications.markSingleAsRead(notificationId) });
 };
 
@@ -206,9 +203,3 @@ export const patchUpdateComment = async (
     data: { content },
   });
 };
-
-// export const postCreateKudo = async (payload: CreateKudoFormProps) =>
-//   await poster<CreateKudoFormProps, void>({
-//     url: ApiRoutes.kudos.createKudo(payload.companyCode),
-//     data: payload,
-//   });

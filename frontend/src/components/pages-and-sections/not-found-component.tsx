@@ -18,9 +18,9 @@ export default function NotFoundComponent() {
       <Button
         className='mt-8'
         variant={'outline'}
-        onClick={() => router.history.back()}
+        onClick={() => router.navigate({ to: '/' })}
       >
-        Go Back
+        Go Home
       </Button>
     </div>
   );

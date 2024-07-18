@@ -10,13 +10,14 @@ import {
   AlertDialogDescription,
 } from '@/components/ui/alert-dialog';
 import useGetCompanyUser from '@/hooks/api/useCompayUsers/useGetCompanyUser';
-import useUpdateCompanyUser from '@/hooks/api/useCompayUsers/useUpdateCompanyUser';
 import { useAuth } from '@/hooks/useAuth';
 import useErrorToast from '@/hooks/useErrorToast';
 import useSuccessToast from '@/hooks/useSuccessToast';
 import { cn } from '@/lib/utils';
 import { createFileRoute, useNavigate, Link } from '@tanstack/react-router';
 import { User } from '@/types';
+import useVerifyUser from '@/hooks/api/useCompayUsers/useVerifyUser';
+import DataLoader from '@/components/ui/data-loader';
 
 export const Route = createFileRoute('/_rootLayout/_adminLayout/admin/verify-user/$userId')({
   component: VerifyTokenPage,
@@ -69,12 +70,13 @@ function VerifyTokenPage() {
   const { errorToast } = useErrorToast();
   const { successToast } = useSuccessToast();
   const { userId } = Route.useParams();
-  const { data: user } = useGetCompanyUser({
+  const { data: user, isLoading } = useGetCompanyUser({
     companyCode: currentUser!.companyCode,
     userId,
   });
-  const { mutateAsync: verify } = useUpdateCompanyUser();
+  const { mutateAsync: verify } = useVerifyUser();
 
+  if (isLoading) return <DataLoader />;
   if (!user) return <NotFoundComponent />;
 
   if (user.deletedAt !== null) {
@@ -107,9 +109,7 @@ function VerifyTokenPage() {
     try {
       await verify({
         companyCode: currentUser!.companyCode,
-        currentUser: currentUser!,
-        userToUpdateId: userId,
-        payload: { isActive: true },
+        userId: user.userId,
       });
       successToast({ message: 'User verified successfully' });
       navigate({ to: '/admin/users' });

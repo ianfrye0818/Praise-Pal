@@ -2,7 +2,7 @@ import useDeleteKudo from '@/hooks/api/useKudos/useDeleteKudo';
 import { TKudos } from '@/types';
 import { useAuth } from '@/hooks/useAuth';
 import { QueryKey } from '@tanstack/react-query';
-import { useNavigate, useLocation } from '@tanstack/react-router';
+import { useRouter } from '@tanstack/react-router';
 import ConfirmationDialog from './confirmation-dialog';
 
 interface DialogDemoProps {
@@ -15,13 +15,13 @@ interface DialogDemoProps {
 export function DeleteKudoDialog({ setMenuOpen, kudo, children, queryKey }: DialogDemoProps) {
   const { user: currentUser } = useAuth().state;
   const { mutateAsync: deleteKudo } = useDeleteKudo(queryKey);
-  const navigate = useNavigate();
-  const { pathname } = useLocation();
+  const router = useRouter();
+  const { pathname } = router.history.location;
 
   const handleDeleteKudo = async () => {
     deleteKudo({ kudoId: kudo.id, companyCode: currentUser?.companyCode as string });
-    if (pathname.startsWith('/kudos')) {
-      navigate({ to: '/' });
+    if (pathname === `/kudos/${kudo.id}`) {
+      router.history.back();
     }
     setMenuOpen && setMenuOpen(false);
   };

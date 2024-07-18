@@ -28,18 +28,18 @@ export class createUserDTO {
   companyCode: string;
 
   @IsOptional()
-  @IsBoolean()
-  isActive?: boolean;
-}
-
-export class updateUserDTO extends PartialType(createUserDTO) {
-  @IsOptional()
   @IsEnum(['ADMIN', 'USER', 'COMPANY_OWNER'], {
     message: 'Role must be either Admin or User or Company Owner',
   })
   @Transform(({ value }: { value: string }) => value.toUpperCase())
   role?: Role;
 
+  @IsOptional()
+  @IsBoolean()
+  isActive?: boolean;
+}
+
+export class updateUserDTO extends PartialType(createUserDTO) {
   @IsOptional()
   @IsDate()
   @Transform(({ value }: { value: string }) => new Date(value))

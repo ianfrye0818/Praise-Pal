@@ -20,7 +20,6 @@ import { Route as RootLayoutIndexImport } from './routes/_rootLayout/index'
 import { Route as RootLayoutAdminLayoutImport } from './routes/_rootLayout/_adminLayout'
 import { Route as AuthLayoutSignUpImport } from './routes/_authLayout/sign-up'
 import { Route as AuthLayoutSignInImport } from './routes/_authLayout/sign-in'
-import { Route as VerificationLayoutVerifyEmailTokenImport } from './routes/_verification-layout/verify-email/$token'
 import { Route as VerificationLayoutResetPasswordTokenImport } from './routes/_verification-layout/reset-password/$token'
 import { Route as RootLayoutAdminLayoutAdminDashboardImport } from './routes/_rootLayout/_adminLayout/admin/dashboard'
 import { Route as RootLayoutAdminLayoutAdminVerifyUserUserIdImport } from './routes/_rootLayout/_adminLayout/admin/verify-user/$userId'
@@ -103,12 +102,6 @@ const RootLayoutKudosKudosIdLazyRoute = RootLayoutKudosKudosIdLazyImport.update(
 ).lazy(() =>
   import('./routes/_rootLayout/kudos/$kudosId.lazy').then((d) => d.Route),
 )
-
-const VerificationLayoutVerifyEmailTokenRoute =
-  VerificationLayoutVerifyEmailTokenImport.update({
-    path: '/verify-email/$token',
-    getParentRoute: () => VerificationLayoutRoute,
-  } as any)
 
 const VerificationLayoutResetPasswordTokenRoute =
   VerificationLayoutResetPasswordTokenImport.update({
@@ -208,13 +201,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof VerificationLayoutResetPasswordTokenImport
       parentRoute: typeof VerificationLayoutImport
     }
-    '/_verification-layout/verify-email/$token': {
-      id: '/_verification-layout/verify-email/$token'
-      path: '/verify-email/$token'
-      fullPath: '/verify-email/$token'
-      preLoaderRoute: typeof VerificationLayoutVerifyEmailTokenImport
-      parentRoute: typeof VerificationLayoutImport
-    }
     '/_rootLayout/kudos/$kudosId': {
       id: '/_rootLayout/kudos/$kudosId'
       path: '/kudos/$kudosId'
@@ -288,7 +274,6 @@ export const routeTree = rootRoute.addChildren({
   }),
   VerificationLayoutRoute: VerificationLayoutRoute.addChildren({
     VerificationLayoutResetPasswordTokenRoute,
-    VerificationLayoutVerifyEmailTokenRoute,
   }),
 })
 
@@ -325,8 +310,7 @@ export const routeTree = rootRoute.addChildren({
     "/_verification-layout": {
       "filePath": "_verification-layout.tsx",
       "children": [
-        "/_verification-layout/reset-password/$token",
-        "/_verification-layout/verify-email/$token"
+        "/_verification-layout/reset-password/$token"
       ]
     },
     "/_authLayout/sign-in": {
@@ -353,10 +337,6 @@ export const routeTree = rootRoute.addChildren({
     },
     "/_verification-layout/reset-password/$token": {
       "filePath": "_verification-layout/reset-password/$token.tsx",
-      "parent": "/_verification-layout"
-    },
-    "/_verification-layout/verify-email/$token": {
-      "filePath": "_verification-layout/verify-email/$token.tsx",
       "parent": "/_verification-layout"
     },
     "/_rootLayout/kudos/$kudosId": {

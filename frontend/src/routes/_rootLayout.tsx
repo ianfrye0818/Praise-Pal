@@ -2,24 +2,21 @@ import Header from '@/components/pages-and-sections/layout-header';
 import MobileNavSheet from '@/components/pages-and-sections/mobile-nav-sheet';
 import Sidebar from '@/components/pages-and-sections/sidebar';
 import useAdminMode from '@/hooks/useAdminMode';
-import { useAuth } from '@/hooks/useAuth';
-import { createFileRoute, Outlet, Navigate } from '@tanstack/react-router';
+
+import { createFileRoute, Outlet, redirect } from '@tanstack/react-router';
 
 export const Route = createFileRoute('/_rootLayout')({
+  beforeLoad: async ({ context, location }) => {
+    const { isAuthenticated, loading } = context.state;
+    if (!isAuthenticated && !loading) {
+      throw redirect({ to: '/sign-in', search: { redirectUrl: location.pathname } });
+    }
+  },
   component: () => <RootLayout />,
 });
 
 export function RootLayout() {
-  const { loading, isAuthenticated } = useAuth().state;
   const { adminMode } = useAdminMode();
-
-  if (loading) {
-    return <div>Loading...</div>;
-  }
-
-  if (!isAuthenticated) {
-    return <Navigate to='/sign-in' />;
-  }
 
   return (
     <main className='flex h-full '>

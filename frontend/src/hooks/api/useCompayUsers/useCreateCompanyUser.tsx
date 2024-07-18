@@ -1,4 +1,4 @@
-import { postRegisterUser } from '@/api/api-handlers';
+import { postCreateUser } from '@/api/api-handlers';
 import { QueryKeys } from '@/constants';
 import useErrorToast from '@/hooks/useErrorToast';
 import useSuccessToast from '@/hooks/useSuccessToast';
@@ -15,7 +15,7 @@ export default function useCreateCompanyUser(queryKey: QueryKey = QueryKeys.allU
   const queryClient = useQueryClient();
   const mutation = useMutation({
     mutationFn: async (data: CreateUserProps) => {
-      return await postRegisterUser(data);
+      return await postCreateUser(data);
     },
     onMutate: async (data) => {
       await queryClient.cancelQueries(USER_QUERY_OPTIONS);

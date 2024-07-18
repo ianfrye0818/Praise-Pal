@@ -15,9 +15,6 @@ export const ApiRoutes = {
     refresh: '/refresh',
     logout: '/logout',
     sendResetPasswordEmail: '/reset-password',
-    sendVerifyEmailEmail: '/verify-email',
-    verifyAndUpdatePasswordWithToken: (token: string) => `/update-password/${token}`,
-    verifyEmailWithToken: (token: string) => `/verify-email/${token}`,
   },
   users: {
     baseUrl: '/user',
@@ -26,12 +23,17 @@ export const ApiRoutes = {
       `/user/company/${companyCode}?${generateQueryString(query)}`,
     findOneById: (companyCode: string, userId: string) =>
       `/user/${userId}?companyCode=${companyCode}`,
+    createUser(companyCode: string) {
+      return `/user/create?companyCode=${companyCode}`;
+    },
     updateUserById: (companyCode: string, userId: string) =>
       `/user/${userId}?companyCode=${companyCode}`,
     deleteUserById: (companyCode: string, userId: string) =>
       `/user/${userId}?companyCode=${companyCode}`,
     restoreUserById: (companyCode: string, userId: string) =>
       `/user/${userId}/restore?companyCode=${companyCode}`,
+    verifyUser: (companyCode: string, userId: string) =>
+      `/verify-user/${userId}?companyCode=${companyCode}`,
   },
   kudoLikes: {
     baseUrl: '/likes',
@@ -70,9 +72,6 @@ export const ApiRoutes = {
     findAll: (query?: CompanyQueryParams) => `/company?${generateQueryString(query)}`,
     findOneById: (companyCode: string) => `/company/${companyCode}`,
     updateCompanyById: (companyCode: string) => `/company/${companyCode}`,
-    // will be added to SUPERADMIN panel
-    // createCompany: () => '/company',
-    // deleteCompanyById: (companyCode: string) => `/company/${companyCode}`,
   },
   userNotifications: {
     baseUrl: '/user-notifications',
@@ -82,5 +81,11 @@ export const ApiRoutes = {
     markSingleAsRead: (notificationId: string) =>
       `/user-notifications/${notificationId}/mark-as-read`,
     deleteNotificationById: (notificationId: string) => `/user-notifications/${notificationId}`,
+  },
+  verify: {
+    baseUrl: '/verify',
+    verifyUser: (companyCode: string, userId: string) =>
+      `/verify-user/${userId}?companyCode=${companyCode}`,
+    verifyAndUpdatePasswordWithToken: (token: string) => `/update-password/${token}`,
   },
 };

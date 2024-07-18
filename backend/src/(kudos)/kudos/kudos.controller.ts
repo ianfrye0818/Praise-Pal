@@ -8,7 +8,6 @@ import {
   Patch,
   Delete,
   Query,
-  Req,
 } from '@nestjs/common';
 import { KudosService } from './kudos.service';
 import { createKudosDTO, UpdateKudosDTO } from './dto/createKudos.dto';
@@ -24,7 +23,6 @@ import { CompanyGuard } from 'src/core-guards/company.guard';
 export class KudosController {
   constructor(private readonly kudosService: KudosService) {}
 
-  // @UseGuards(SuperAdminGuard)
   @UseGuards(CompanyGuard)
   @Get()
   async findAll(@Query() query: KudosFilterDTO) {
@@ -33,9 +31,8 @@ export class KudosController {
 
   @UseGuards(CompanyGuard)
   @Get(':kudoId')
-  async findKudoById(@Param('kudoId') kudoId: string, @Req() req: any) {
+  async findKudoById(@Param('kudoId') kudoId: string) {
     const data = await this.kudosService.getKudoById(kudoId);
-    console.log('data: ', data);
     return data;
   }
 

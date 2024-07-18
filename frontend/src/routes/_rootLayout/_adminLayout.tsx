@@ -3,17 +3,14 @@ import { useAuth } from '@/hooks/useAuth';
 import { createFileRoute, Outlet, Navigate } from '@tanstack/react-router';
 
 export const Route = createFileRoute('/_rootLayout/_adminLayout')({
-  component: () => <AdminLayout />,
+  component: AdminLayout,
 });
-
 function AdminLayout() {
-  const { isAuthenticated, loading, isAdmin } = useAuth().state;
+  const { isAdmin, loading } = useAuth().state;
+  if (!isAdmin && !loading) {
+    return <Navigate to='/' />;
+  }
 
-  if (loading) return <div>Loading...</div>;
-
-  if (!isAuthenticated) return <Navigate to='/sign-in' />;
-
-  if (!isAdmin) return <Navigate to='/' />;
   return (
     <div className='w-screen md:w-auto'>
       <Header showAddKudos={false} />

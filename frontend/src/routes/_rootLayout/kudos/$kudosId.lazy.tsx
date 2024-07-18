@@ -26,8 +26,6 @@ function Component() {
     queryKey: QueryKeys.singleKudo(kudosId),
   });
 
-  console.log(kudo);
-
   if (isLoading) {
     return <DataLoader />;
   }

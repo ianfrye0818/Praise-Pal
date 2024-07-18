@@ -60,7 +60,6 @@ export default function AddUserForm({ setOpen }: AddUserFormProps) {
   const isFormValid = form.formState.isValid;
 
   useEffect(() => {
-    console.log('rendersuccess');
     if (isSuccess) {
       setOpen && setOpen(false);
     }

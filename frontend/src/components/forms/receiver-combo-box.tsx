@@ -25,7 +25,7 @@ export default function ReceiverComboBox({ field, form }: ReceiverComboBox) {
   const { user: currentUser } = useAuth().state;
   const [open, setOpen] = useState(false);
   const { data } = useGetCompanyUsers({
-    companyCode: currentUser?.companyCode,
+    companyCode: currentUser!.companyCode,
   });
 
   if (!data) return null;

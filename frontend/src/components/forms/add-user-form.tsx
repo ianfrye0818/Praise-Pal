@@ -30,7 +30,7 @@ interface AddUserFormProps {
 }
 
 export default function AddUserForm({ setOpen }: AddUserFormProps) {
-  const { user: currentUser } = useAuth().state;
+  const { user: currentUser, isCompanyOwner } = useAuth().state;
   const form = useForm<z.infer<typeof addUserSchema>>({
     defaultValues: defaultAddValues(currentUser!),
     resolver: zodResolver(addUserSchema),
@@ -57,6 +57,7 @@ export default function AddUserForm({ setOpen }: AddUserFormProps) {
 
   const isSubmitting = form.formState.isSubmitting;
   const isGlobalError = form.formState.errors.root;
+  const disableUpdateRole = !isCompanyOwner;
   const isFormValid = form.formState.isValid;
 
   useEffect(() => {
@@ -111,6 +112,7 @@ export default function AddUserForm({ setOpen }: AddUserFormProps) {
           name='role'
           options={getRoleOptions()}
           label='Role'
+          disabled={disableUpdateRole}
         />
         <FormInputItem
           control={form.control}

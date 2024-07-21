@@ -18,7 +18,6 @@ export class UserNotificationsService {
     const data = await this.prismaservice.userNotifications.findMany({
       where: {
         userId,
-        deletedAt: filter.deletedAt || null,
         actionType: { in: actionTypes },
         ...otherFilters,
       },
@@ -27,7 +26,7 @@ export class UserNotificationsService {
       skip: skip || 0,
     });
     const filteredData = data.map((notification) => {
-      const { createdAt, updatedAt, deletedAt, ...rest } = notification;
+      const { createdAt, updatedAt, ...rest } = notification;
       return rest;
     });
 
@@ -79,14 +78,4 @@ export class UserNotificationsService {
       where,
     });
   }
-
-  // async deleteNotificationByReferrenceId(referenceIds: string[]) {
-  //   return await this.prismaservice.userNotifications.deleteMany({
-  //     where: {
-  //       referenceId: {
-  //         hasSome: referenceIds,
-  //       },
-  //     },
-  //   });
-  // }
 }

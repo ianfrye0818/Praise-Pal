@@ -11,14 +11,14 @@ import { Popover, PopoverContent, PopoverTrigger } from '@radix-ui/react-popover
 import { Button } from '../ui/button';
 import { useState } from 'react';
 import { ControllerRenderProps, UseFormReturn } from 'react-hook-form';
-import { addKudoFormSchema } from '@/zodSchemas';
+import { AddKudosSchema } from '@/zodSchemas';
 import { getUserDisplayName } from '@/lib/utils';
 import { useAuth } from '@/hooks/useAuth';
 import useGetCompanyUsers from '@/hooks/api/useCompayUsers/useGetCompanyUsers';
 
 interface ReceiverComboBox {
-  field: ControllerRenderProps<z.infer<typeof addKudoFormSchema>, 'receiverId'>;
-  form: UseFormReturn<z.infer<typeof addKudoFormSchema>>;
+  field: ControllerRenderProps<z.infer<typeof AddKudosSchema>, 'receiverId'>;
+  form: UseFormReturn<z.infer<typeof AddKudosSchema>>;
 }
 
 export default function ReceiverComboBox({ field, form }: ReceiverComboBox) {

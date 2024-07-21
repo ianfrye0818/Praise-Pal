@@ -1,22 +1,34 @@
 import {
+  forwardRef,
   HttpException,
+  Inject,
   Injectable,
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
 import { PrismaService } from '../core-services/prisma.service';
-import { CreateCompanyDTO, UpdateCompanyDTO } from './dto/createCompany.dto';
+import {
+  CreateCompanyDTO,
+  CreateCompanyWithContactDto,
+  UpdateCompanyDTO,
+} from './dto/createCompany.dto';
 import { Cron } from '@nestjs/schedule';
-import { Company } from '@prisma/client';
+import { ActionType, Company, CompanyStatus, Role } from '@prisma/client';
 import { EmailService } from '../core-services/email.service';
 import { generateCompanyCode } from '../utils';
 import { CompanyFilterDTO } from './dto/filterCompany.dto';
+import { UserNotificationsService } from 'src/(user)/user-notifications/user-notifications.service';
+import { ClientUser } from 'src/types';
+import { CompanyContactService } from '../company-contact/company-contact.service';
 
 @Injectable()
 export class CompanyService {
   constructor(
     private prismaService: PrismaService,
     private emailService: EmailService,
+    private notificationService: UserNotificationsService,
+    @Inject(forwardRef(() => CompanyContactService)) // Use forwardRef to resolve circular dependency
+    private companyContactService: CompanyContactService,
   ) {}
 
   async findAll(filter?: CompanyFilterDTO) {
@@ -28,7 +40,7 @@ export class CompanyService {
     }
   }
 
-  async findOneById(companyCode: string) {
+  async findOneByCompanyCode(companyCode: string) {
     try {
       const company = await this.prismaService.company.findUnique({
         where: { companyCode },
@@ -43,49 +55,110 @@ export class CompanyService {
     }
   }
 
-  async findOneByCompanyCode(companyCode: string) {
+  async findCompanyContacts(companyCode: string) {
     try {
-      const company = await this.prismaService.company.findUnique({
+      return await this.prismaService.company.findUnique({
         where: { companyCode },
+        include: { companyContacts: true },
       });
-      if (!company) throw new NotFoundException('Company not found');
-      return company;
     } catch (error) {
-      console.error(error);
-      if (error instanceof NotFoundException) throw error;
-      throw new InternalServerErrorException('Could not retrieve company');
+      console.error(['company - findCompanyContactsError'], error);
+      throw error;
     }
   }
 
-  async createCompanyRecursive(data: CreateCompanyDTO, retries: number) {
+  async requestNewCompany(data: CreateCompanyWithContactDto) {
+    console.log(data);
+    const { companyInfo, contactInfo } = data;
     try {
-      const companyCode = generateCompanyCode();
-      let company = await this.prismaService.company.findUnique({
-        where: { companyCode },
-      });
-      if (!company) {
-        company = await this.prismaService.company.create({
-          data: { ...data, companyCode },
+      const resp = await this.prismaService.$transaction(async () => {
+        const newCompany =
+          await this.createCompanyWithUniqueCompanyCode(companyInfo);
+
+        const newContact = await this.companyContactService.addNewContact({
+          ...contactInfo,
+          companyCode: newCompany.companyCode,
         });
-        return company;
-      } else {
-        const MAX_RETRIES = 5;
-        if (retries < MAX_RETRIES) {
-          retries++;
-          return this.createCompanyRecursive(data, retries);
-        } else {
-          throw new InternalServerErrorException('Could not create company');
-        }
-      }
+
+        return { newCompany, newContact };
+      });
+
+      const superAdminUserId = await this.prismaService.user.findFirst({
+        where: { role: Role.SUPER_ADMIN },
+        select: { userId: true, email: true },
+      });
+      const { newCompany: company, newContact } = resp;
+
+      console.log(resp);
+
+      await this.notificationService.createNotification({
+        actionType: ActionType.NEW_COMPANY,
+        message: `New company request: ${company.name}`,
+        companyCode: company.companyCode,
+        userId: superAdminUserId.userId,
+      });
+
+      //TODO: Uncomment this when email service is implemented
+
+      // await this.emailService.sendNewCompanyRequestEmail(
+      //   company,
+      //   superAdminUserId.email,
+      // );
+
+      return company;
     } catch (error) {
       console.error(error);
       throw new InternalServerErrorException('Could not create company');
     }
   }
 
-  async create(data: CreateCompanyDTO) {
-    const retries = 0;
-    return this.createCompanyRecursive(data, retries);
+  async createCompanyWithUniqueCompanyCode(
+    data: CreateCompanyDTO,
+    user?: ClientUser,
+  ) {
+    let companyCode: string;
+    let retries = 0;
+    const maxRetries = 5;
+    try {
+      return await this.prismaService.$transaction(async (prisma) => {
+        while (retries < maxRetries) {
+          if (retries === maxRetries)
+            throw new InternalServerErrorException('Could not create company');
+          companyCode = generateCompanyCode();
+          retries++;
+
+          const company = await prisma.company.findUnique({
+            where: { companyCode },
+          });
+
+          if (company === null) break;
+        }
+
+        return await prisma.company.create({
+          data: {
+            ...data,
+            companyCode,
+            status:
+              user && user.role === Role.SUPER_ADMIN ? 'ACTIVE' : 'PENDING',
+          },
+        });
+      });
+    } catch (error) {
+      console.error(['createCompanyError'], error);
+      throw new InternalServerErrorException('Could not create company');
+    }
+  }
+
+  async toggleStatus(companyCode: string, status: CompanyStatus) {
+    try {
+      await this.updateCompany(companyCode, { status: status });
+    } catch (error) {
+      console.error(['toggleActiveError'], error);
+      if (error.code === 'P2025') {
+        throw new HttpException('Company not found', 404);
+      }
+      throw new InternalServerErrorException('Could not update company');
+    }
   }
 
   async updateCompany(
@@ -129,9 +202,16 @@ export class CompanyService {
     try {
       await this.prismaService.company.deleteMany({
         where: {
-          deletedAt: {
-            lte: dateThreshold,
-          },
+          AND: [
+            {
+              deletedAt: {
+                lt: dateThreshold,
+              },
+            },
+            {
+              status: 'INACTIVE',
+            },
+          ],
         },
       });
     } catch (error) {

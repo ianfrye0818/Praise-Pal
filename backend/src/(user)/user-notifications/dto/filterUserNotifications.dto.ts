@@ -40,10 +40,6 @@ export class FilterUserNotificationsDTO {
   updatedAt?: string;
 
   @IsOptional()
-  @IsDate()
-  deletedAt?: string;
-
-  @IsOptional()
   @IsInt()
   @Type(() => Number)
   take?: number;

@@ -26,7 +26,7 @@ export class CommentsService {
     const { take, skip, sort, ...otherFilters } = filter;
     try {
       const comments = await this.prismaService.comment.findMany({
-        where: { deletedAt: filter.deletedAt || null, ...otherFilters },
+        where: { ...otherFilters },
         orderBy: { createdAt: sort || 'asc' },
         select: commentSelectOptions,
         take,

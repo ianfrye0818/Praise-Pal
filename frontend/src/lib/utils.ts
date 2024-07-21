@@ -2,6 +2,9 @@ import { Role, User } from '@/types';
 import { type ClassValue, clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import qs from 'query-string';
+import { ZodError } from 'zod';
+import * as libPhoneNumber from 'libphonenumber-js';
+import { ContactTime } from '@/zodSchemas';
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -76,6 +79,15 @@ export const getRoleOptions = () => {
   return options;
 };
 
+export const getContactTimeOptions = () => {
+  const options = Object.values(ContactTime).map((time) => {
+    return {
+      label: capitalizeString(time),
+      value: time.toUpperCase(),
+    };
+  });
+  return options;
+};
 interface UrlQueryParams {
   params: string;
   key: string;
@@ -104,20 +116,29 @@ export function getUserDisplayName(user: User) {
   return user.firstName && user.lastName ? `${user.firstName} ${user.lastName}` : '';
 }
 
-// export function sortUsersByCompanyOwnerThenName(users: User[]) {
-//   users.sort((a, b) => {
-//     if (a.role === Role.COMPANY_OWNER && b.role !== Role.COMPANY_OWNER) {
-//       return -1;
-//     }
-//     if (a.role !== Role.COMPANY_OWNER && b.role === Role.COMPANY_OWNER) {
-//       return 1;
-//     }
-//     if (a.firstName < b.firstName) {
-//       return -1;
-//     }
-//     if (a.firstName > b.firstName) {
-//       return 1;
-//     }
-//     return 0;
-//   });
-// }
+export function validateParsedPhoneNumber(val: string | undefined, path: (string | number)[]) {
+  try {
+    return getFormattedPhoneNumber(val);
+  } catch (error) {
+    throw new ZodError([
+      {
+        message: 'Please enter a valid phone number',
+        fatal: true,
+        code: 'invalid_string',
+        validation: 'base64',
+        path,
+      },
+    ]);
+  }
+}
+
+export function getFormattedPhoneNumber(val: string | undefined) {
+  if (!val) return { isValid: false, formattedNumber: '' };
+  const cleanedValue = val.replace(/\D/g, '');
+  const parsedNumber = libPhoneNumber.parsePhoneNumberFromString(cleanedValue, 'US');
+  const formattedNumber = parsedNumber
+    ? parsedNumber.format('NATIONAL', { fromCountry: 'US' })
+    : '';
+  const isValid = parsedNumber?.isValid();
+  return { isValid, formattedNumber: isValid ? formattedNumber : '' };
+}

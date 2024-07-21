@@ -30,7 +30,7 @@ export class UserService {
           ...otherFilters,
         },
         orderBy: [
-          { role: sort || 'asc' },
+          { role: sort || 'desc' },
           { lastName: 'asc' },
           { userId: 'asc' },
         ],

@@ -2,7 +2,7 @@ import * as z from 'zod';
 import { useForm } from 'react-hook-form';
 import { Button } from '@/components/ui/button';
 import { Role, User } from '@/types';
-import { updateUserSchema } from '@/zodSchemas';
+import { UpdateUserSchema } from '@/zodSchemas';
 import { useAuth } from '@/hooks/useAuth';
 import { DialogFooter } from '@/components/ui/dialog';
 import { Form } from '@/components/ui/form';
@@ -35,9 +35,9 @@ export default function UpdateUserForm({ setOpen, updatingUser }: UpdateUserForm
   const { user: currentUser } = useAuth().state;
   const [canSumbit, setCanSubmit] = useState(true);
 
-  const form = useForm<z.infer<typeof updateUserSchema>>({
+  const form = useForm<z.infer<typeof UpdateUserSchema>>({
     defaultValues: defaultUpdateValues(updatingUser),
-    resolver: zodResolver(updateUserSchema),
+    resolver: zodResolver(UpdateUserSchema),
   });
   const { successToast } = useSuccessToast();
   const { errorToast } = useErrorToast();
@@ -47,14 +47,14 @@ export default function UpdateUserForm({ setOpen, updatingUser }: UpdateUserForm
 
   const updatingCurrentUser = currentUser?.userId === updatingUser?.userId;
 
-  const onSubmit = async (data: z.infer<typeof updateUserSchema>) => {
+  const onSubmit = async (data: z.infer<typeof UpdateUserSchema>) => {
     if (!canSumbit) return;
     try {
       if (updatingCurrentUser) {
         await updateCurrentUser({
           companyCode: updatingUser?.companyCode as string,
           currentUser: currentUser as User,
-          payload: data as z.infer<typeof updateUserSchema>,
+          payload: data as z.infer<typeof UpdateUserSchema>,
         });
         successToast({ title: 'Success', message: 'User updated successfully' });
       } else {
@@ -62,7 +62,7 @@ export default function UpdateUserForm({ setOpen, updatingUser }: UpdateUserForm
           companyCode: updatingUser?.companyCode as string,
           currentUser: currentUser as User,
           userToUpdateId: updatingUser?.userId as string,
-          payload: data as z.infer<typeof updateUserSchema>,
+          payload: data as z.infer<typeof UpdateUserSchema>,
         });
         successToast({ title: 'Success', message: 'User updated successfully' });
       }

@@ -1,7 +1,7 @@
 import { User } from '@/types';
 import * as z from 'zod';
 
-import { addKudoFormSchema } from '@/zodSchemas';
+import { AddKudosSchema } from '@/zodSchemas';
 import useCreateKudo from '../api/useKudos/useCreateKudo';
 import { QueryKey } from '@tanstack/react-query';
 
@@ -12,7 +12,7 @@ export default function useSubmitAddKudosForm(
 ) {
   const { mutateAsync } = useCreateKudo(queryKey);
 
-  async function onSubmit(data: z.infer<typeof addKudoFormSchema>) {
+  async function onSubmit(data: z.infer<typeof AddKudosSchema>) {
     try {
       await mutateAsync({
         ...data,

@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { PrismaService } from './core-services/prisma.service';
+// import { PrismaService } from './core-services/prisma.service';
 import { UserModule } from './(user)/user/user.module';
 import { CompanyModule } from './company/company.module';
 import { AuthModule } from './auth/auth.module';
@@ -14,6 +14,7 @@ import { CommentLikesModule } from './(comments)/comment_likes/comment_likes.mod
 import { CommentsModule } from './(comments)/comments/comments.module';
 import { KudosModule } from './(kudos)/kudos/kudos.module';
 import { VerifyModule } from './verify/verify.module';
+import { CompanyContactModule } from './company-contact/company-contact.module';
 
 @Module({
   imports: [
@@ -32,11 +33,12 @@ import { VerifyModule } from './verify/verify.module';
     CommentsModule,
     CommentLikesModule,
     VerifyModule,
+    CompanyContactModule,
   ],
   controllers: [AppController],
   providers: [
     AppService,
-    PrismaService,
+    // PrismaService,
     { provide: APP_INTERCEPTOR, useClass: LoggingInterceptor },
   ],
 })

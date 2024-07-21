@@ -31,6 +31,8 @@ export default function EditCommentForm({
     defaultValues: {
       content: comment.content,
       commentId: comment.id,
+      kudosId: kudo.id,
+      userId: currentUser?.userId as string,
     },
     resolver: zodResolver(EditCommentSchema),
   });

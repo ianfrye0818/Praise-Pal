@@ -21,9 +21,5 @@ export class CreateCommentDTO {
 export class UpdateCommentDTO extends PartialType(CreateCommentDTO) {
   @IsOptional()
   @IsDate()
-  deletedAt?: Date;
-
-  @IsOptional()
-  @IsDate()
   updatedAt?: Date;
 }

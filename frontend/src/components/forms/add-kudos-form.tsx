@@ -2,7 +2,7 @@ import * as z from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { useAuth } from '@/hooks/useAuth';
-import { addKudoFormSchema } from '@/zodSchemas';
+import { AddKudosSchema } from '@/zodSchemas';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Form, FormControl, FormField, FormItem, FormMessage } from '../ui/form';
@@ -22,8 +22,8 @@ interface AddKudosFormProps {
 
 export default function AddKudosForm({ queryKey, setOpen }: AddKudosFormProps) {
   const { user: currentUser } = useAuth().state;
-  const form = useForm<z.infer<typeof addKudoFormSchema>>({
-    resolver: zodResolver(addKudoFormSchema),
+  const form = useForm<z.infer<typeof AddKudosSchema>>({
+    resolver: zodResolver(AddKudosSchema),
     defaultValues: ADD_KUDOS_DIALOG_FORM_DEFAULT_VALUES(
       currentUser?.userId as string,
       currentUser?.companyCode as string
@@ -36,7 +36,7 @@ export default function AddKudosForm({ queryKey, setOpen }: AddKudosFormProps) {
       <form>
         <div className='grid gap-4 py-4'>
           <div className='grid gap-2'>
-            <FormInputItem<typeof addKudoFormSchema>
+            <FormInputItem<typeof AddKudosSchema>
               control={form.control}
               label="What's this for?"
               placeholder='Great job on that project!'
@@ -45,7 +45,7 @@ export default function AddKudosForm({ queryKey, setOpen }: AddKudosFormProps) {
             />
           </div>
           <div className='grid gap-2'>
-            <FormTextAreaItem<typeof addKudoFormSchema>
+            <FormTextAreaItem<typeof AddKudosSchema>
               control={form.control}
               label='Message'
               placeholder='Let them know what they did well!'
@@ -73,7 +73,7 @@ export default function AddKudosForm({ queryKey, setOpen }: AddKudosFormProps) {
             </div>
           </div>
           <div className='flex items-center gap-2'>
-            <CheckBoxInputItem<typeof addKudoFormSchema>
+            <CheckBoxInputItem<typeof AddKudosSchema>
               control={form.control}
               label='Send Anonymous'
               name='isAnonymous'

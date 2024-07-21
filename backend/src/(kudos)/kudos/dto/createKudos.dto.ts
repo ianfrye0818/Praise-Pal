@@ -31,10 +31,6 @@ export class createKudosDTO {
 
 export class UpdateKudosDTO extends PartialType(createKudosDTO) {
   @IsOptional()
-  @IsDate()
-  deletedAt?: Date;
-
-  @IsOptional()
   @IsInt()
   likes?: number;
 

@@ -9,6 +9,7 @@ import {
   LayoutDashboard,
 } from 'lucide-react';
 import { env } from '@/zodSchemas/env';
+import { ContactTime } from '@/zodSchemas';
 
 export const QueryKeys = {
   allKudos: ['kudos'],
@@ -81,6 +82,25 @@ export const SIGN_UP_FORM_DEFAULT_VALUES = {
   isActive: false,
 };
 
+export const COMPANY_SIGN_UP_FORM_DEFAULT_VALUES = {
+  companyInfo: {
+    name: '',
+    address: '',
+    city: '',
+    state: '',
+    zip: '',
+    phone: '',
+  },
+  contactInfo: {
+    firstName: '',
+    lastName: '',
+    email: '',
+    bestTimeToContact: ContactTime.ANYTIME,
+    phone: '',
+    sameNumber: false,
+  },
+};
+
 export const SIGN_IN_FORM_DEFAULT_VALUES = {
   email: '',
   password: '',
@@ -117,6 +137,7 @@ export const UPDATE_COMPANY_DIALOG_DEFAULT_VALUES = (company: Company) => {
     state: company.state,
     zip: company.zip,
     phone: company.phone,
+    companyCode: company.companyCode,
   };
 };
 

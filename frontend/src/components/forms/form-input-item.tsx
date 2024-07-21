@@ -33,7 +33,7 @@ export function FormInputItem<T extends z.ZodTypeAny>({
 
   let handleChange = field.onChange;
 
-  if (name === 'companyCode') {
+  if (name === 'companyCode' || name.includes('state')) {
     handleChange = (event) => {
       // Remove non-alphanumeric characters and capitalize the value
       const filteredValue = event.target.value.replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
@@ -53,29 +53,31 @@ export function FormInputItem<T extends z.ZodTypeAny>({
     <FormField
       control={control}
       name={name}
-      render={() => (
-        <FormItem>
-          {label && <FormLabel>{label}</FormLabel>}
-          <FormControl>
-            <div className='relative'>
-              <Input
-                type={isVisable ? 'text' : type}
-                placeholder={placeholder}
-                {...field}
-                {...customField}
-                {...props}
-              />
-              {obsureText && (
-                <ShowPasswordButton
-                  setIsVisable={setIsVisable}
-                  isVisable={isVisable}
+      render={({ field }) => {
+        return (
+          <FormItem>
+            {label && <FormLabel>{label}</FormLabel>}
+            <FormControl>
+              <div className='relative'>
+                <Input
+                  type={isVisable ? 'text' : type}
+                  placeholder={placeholder}
+                  {...field}
+                  {...customField}
+                  {...props}
                 />
-              )}
-            </div>
-          </FormControl>
-          <FormMessage />
-        </FormItem>
-      )}
+                {obsureText && (
+                  <ShowPasswordButton
+                    setIsVisable={setIsVisable}
+                    isVisable={isVisable}
+                  />
+                )}
+              </div>
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        );
+      }}
     />
   );
 }

@@ -15,7 +15,7 @@ export default function LogoutButton() {
       size='sm'
       onClick={async () => {
         await logout(dispatch);
-        await navigate({ to: '/sign-in' });
+        await navigate({ to: '/sign-in', replace: true, resetScroll: true });
       }}
     >
       <LogOutIcon />

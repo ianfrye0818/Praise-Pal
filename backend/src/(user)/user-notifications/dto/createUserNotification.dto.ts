@@ -13,6 +13,10 @@ export class CreateUserNotificationDTO {
   @IsString()
   commentId?: string;
 
+  @IsOptional()
+  @IsString()
+  companyCode?: string;
+
   @IsEnum(
     [
       'COMMENT_LIKE',
@@ -21,6 +25,7 @@ export class CreateUserNotificationDTO {
       'KUDOS_COMMENT',
       'KUDOS',
       'NEW_USER',
+      'NEW_COMPANY',
     ],
     {
       message: 'Action Type Must Be LIKE, COMMENT, or KUDOS',

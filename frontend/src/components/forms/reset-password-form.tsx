@@ -3,15 +3,15 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { RESET_PASSWORD_DEFAULT_VALUES } from '@/constants';
 import useSubmitResetPasswordForm from '@/hooks/forms/useSubmitResetPasswordForm';
-import { ResetPasswordFormSchema } from '@/zodSchemas';
+import { ResetPasswordSchema } from '@/zodSchemas';
 import { Form } from '../ui/form';
 import { FormInputItem } from './form-input-item';
 import { Button } from '../ui/button';
 
 export default function ResetPasswordForm({ token }: { token: string }) {
-  const form = useForm<z.infer<typeof ResetPasswordFormSchema>>({
+  const form = useForm<z.infer<typeof ResetPasswordSchema>>({
     defaultValues: RESET_PASSWORD_DEFAULT_VALUES(token),
-    resolver: zodResolver(ResetPasswordFormSchema),
+    resolver: zodResolver(ResetPasswordSchema),
   });
 
   const onSubmit = useSubmitResetPasswordForm({ setError: form.setError });
@@ -26,7 +26,7 @@ export default function ResetPasswordForm({ token }: { token: string }) {
         onSubmit={form.handleSubmit(onSubmit)}
         className='w-full max-w-[500px] flex flex-col gap-4'
       >
-        <FormInputItem<typeof ResetPasswordFormSchema>
+        <FormInputItem<typeof ResetPasswordSchema>
           control={form.control}
           name='password'
           label='New Password'
@@ -35,7 +35,7 @@ export default function ResetPasswordForm({ token }: { token: string }) {
           disabled={submitting}
         />
 
-        <FormInputItem<typeof ResetPasswordFormSchema>
+        <FormInputItem<typeof ResetPasswordSchema>
           control={form.control}
           name='confirmPassword'
           label='Confirm Password'

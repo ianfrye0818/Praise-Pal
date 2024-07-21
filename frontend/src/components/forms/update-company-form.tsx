@@ -1,5 +1,5 @@
 import * as z from 'zod';
-import { updateCompanyFormSchema } from '@/zodSchemas';
+import { UpdateCompanySchema } from '@/zodSchemas';
 import { useForm } from 'react-hook-form';
 import { Form } from '../ui/form';
 import { FormInputItem } from './form-input-item';
@@ -19,14 +19,14 @@ export function UpdateCompanyForm({
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
   const { errorToast } = useErrorToast();
-  const form = useForm<z.infer<typeof updateCompanyFormSchema>>({
-    resolver: zodResolver(updateCompanyFormSchema),
+  const form = useForm<z.infer<typeof UpdateCompanySchema>>({
+    resolver: zodResolver(UpdateCompanySchema),
     defaultValues: UPDATE_COMPANY_DIALOG_DEFAULT_VALUES(updatingCompany),
   });
 
   const { mutateAsync: updateCompany } = useUpdateCompany();
 
-  async function onSubmit(values: z.infer<typeof updateCompanyFormSchema>) {
+  async function onSubmit(values: z.infer<typeof UpdateCompanySchema>) {
     try {
       await updateCompany({ ...values, companyCode: updatingCompany.companyCode });
       setOpen(false);
@@ -43,7 +43,7 @@ export function UpdateCompanyForm({
         onSubmit={form.handleSubmit(onSubmit)}
       >
         <div className='space-y-2'>
-          <FormInputItem<typeof updateCompanyFormSchema>
+          <FormInputItem<typeof UpdateCompanySchema>
             control={form.control}
             name='name'
             label='Company Name'
@@ -51,7 +51,7 @@ export function UpdateCompanyForm({
           />
         </div>
         <div className='space-y-2'>
-          <FormInputItem<typeof updateCompanyFormSchema>
+          <FormInputItem<typeof UpdateCompanySchema>
             control={form.control}
             name='address'
             label='Address'
@@ -60,7 +60,7 @@ export function UpdateCompanyForm({
         </div>
         <div className='flex gap-1'>
           <div className='space-y-2 flex-2'>
-            <FormInputItem<typeof updateCompanyFormSchema>
+            <FormInputItem<typeof UpdateCompanySchema>
               control={form.control}
               name='city'
               label='City'
@@ -68,7 +68,7 @@ export function UpdateCompanyForm({
             />
           </div>
           <div className='space-y-2  flex-1'>
-            <FormInputItem<typeof updateCompanyFormSchema>
+            <FormInputItem<typeof UpdateCompanySchema>
               control={form.control}
               maxLength={2}
               name='state'
@@ -77,7 +77,7 @@ export function UpdateCompanyForm({
             />
           </div>
           <div className='space-y-2 flex-1'>
-            <FormInputItem<typeof updateCompanyFormSchema>
+            <FormInputItem<typeof UpdateCompanySchema>
               control={form.control}
               maxLength={5}
               minLength={5}
@@ -88,7 +88,7 @@ export function UpdateCompanyForm({
           </div>
         </div>
         <div className='space-y-2'>
-          <FormInputItem<typeof updateCompanyFormSchema>
+          <FormInputItem<typeof UpdateCompanySchema>
             control={form.control}
             name='phone'
             label='Phone'

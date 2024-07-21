@@ -4,13 +4,13 @@ import { Button } from '@/components/ui/button';
 import { Form } from '@/components/ui/form';
 import { SIGN_UP_FORM_DEFAULT_VALUES } from '@/constants';
 import useSubmitSignUpForm from '@/hooks/forms/useSubmitSignUpForm';
-import { addUserSchema } from '@/zodSchemas';
+import { AddUserSchema } from '@/zodSchemas';
 import { SignUpFormProps } from '@/types';
 import { FormInputItem } from './form-input-item';
 
 export default function SignUpForm() {
   const form = useForm<SignUpFormProps>({
-    resolver: zodResolver(addUserSchema),
+    resolver: zodResolver(AddUserSchema),
     defaultValues: SIGN_UP_FORM_DEFAULT_VALUES,
   });
 

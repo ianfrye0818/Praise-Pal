@@ -2,7 +2,7 @@ import * as z from 'zod';
 import { useForm } from 'react-hook-form';
 import { Button } from '@/components/ui/button';
 import { Role, User } from '@/types';
-import { addUserSchema } from '@/zodSchemas';
+import { AddUserSchema } from '@/zodSchemas';
 import { useAuth } from '@/hooks/useAuth';
 import { DialogFooter } from '@/components/ui/dialog';
 import { Form } from '@/components/ui/form';
@@ -31,21 +31,21 @@ interface AddUserFormProps {
 
 export default function AddUserForm({ setOpen }: AddUserFormProps) {
   const { user: currentUser, isCompanyOwner } = useAuth().state;
-  const form = useForm<z.infer<typeof addUserSchema>>({
+  const form = useForm<z.infer<typeof AddUserSchema>>({
     defaultValues: defaultAddValues(currentUser!),
-    resolver: zodResolver(addUserSchema),
+    resolver: zodResolver(AddUserSchema),
   });
   const { successToast } = useSuccessToast();
 
   const { mutateAsync: createUser, isSuccess } = useCreateCompanyUser();
 
-  const onSubmit = async (data: z.infer<typeof addUserSchema>) => {
+  const onSubmit = async (data: z.infer<typeof AddUserSchema>) => {
     try {
       if (data.password !== data.confirmPassword) {
         form?.setError('confirmPassword', { message: 'Passwords do not match' });
         return;
       }
-      await createUser(data as z.infer<typeof addUserSchema>);
+      await createUser(data as z.infer<typeof AddUserSchema>);
       successToast({ title: 'Success', message: 'User created successfully' });
     } catch (error) {
       console.error(['addUserForm'], error);

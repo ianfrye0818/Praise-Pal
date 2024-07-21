@@ -121,3 +121,31 @@ export const cronErrorEmailHtml = (
 
   return html;
 };
+
+export const newCompanySuperAdmin = (url: string, newCompanyName: string) => {
+  const html = `
+  <html lang="en">
+  <head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>New Company Submitted</title>
+  </head>
+  <body>
+  <h1>Verify Email</h1>
+  <p>{{newCompanyName}} has requsted to joing Praise-Pal. Click the link below to verify this company</p>
+  <a href="{{url}}">Verify company</a>
+  
+  <p>
+  If link above does not work - please copy and paste this link into your
+  browser
+  </p>
+  <p>{{url}}</p>
+  
+  </body>
+  </html>
+  `;
+
+  return html
+    .replace(/{{url}}/g, url)
+    .replace(/{{newCompanyName}}/g, newCompanyName);
+};

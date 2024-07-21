@@ -22,7 +22,7 @@ export class VerifyService {
     const updatedUser = await this.userService.updateUserById(userId, {
       isActive: true,
     });
-    const company = await this.companyService.findOneById(
+    const company = await this.companyService.findOneByCompanyCode(
       updatedUser.companyCode,
     );
 

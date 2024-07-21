@@ -35,10 +35,6 @@ export class KudosFilterDTO {
 
   @IsOptional()
   @IsDate()
-  deletedAt?: Date;
-
-  @IsOptional()
-  @IsDate()
   createdAt?: Date;
 
   @IsOptional()

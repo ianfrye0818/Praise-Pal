@@ -7,6 +7,7 @@ import { PrismaService } from 'src/core-services/prisma.service';
 import { EmailService } from 'src/core-services/email.service';
 import { JwtService } from '@nestjs/jwt';
 import { CompanyService } from 'src/company/company.service';
+import { CompanyContactService } from 'src/company-contact/company-contact.service';
 
 @Module({
   controllers: [VerifyController],
@@ -18,6 +19,7 @@ import { CompanyService } from 'src/company/company.service';
     EmailService,
     JwtService,
     CompanyService,
+    CompanyContactService,
   ],
   exports: [VerifyService],
 })

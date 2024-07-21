@@ -30,7 +30,7 @@ export class KudosService {
     const { take, skip, sort, ...otherFilters } = filter;
     try {
       const kudos = await this.prismaService.kudos.findMany({
-        where: { deletedAt: filter.deletedAt || null, ...otherFilters },
+        where: { ...otherFilters },
         orderBy: [{ createdAt: sort || 'desc' }, { id: sort || 'asc' }],
         take,
         skip,

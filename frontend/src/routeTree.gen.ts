@@ -20,6 +20,7 @@ import { Route as RootLayoutIndexImport } from './routes/_rootLayout/index'
 import { Route as RootLayoutAdminLayoutImport } from './routes/_rootLayout/_adminLayout'
 import { Route as AuthLayoutSignUpImport } from './routes/_authLayout/sign-up'
 import { Route as AuthLayoutSignInImport } from './routes/_authLayout/sign-in'
+import { Route as AuthLayoutCompanySignUpImport } from './routes/_authLayout/company-sign-up'
 import { Route as VerificationLayoutResetPasswordTokenImport } from './routes/_verification-layout/reset-password/$token'
 import { Route as RootLayoutAdminLayoutAdminDashboardImport } from './routes/_rootLayout/_adminLayout/admin/dashboard'
 import { Route as RootLayoutAdminLayoutAdminVerifyUserUserIdImport } from './routes/_rootLayout/_adminLayout/admin/verify-user/$userId'
@@ -76,6 +77,11 @@ const AuthLayoutSignUpRoute = AuthLayoutSignUpImport.update({
 
 const AuthLayoutSignInRoute = AuthLayoutSignInImport.update({
   path: '/sign-in',
+  getParentRoute: () => AuthLayoutRoute,
+} as any)
+
+const AuthLayoutCompanySignUpRoute = AuthLayoutCompanySignUpImport.update({
+  path: '/company-sign-up',
   getParentRoute: () => AuthLayoutRoute,
 } as any)
 
@@ -165,6 +171,13 @@ declare module '@tanstack/react-router' {
       fullPath: ''
       preLoaderRoute: typeof VerificationLayoutImport
       parentRoute: typeof rootRoute
+    }
+    '/_authLayout/company-sign-up': {
+      id: '/_authLayout/company-sign-up'
+      path: '/company-sign-up'
+      fullPath: '/company-sign-up'
+      preLoaderRoute: typeof AuthLayoutCompanySignUpImport
+      parentRoute: typeof AuthLayoutImport
     }
     '/_authLayout/sign-in': {
       id: '/_authLayout/sign-in'
@@ -257,6 +270,7 @@ declare module '@tanstack/react-router' {
 
 export const routeTree = rootRoute.addChildren({
   AuthLayoutRoute: AuthLayoutRoute.addChildren({
+    AuthLayoutCompanySignUpRoute,
     AuthLayoutSignInRoute,
     AuthLayoutSignUpRoute,
   }),
@@ -293,6 +307,7 @@ export const routeTree = rootRoute.addChildren({
     "/_authLayout": {
       "filePath": "_authLayout.tsx",
       "children": [
+        "/_authLayout/company-sign-up",
         "/_authLayout/sign-in",
         "/_authLayout/sign-up"
       ]
@@ -312,6 +327,10 @@ export const routeTree = rootRoute.addChildren({
       "children": [
         "/_verification-layout/reset-password/$token"
       ]
+    },
+    "/_authLayout/company-sign-up": {
+      "filePath": "_authLayout/company-sign-up.tsx",
+      "parent": "/_authLayout"
     },
     "/_authLayout/sign-in": {
       "filePath": "_authLayout/sign-in.tsx",

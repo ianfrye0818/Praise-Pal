@@ -1,7 +1,7 @@
 import * as z from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
-import { editKudosFormSchema } from '@/zodSchemas';
+import { EditKudosSchema } from '@/zodSchemas';
 import { DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Form } from '../ui/form';
@@ -20,8 +20,8 @@ interface EditKudosFormProps {
 }
 
 export default function EditKudosForm({ kudo, setMenuOpen, queryKey }: EditKudosFormProps) {
-  const form = useForm<z.infer<typeof editKudosFormSchema>>({
-    resolver: zodResolver(editKudosFormSchema),
+  const form = useForm<z.infer<typeof EditKudosSchema>>({
+    resolver: zodResolver(EditKudosSchema),
     defaultValues: EDIT_KUDOS_DIALOG_FORM_DEFAULT_VALUES(kudo),
   });
 
@@ -32,7 +32,7 @@ export default function EditKudosForm({ kudo, setMenuOpen, queryKey }: EditKudos
       <form>
         <div className='grid gap-4 py-4'>
           <div className='grid gap-2'>
-            <FormInputItem<typeof editKudosFormSchema>
+            <FormInputItem<typeof EditKudosSchema>
               control={form.control}
               label='Title'
               placeholder='Great job on that project!'
@@ -41,7 +41,7 @@ export default function EditKudosForm({ kudo, setMenuOpen, queryKey }: EditKudos
             />
           </div>
           <div className='grid gap-2'>
-            <FormTextAreaItem<typeof editKudosFormSchema>
+            <FormTextAreaItem<typeof EditKudosSchema>
               control={form.control}
               label='Message'
               placeholder='Let them know what they did well!'

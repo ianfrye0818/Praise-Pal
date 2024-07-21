@@ -1,4 +1,6 @@
-import { IsDate, IsOptional, IsString } from 'class-validator';
+import { CompanyStatus } from '@prisma/client';
+import { Transform } from 'class-transformer';
+import { IsDate, IsEnum, IsOptional, IsString } from 'class-validator';
 
 export class CompanyFilterDTO {
   @IsOptional()
@@ -44,4 +46,11 @@ export class CompanyFilterDTO {
   @IsOptional()
   @IsDate()
   updatedAt?: Date;
+
+  @IsOptional()
+  @IsEnum(['PENDING', 'ACTIVE', 'INACTIVE'], {
+    message: 'Status must be either PENDING, ACTIVE, or INACTIVE',
+  })
+  @Transform(({ value }: { value: string }) => value.toUpperCase())
+  status?: CompanyStatus;
 }

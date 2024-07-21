@@ -9,7 +9,6 @@ import {
 
 export const ApiRoutes = {
   auth: {
-    baseUrl: '/auth',
     login: '/login',
     register: '/register',
     refresh: '/refresh',
@@ -17,7 +16,6 @@ export const ApiRoutes = {
     sendResetPasswordEmail: '/reset-password',
   },
   users: {
-    baseUrl: '/user',
     findAll: (query?: UserQueryParams) => `/user?${generateQueryString(query)}`,
     findAllByCompany: (companyCode: string, query?: Omit<UserQueryParams, 'companyCode'>) =>
       `/user/company/${companyCode}?${generateQueryString(query)}`,
@@ -37,12 +35,10 @@ export const ApiRoutes = {
       `/verify/verify-user/${userId}?companyCode=${companyCode}`,
   },
   kudoLikes: {
-    baseUrl: '/likes',
     createLike: (kudosId: string) => `/likes/${kudosId}`,
     deleteLike: (kudosId: string) => `/likes/${kudosId}`,
   },
   kudos: {
-    baseUrl: '/kudos',
     findAll: (query: KudosQueryParams) => `/kudos?${generateQueryString(query)}`,
     findOneById: (companyCode: string, kudosId: string) =>
       `/kudos/${kudosId}?companyCode=${companyCode}`,
@@ -53,7 +49,6 @@ export const ApiRoutes = {
       `/kudos/${kudosId}?companyCode=${companyCode}`,
   },
   comments: {
-    baseUrl: '/comments',
     findAll: (query?: CommentQueryParams) => `/comments?${generateQueryString(query)}`,
     findOneById: (companyCode: string, commentId: string) =>
       `/comments/${commentId}?companyCode=${companyCode}`,
@@ -69,13 +64,18 @@ export const ApiRoutes = {
     deleteLike: (commentId: string) => `/comment-likes/${commentId}`,
   },
   company: {
-    baseUrl: '/company',
     findAll: (query?: CompanyQueryParams) => `/company?${generateQueryString(query)}`,
     findOneById: (companyCode: string) => `/company/${companyCode}`,
     updateCompanyById: (companyCode: string) => `/company/${companyCode}`,
+    requestNewCompany: '/company/request-new-company',
+  },
+  companyContacts: {
+    createContact: '/company-contact',
+    getContacts: (companyCode: string) => `/company-contact?companyCode=${companyCode}`,
+    updateContact: (contactId: string) => `/company-contact/${contactId}`,
+    deleteContact: (contactId: string) => `/company-contact/${contactId}`,
   },
   userNotifications: {
-    baseUrl: '/user-notifications',
     findAll: (query?: UserNotificationQueryParams) =>
       `/user-notifications?${generateQueryString(query)}`,
     markAllAsRead: () => `/user-notifications/mark-all-as-read`,
@@ -84,8 +84,6 @@ export const ApiRoutes = {
     deleteNotificationById: (notificationId: string) => `/user-notifications/${notificationId}`,
   },
   verify: {
-    baseUrl: '/verify',
-
     verifyAndUpdatePasswordWithToken: (token: string) => `/update-password/${token}`,
   },
 };

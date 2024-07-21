@@ -20,10 +20,6 @@ export class FilterCommentDTO {
 
   @IsOptional()
   @IsDate()
-  deletedAt?: Date;
-
-  @IsOptional()
-  @IsDate()
   createdAt?: Date;
 
   @IsOptional()

@@ -11,24 +11,25 @@ let retries = 0;
 export const authClient = axios.create({
   baseURL: `${BASE_API_URL}/auth`,
 });
-export const apiClient = axios.create({
+export const APIClientWithToken = axios.create({
   baseURL: BASE_API_URL,
   withCredentials: true,
 });
 
-export const verifyClient = axios.create({
-  baseURL: `${BASE_API_URL}/verify`,
+export const APIClient = axios.create({
+  baseURL: BASE_API_URL,
+  withCredentials: true,
 });
 
 const clients = {
   AUTH: authClient,
-  API: apiClient,
-  VERIFY: verifyClient,
+  API: APIClient,
+  APITOKEN: APIClientWithToken,
 };
 
 export type HTTPClients = ObjectKeys<typeof clients>;
 
-apiClient.interceptors.request.use((config) => {
+APIClientWithToken.interceptors.request.use((config) => {
   const authTokens = getAuthTokens();
   if (!authTokens || !authTokens.accessToken) {
     return Promise.reject(new CustomError('No auth tokens found', 400));
@@ -39,7 +40,7 @@ apiClient.interceptors.request.use((config) => {
 
 //intercept apiClient response and handles a 401 error. If error exists it will try and refresh the access token using the refresh token
 //if no refresh token exists or get's a response status of 401 it will log the user out
-apiClient.interceptors.response.use(
+APIClientWithToken.interceptors.response.use(
   (response) => response,
   async (error) => {
     if (error.response) {
@@ -64,7 +65,7 @@ apiClient.interceptors.response.use(
           throw new CustomError('No auth tokens found', 401);
         }
         originalRequest.headers.Authorization = `Bearer ${authTokens.accessToken}`;
-        return apiClient(originalRequest);
+        return APIClient(originalRequest);
       } else {
         const customError = new CustomError(
           error.response.data.message || 'An Error Occured',
@@ -86,54 +87,104 @@ apiClient.interceptors.response.use(
   }
 );
 
-async function fetcher<T, D = any>({ client = 'API', url }: APIProps<D>) {
-  try {
-    const response = await clients[client].get<T>(url);
-    return response.data;
-  } catch (error) {
-    handleApiError(error);
+// async function getter<T, D = any>({ client = 'APITOKEN', url }: APIProps<D>) {
+//   try {
+//     const response = await clients[client].get<T>(url);
+//     return response.data;
+//   } catch (error) {
+//     handleApiError(error);
+//   }
+// }
+
+// async function poster<D = any, T = any>({
+//   client = 'APITOKEN',
+//   data,
+//   url,
+//   config,
+// }: APIProps<D>): Promise<T | undefined> {
+//   try {
+//     const response = await clients[client].post<T>(url, data, config);
+//     return response.data;
+//   } catch (error) {
+//     handleApiError(error);
+//   }
+// }
+
+// async function patcher<D = any, T = any>({
+//   client = 'APITOKEN',
+//   url,
+//   data,
+//   config,
+// }: APIProps<D>): Promise<T | undefined> {
+//   try {
+//     const response = await clients[client].patch<T>(url, data, config);
+//     return response.data as T;
+//   } catch (error) {
+//     handleApiError(error);
+//   }
+// }
+
+// async function deleter<D = any, T = any>({
+//   client = 'APITOKEN',
+//   url,
+//   config,
+// }: APIProps<D>): Promise<T | undefined> {
+//   try {
+//     const response = await clients[client].delete<T>(url, config);
+//     return response.data as T;
+//   } catch (error) {
+//     handleApiError(error);
+//   }
+// }
+
+export class AxiosClientsHandlers {
+  static async getter<T, D = any>({ client = 'APITOKEN', url }: APIProps<D>) {
+    try {
+      const response = await clients[client].get<T>(url);
+      return response.data;
+    } catch (error) {
+      handleApiError(error);
+    }
+  }
+
+  static async poster<D = any, T = any>({
+    client = 'APITOKEN',
+    data,
+    url,
+    config,
+  }: APIProps<D>): Promise<T | undefined> {
+    try {
+      const response = await clients[client].post<T>(url, data, config);
+      return response.data;
+    } catch (error) {
+      handleApiError(error);
+    }
+  }
+
+  static async patcher<D = any, T = any>({
+    client = 'APITOKEN',
+    url,
+    data,
+    config,
+  }: APIProps<D>): Promise<T | undefined> {
+    try {
+      const response = await clients[client].patch<T>(url, data, config);
+      return response.data as T;
+    } catch (error) {
+      handleApiError(error);
+    }
+  }
+
+  static async deleter<D = any, T = any>({
+    client = 'APITOKEN',
+    url,
+    config,
+  }: APIProps<D>): Promise<T | undefined> {
+    try {
+      const response = await clients[client].delete<T>(url, config);
+      return response.data as T;
+    } catch (error) {
+      handleApiError(error);
+    }
   }
 }
-
-async function poster<D = any, T = any>({
-  client = 'API',
-  data,
-  url,
-  config,
-}: APIProps<D>): Promise<T | undefined> {
-  try {
-    const response = await clients[client].post<T>(url, data, config);
-    return response.data;
-  } catch (error) {
-    handleApiError(error);
-  }
-}
-
-async function patcher<D = any, T = any>({
-  client = 'API',
-  url,
-  data,
-  config,
-}: APIProps<D>): Promise<T | undefined> {
-  try {
-    const response = await clients[client].patch<T>(url, data, config);
-    return response.data as T;
-  } catch (error) {
-    handleApiError(error);
-  }
-}
-
-async function deleter<D = any, T = any>({
-  client = 'API',
-  url,
-  config,
-}: APIProps<D>): Promise<T | undefined> {
-  try {
-    const response = await clients[client].delete<T>(url, config);
-    return response.data as T;
-  } catch (error) {
-    handleApiError(error);
-  }
-}
-
-export { fetcher, poster, patcher, deleter };

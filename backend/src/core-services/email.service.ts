@@ -4,6 +4,7 @@ import {
   InternalServerErrorException,
   UnauthorizedException,
 } from '@nestjs/common';
+import { Company } from '@prisma/client';
 import { Resend } from 'resend';
 import {
   cronErrorEmailHtml,
@@ -30,6 +31,17 @@ export class EmailService {
       throw new Error('API Key is not defined');
     }
     this.resend = new Resend(this.RESENT_API_KEY);
+  }
+
+  async sendEmail({
+    from = 'Praise-Pal Support <support@email.praise-pal.com>',
+    ...rest
+  }: EmailData) {
+    const { data, error } = await this.resend.emails.send({ from, ...rest });
+    if (error) {
+      return console.error(error);
+    }
+    console.log('Email Sent. ID: ', data);
   }
 
   async sendCronErrorNotification(errorDetails: string, errorTitle: string) {
@@ -94,14 +106,11 @@ export class EmailService {
     });
   }
 
-  async sendEmail({
-    from = 'Praise-Pal Support <support@email.praise-pal.com>',
-    ...rest
-  }: EmailData) {
-    const { data, error } = await this.resend.emails.send({ from, ...rest });
-    if (error) {
-      return console.error(error);
-    }
-    console.log('Email Sent. ID: ', data);
+  async sendNewCompanyRequestEmail(company: Company, superAdminEmail: string) {
+    await this.sendEmail({
+      to: [superAdminEmail],
+      subject: 'New Company Request',
+      html: `New company request: ${company.name}`,
+    });
   }
 }

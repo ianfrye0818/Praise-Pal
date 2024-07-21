@@ -3,16 +3,19 @@ import { LucideProps } from 'lucide-react';
 import { ForwardRefExoticComponent, RefAttributes } from 'react';
 import { Control, FieldPath } from 'react-hook-form';
 import { AxiosRequestConfig } from 'axios';
-import { addUserSchema } from '@/zodSchemas';
+import {
+  AddUserSchema,
+  SignInSchema,
+  SubmitCompanyContactSchema,
+  UpdateCompanySchema,
+} from '@/zodSchemas';
 import { HTTPClients } from '@/api/axios';
 
-export interface SignInFormProps {
-  email: string;
-  password: string;
-}
+export type SignInFormProps = z.infer<typeof SignInSchema>;
 
-export type SignUpFormProps = z.infer<typeof addUserSchema>;
+export type SignUpFormProps = z.infer<typeof AddUserSchema>;
 
+export type CompanySignUpFormProps = z.infer<typeof SubmitCompanyContactSchema>;
 export interface User {
   email: string;
   userId: string;
@@ -47,7 +50,7 @@ export type SidebarLink = {
   icon: ForwardRefExoticComponent<Omit<LucideProps, 'ref'> & RefAttributes<SVGSVGElement>>;
 };
 
-export type TKudos = {
+export interface TKudos {
   id: string;
   companyCode: string;
   message: string;
@@ -60,7 +63,7 @@ export type TKudos = {
   kudoLikes: KudoLike[];
   comments?: Comment[];
   createdAt: string;
-};
+}
 
 export interface CreateKudoFormProps {
   senderId: string;
@@ -108,10 +111,11 @@ export interface Company {
   deletedAt?: EpochTimeStamp | null;
 }
 
-export type UpdateCompanyProps = Partial<
-  Omit<Company, 'users' | 'kudos' | 'createdAt' | 'updatedAt' | 'deletedAt'>
->;
+// export type UpdateCompanyProps = Partial<
+//   Omit<Company, 'users' | 'kudos' | 'createdAt' | 'updatedAt' | 'deletedAt'>
+// >;
 
+export type UpdateCompanyProps = z.infer<typeof UpdateCompanySchema>;
 export interface Comment {
   id: string;
   content: string;

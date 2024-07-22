@@ -9,6 +9,7 @@ import {
 } from '@/components/ui/card';
 import SignUpForm from '../forms/sign-up-form';
 import ForgotPasswordButton from '../switches-and-buttons/forgot-password-button';
+import SignUpCompanyLink from '../pages-and-sections/company-sign-up-link';
 
 export default function SignUpCard() {
   return (
@@ -31,9 +32,9 @@ export default function SignUpCard() {
             Sign In
           </Link>
         </p>
-        <p className='w-full text-left'>
-          <ForgotPasswordButton />
-        </p>
+
+        <ForgotPasswordButton />
+        <SignUpCompanyLink />
       </CardFooter>
     </Card>
   );

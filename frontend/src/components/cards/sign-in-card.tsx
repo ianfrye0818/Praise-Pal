@@ -9,6 +9,7 @@ import {
 } from '@/components/ui/card';
 import SignInForm from '../forms/sign-in-form';
 import ForgotPasswordButton from '../switches-and-buttons/forgot-password-button';
+import SignUpCompanyLink from '../pages-and-sections/company-sign-up-link';
 
 export default function SignInCard() {
   return (
@@ -25,15 +26,14 @@ export default function SignInCard() {
           {"Don't have an account? "}
           <Link
             to='/sign-up'
-            className='text-blue-600'
+            className='text-blue-600 hover:underline'
           >
             {' '}
-            Sign Up
+            Sign Up with Company Code
           </Link>
         </p>
-        <p className='w-full text-left'>
-          <ForgotPasswordButton />
-        </p>
+        <ForgotPasswordButton />
+        <SignUpCompanyLink />
       </CardFooter>
     </Card>
   );

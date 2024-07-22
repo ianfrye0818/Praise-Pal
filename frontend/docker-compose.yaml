@@ -1,8 +1,8 @@
 version: '3.9'
 services:
   frontend:
-    container_name: praisepal-frontend-staging
-    image: biggiefrye45/praisepal-frontend:staging
+    container_name: praisepal-frontend
+    image: biggiefrye45/praisepal-frontend:latest
     env_file:
       - .env
     networks:

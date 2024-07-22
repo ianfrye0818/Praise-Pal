@@ -1,0 +1,15 @@
+version: '3.9'
+services:
+  frontend:
+    container_name: praisepal-frontend-local
+    image: biggiefrye45/praisepal-frontend:local
+    env_file:
+      - .env
+    networks:
+      - praisepal_staging
+    ports:
+      - 8012:80
+
+networks:
+  praisepal_staging:
+    external: true

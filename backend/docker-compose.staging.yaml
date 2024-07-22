@@ -3,17 +3,17 @@ version: '3.9'
 services:
   backend:
     container_name: praisepal-backend
-    image: biggiefrye45/praisepal-backend:latest
+    image: biggiefrye45/praisepal-backend:staging
     env_file:
       - .env
     networks:
-      - praisepal_default
+      - praisepal_staging
     ports:
       - 3001:3001
     volumes:
-      - /docker/appdata/praisepal/backend:/app
+      - /docker/appdata/praise-pal-staging:/app
     restart: unless-stopped
 
 networks:
-  praisepal_default:
+  praisepal_staging:
     external: true

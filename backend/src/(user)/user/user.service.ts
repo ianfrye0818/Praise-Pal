@@ -85,7 +85,11 @@ export class UserService {
 
   async create(data: createUserDTO) {
     const { companyCode, password, ...userData } = data;
-
+    if (companyCode === 'ADMN')
+      throw new HttpException(
+        'Users cannot be created for the this company',
+        400,
+      );
     const hashedPassword = await bcrypt.hash(password, 10);
     const formattedEmail = userData.email.toLowerCase();
     const company = await this.prismaService.company.findUnique({
@@ -113,6 +117,9 @@ export class UserService {
     if (error instanceof NotFoundException) throw error;
     if (error.code === 'P2002') {
       throw new HttpException('Email already exists', 400);
+    }
+    if ((error.statusCode = 400)) {
+      throw error;
     }
     throw new HttpException('Something went wrong', 500);
   }

@@ -3,12 +3,12 @@ import { QueryKeys } from '@/constants';
 import { useAuth } from '@/hooks/useAuth';
 import useErrorToast from '@/hooks/useErrorToast';
 import useSuccessToast from '@/hooks/useSuccessToast';
-import { User } from '@/types';
+import { UpdateUserProps, User } from '@/types';
 import { QueryKey, useMutation, useQueryClient } from '@tanstack/react-query';
 
 interface UseUpdateCurrentUserProps {
   companyCode: string;
-  payload: Partial<User>;
+  payload: UpdateUserProps;
   currentUser: User;
 }
 
@@ -23,7 +23,7 @@ export default function useUpdateCurrentUser({
 
   const mutation = useMutation({
     mutationFn: async ({ payload, currentUser, companyCode }: UseUpdateCurrentUserProps) => {
-      const { companyCode: _, role: __, createdAt: ___, updatedAt: ____, ...rest } = payload;
+      const { companyCode: _, role: __, ...rest } = payload;
 
       return await updateCurrentUser({
         dispatch,

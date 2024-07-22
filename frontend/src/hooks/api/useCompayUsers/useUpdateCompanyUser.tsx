@@ -2,13 +2,13 @@ import { patchUpdateUser } from '@/api/api-handlers';
 import { QueryKeys } from '@/constants';
 import useErrorToast from '@/hooks/useErrorToast';
 import useSuccessToast from '@/hooks/useSuccessToast';
-import { Role, User } from '@/types';
+import { Role, UpdateUserProps, User } from '@/types';
 import { QueryKey, useMutation, useQueryClient } from '@tanstack/react-query';
 
 interface UseUpdateCuurentUserProps {
   userToUpdateId: string;
   companyCode: string;
-  payload: Partial<User>;
+  payload: UpdateUserProps;
   currentUser: User;
 }
 
@@ -31,7 +31,8 @@ export default function useUpdateCompanyUser({
         throw new Error('Please click the avitar icon in the sidebar to update your account');
       }
 
-      const { companyCode: code, role, createdAt: _, updatedAt: __, ...rest } = payload;
+      // const { companyCode: code, role, createdAt: _, updatedAt: __, ...rest } = payload;
+      const { role, companyCode: code, ...rest } = payload;
 
       const sendingPayload =
         currentUser.role === Role.COMPANY_OWNER ? { ...rest, code, role } : rest;

@@ -23,7 +23,9 @@ export const AddUserSchema = SignInSchema.extend({
   isActive: z.boolean().optional(),
 });
 
-export const UpdateUserSchema = AddUserSchema.partial().optional();
+export const UpdateUserSchema = AddUserSchema.partial().extend({
+  userId: z.string().optional(),
+});
 
 export const AddCompanySchema = z.object({
   name: z.string().min(2, 'Please enter a valid name'),

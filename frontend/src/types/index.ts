@@ -9,6 +9,7 @@ import {
   SignInSchema,
   SubmitCompanyContactSchema,
   UpdateCompanySchema,
+  UpdateUserSchema,
 } from '@/zodSchemas';
 import { HTTPClients } from '@/api/axios';
 
@@ -19,6 +20,8 @@ export type SignUpFormProps = z.infer<typeof AddUserSchema>;
 export type CompanySignUpFormProps = z.infer<typeof SubmitCompanyContactSchema>;
 
 export type ErrorLogFormProps = z.infer<typeof AddErrorLogSchema>;
+
+export type UpdateUserProps = z.infer<typeof UpdateUserSchema>;
 
 export type ErrorLog = ErrorLogFormProps & { id: string; createdAt: string; updatedAt: string };
 export interface User {
@@ -34,7 +37,7 @@ export interface User {
   deletedAt: string | null;
 }
 
-export type UpdateUserProps = Partial<Omit<User, 'userId'>>;
+// export type UpdateUserProps = Partial<Omit<User, 'userId'>>;
 export type AdminUpdateUserProps = Partial<Omit<User, 'companyCode' | 'userId'>>;
 
 export enum Role {

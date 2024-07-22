@@ -1,6 +1,6 @@
 import React, { createContext, useReducer, ReactNode, useEffect } from 'react';
 import { Role, User } from '@/types';
-import { errorLogout, refreshTokens } from '@/api/auth-actions';
+import { refreshTokens } from '@/api/auth-actions';
 import { getUserToken } from '@/lib/localStorage';
 
 export interface AuthState {

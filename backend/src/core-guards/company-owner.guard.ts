@@ -17,6 +17,7 @@ export class CompanyOwnerGuard implements CanActivate {
 
     // have to be logged in to access any resources
     const user = request.user as ClientUser;
+
     if (!user)
       throw new UnauthorizedException(
         'Must be logged in to access this resource',

@@ -6,12 +6,12 @@ import LikeReplyButtons from '../switches-and-buttons/like-reply-buttons';
 import UserAvitar from '../ui/user-avatar';
 import CommentDropDownMenu from '../dialogs-and-menus/comment-drop-down-menu';
 import CollapsibleCommentList from '../lists/collapsible-comment-list';
-import EditCommentForm from '../forms/edit-comment-form';
 import NewCommentForm from '../forms/new-comment-form';
+import UpdateCommentForm from '../forms/update-comment-form';
 
 export default function CommentComponent(comment: Comment) {
   const { user: currentUser } = useAuth().state;
-  const [editMode, setEditMode] = useState(false);
+  const [updateMode, setUpdateMode] = useState(false);
   const [replyVisible, setReplyVisible] = useState(false);
   const senderDisplayName = comment.user ? getUserDisplayName(comment.user) : '';
   const canSeeDropDown =
@@ -20,7 +20,7 @@ export default function CommentComponent(comment: Comment) {
         currentUser?.role === Role.ADMIN ||
         currentUser?.role === Role.COMPANY_OWNER
       : false;
-  const canEdit =
+  const canUpdate =
     comment.user && currentUser?.userId ? comment.user.userId === currentUser?.userId : false;
 
   return (
@@ -45,19 +45,19 @@ export default function CommentComponent(comment: Comment) {
                 commentId={comment.id}
                 companyCode={currentUser?.companyCode as string}
                 parentId={comment.parentId}
-                setEditMode={setEditMode}
-                canEdit={canEdit}
+                setUpdateMode={setUpdateMode}
+                canUpdate={canUpdate}
               />
             )}
           </div>
         </div>
         <div className='flex gap-4'>
-          {!editMode ? (
+          {!updateMode ? (
             <p>{comment.content}</p>
           ) : (
-            <EditCommentForm
+            <UpdateCommentForm
               comment={comment}
-              setEditMode={setEditMode}
+              setUpdateMode={setUpdateMode}
             />
           )}
         </div>

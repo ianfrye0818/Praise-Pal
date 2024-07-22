@@ -1,38 +1,41 @@
 import * as z from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
-import { EditKudosSchema } from '@/zodSchemas';
+import { UpdateKudosSchema } from '@/zodSchemas';
 import { DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Form } from '../ui/form';
-import { EDIT_KUDOS_DIALOG_FORM_DEFAULT_VALUES } from '@/constants';
-import useSubmitEditKudosForm from '@/hooks/forms/useSubmitEditKudosForm';
+import { UPDATE_KUDOS_DIALOG_FORM_DEFAULT_VALUES } from '@/constants';
 import { FormInputItem } from './form-input-item';
 import { FormTextAreaItem } from './form-text-area-item';
 import { QueryKey } from '@tanstack/react-query';
 import { TKudos } from '@/types';
+import useSubmitUpdateKudosForm from '@/hooks/forms/useSubmitUpdateKudosForm';
 
-interface EditKudosFormProps {
+interface UpdateKudosFormProps {
   kudo: TKudos;
   queryKey?: QueryKey;
   isSingleKudo?: boolean;
   setMenuOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-export default function EditKudosForm({ kudo, setMenuOpen, queryKey }: EditKudosFormProps) {
-  const form = useForm<z.infer<typeof EditKudosSchema>>({
-    resolver: zodResolver(EditKudosSchema),
-    defaultValues: EDIT_KUDOS_DIALOG_FORM_DEFAULT_VALUES(kudo),
+export default function UpdateKudosForm({ kudo, setMenuOpen, queryKey }: UpdateKudosFormProps) {
+  const form = useForm<z.infer<typeof UpdateKudosSchema>>({
+    resolver: zodResolver(UpdateKudosSchema),
+    defaultValues: UPDATE_KUDOS_DIALOG_FORM_DEFAULT_VALUES(kudo),
   });
 
-  const onSubmit = useSubmitEditKudosForm(queryKey);
+  const isSubmitting = form.formState.isSubmitting;
+  const isValid = form.formState.isValid;
+
+  const onSubmit = useSubmitUpdateKudosForm(queryKey);
 
   return (
     <Form {...form}>
       <form>
         <div className='grid gap-4 py-4'>
           <div className='grid gap-2'>
-            <FormInputItem<typeof EditKudosSchema>
+            <FormInputItem<typeof UpdateKudosSchema>
               control={form.control}
               label='Title'
               placeholder='Great job on that project!'
@@ -41,7 +44,7 @@ export default function EditKudosForm({ kudo, setMenuOpen, queryKey }: EditKudos
             />
           </div>
           <div className='grid gap-2'>
-            <FormTextAreaItem<typeof EditKudosSchema>
+            <FormTextAreaItem<typeof UpdateKudosSchema>
               control={form.control}
               label='Message'
               placeholder='Let them know what they did well!'
@@ -66,9 +69,9 @@ export default function EditKudosForm({ kudo, setMenuOpen, queryKey }: EditKudos
               setMenuOpen(false);
             })}
             type='submit'
-            disabled={form.formState.isSubmitting || !form.formState.isValid}
+            disabled={isSubmitting || !isValid}
           >
-            {form.formState.isSubmitting ? 'Sending...' : 'Update Kudo'}
+            {isSubmitting ? 'Updating...' : 'Update Kudo'}
           </Button>
         </DialogFooter>
       </form>

@@ -68,7 +68,6 @@ export class CompanyService {
   }
 
   async requestNewCompany(data: CreateCompanyWithContactDto) {
-    console.log(data);
     const { companyInfo, contactInfo } = data;
     try {
       const resp = await this.prismaService.$transaction(async () => {
@@ -87,9 +86,7 @@ export class CompanyService {
         where: { role: Role.SUPER_ADMIN },
         select: { userId: true, email: true },
       });
-      const { newCompany: company, newContact } = resp;
-
-      console.log(resp);
+      const { newCompany: company, newContact: _ } = resp;
 
       await this.notificationService.createNotification({
         actionType: ActionType.NEW_COMPANY,
@@ -100,10 +97,10 @@ export class CompanyService {
 
       //TODO: Uncomment this when email service is implemented
 
-      // await this.emailService.sendNewCompanyRequestEmail(
-      //   company,
-      //   superAdminUserId.email,
-      // );
+      await this.emailService.sendNewCompanyRequestEmail(
+        company,
+        superAdminUserId.email,
+      );
 
       return company;
     } catch (error) {

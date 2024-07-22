@@ -8,15 +8,15 @@ import { Form } from '../ui/form';
 import { FormInputItem } from '../forms/form-input-item';
 import { Button } from '../ui/button';
 import { Send } from 'lucide-react';
-import { EditCommentSchema } from '@/zodSchemas';
+import { UpdateCommentsSchema } from '@/zodSchemas';
 import { useSingleKudoContext } from '@/hooks/useSingleKudoContext';
 import { QueryKeys } from '@/constants';
 
-export default function EditCommentForm({
-  setEditMode,
+export default function UpdateCommentForm({
+  setUpdateMode,
   comment,
 }: {
-  setEditMode: React.Dispatch<React.SetStateAction<boolean>>;
+  setUpdateMode: React.Dispatch<React.SetStateAction<boolean>>;
   comment: Comment;
 }) {
   const { user: currentUser } = useAuth().state;
@@ -27,19 +27,19 @@ export default function EditCommentForm({
     kudoQueryKey: QueryKeys.singleKudo(kudo.id),
   });
 
-  const form = useForm<z.infer<typeof EditCommentSchema>>({
+  const form = useForm<z.infer<typeof UpdateCommentsSchema>>({
     defaultValues: {
       content: comment.content,
       commentId: comment.id,
       kudosId: kudo.id,
       userId: currentUser?.userId as string,
     },
-    resolver: zodResolver(EditCommentSchema),
+    resolver: zodResolver(UpdateCommentsSchema),
   });
 
-  const onSubmit = async (data: z.infer<typeof EditCommentSchema>) => {
+  const onSubmit = async (data: z.infer<typeof UpdateCommentsSchema>) => {
     await updateComment({ commentId: data.commentId, content: data.content });
-    setEditMode(false);
+    setUpdateMode(false);
     form.reset();
   };
 
@@ -49,7 +49,7 @@ export default function EditCommentForm({
         className='w-full max-w-[90%] relative'
         onSubmit={form.handleSubmit(onSubmit)}
       >
-        <FormInputItem<typeof EditCommentSchema>
+        <FormInputItem<typeof UpdateCommentsSchema>
           control={form.control}
           name='content'
         />

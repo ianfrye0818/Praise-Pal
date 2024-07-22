@@ -41,7 +41,7 @@ export class CompanyContactService {
         data,
       });
     } catch (error) {
-      console.log(['addNewContactError', error]);
+      console.error(['addNewContactError', error]);
       if (error.code === 'P2025') {
         throw new Error('Company not found');
       }

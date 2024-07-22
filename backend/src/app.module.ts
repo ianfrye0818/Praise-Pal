@@ -15,6 +15,7 @@ import { CommentsModule } from './(comments)/comments/comments.module';
 import { KudosModule } from './(kudos)/kudos/kudos.module';
 import { VerifyModule } from './verify/verify.module';
 import { CompanyContactModule } from './company-contact/company-contact.module';
+import { ErrorLoggerModule } from './error-logger/error-logger.module';
 
 @Module({
   imports: [
@@ -34,6 +35,7 @@ import { CompanyContactModule } from './company-contact/company-contact.module';
     CommentLikesModule,
     VerifyModule,
     CompanyContactModule,
+    ErrorLoggerModule,
   ],
   controllers: [AppController],
   providers: [

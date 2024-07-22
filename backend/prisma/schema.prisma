@@ -29,6 +29,7 @@ model User {
   newUser       UserNotifications[] @relation("newUser")
   notifications UserNotifications[] @relation("user")
   settings      UserSettings[]
+  errorLogs     ErrorLog[]
 }
 
 model Company {
@@ -136,6 +137,16 @@ model UserNotifications {
   kudo        Kudos?     @relation(fields: [kudosId], references: [id], onDelete: Cascade)
   newUser     User?      @relation("newUser", fields: [newUserId], references: [userId])
   user        User       @relation("user", fields: [userId], references: [userId])
+}
+
+model ErrorLog {
+  id        String   @id @default(cuid())
+  userId    String
+  message   String
+  stack     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [userId])
 }
 
 model UserSettings {

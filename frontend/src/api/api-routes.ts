@@ -86,4 +86,10 @@ export const ApiRoutes = {
   verify: {
     verifyAndUpdatePasswordWithToken: (token: string) => `/update-password/${token}`,
   },
+  errors: {
+    getAllErrorLogs: '/errors/logs',
+    getErrorLogById: (errorId: string) => `/errors/logs/${errorId}`,
+    createErrorLog: '/errors/logs',
+    deleteErrorLogById: (errorId: string) => `/errors/logs/${errorId}`,
+  },
 };

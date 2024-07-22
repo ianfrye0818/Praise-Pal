@@ -10,6 +10,7 @@ import { Company } from '@/types';
 import useUpdateCompany from '@/hooks/api/useCompany/useUpdateCompany';
 import useErrorToast from '@/hooks/useErrorToast';
 import { DialogFooter } from '../ui/dialog';
+import { isCustomError, isError } from '@/errors';
 
 export function UpdateCompanyForm({
   updatingCompany,
@@ -32,7 +33,13 @@ export function UpdateCompanyForm({
       setOpen(false);
     } catch (error) {
       console.error(['updateCompanyError'], error);
-      errorToast({ message: 'Error updating company', title: 'Error' });
+      errorToast({
+        message:
+          isCustomError(error) || isError(error)
+            ? error.message
+            : 'Something went wrong. Please try again',
+        title: 'Error',
+      });
     }
   }
 

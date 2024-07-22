@@ -14,18 +14,18 @@ interface CommentDropDownMenuProps {
   companyCode: string;
   commentId: string;
   parentId?: string;
-  setEditMode: React.Dispatch<React.SetStateAction<boolean>>;
+  setUpdateMode: React.Dispatch<React.SetStateAction<boolean>>;
   children?: React.ReactNode;
-  canEdit: boolean;
+  canUpdate: boolean;
 }
 
 export default function CommentDropDownMenu({
   commentId,
   companyCode,
   parentId,
-  setEditMode,
+  setUpdateMode,
   children,
-  canEdit,
+  canUpdate,
 }: CommentDropDownMenuProps) {
   const kudo = useSingleKudoContext();
   const [open, setOpen] = useState(false);
@@ -47,14 +47,14 @@ export default function CommentDropDownMenu({
         side='bottom'
         className='cursor-pointer p-2'
       >
-        {canEdit && (
+        {canUpdate && (
           <DropdownMenuItem
             className='p-1 hover:bg-gray-200 outline-1 hover:outline-none border-none rounded-md'
             onClick={() => {
-              setEditMode(true);
+              setUpdateMode(true);
             }}
           >
-            Edit
+            Update
           </DropdownMenuItem>
         )}
 

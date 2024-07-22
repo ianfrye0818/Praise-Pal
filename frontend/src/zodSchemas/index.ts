@@ -1,6 +1,9 @@
 import { validateParsedPhoneNumber } from '@/lib/utils';
-import { Role } from '@/types';
+import { CompanyStatus, Role } from '@/types';
 import { z, ZodError } from 'zod';
+
+const ContactTimeEnum = z.enum(['MORNING', 'AFTERNOON', 'EVENING', 'ANYTIME']);
+export const ContactTime = ContactTimeEnum.enum;
 
 export const SignInSchema = z.object({
   email: z.string().email('Please enter a valid email address'),
@@ -68,9 +71,6 @@ export const AddCompanySchema = z.object({
     }),
 });
 
-const ContactTimeEnum = z.enum(['MORNING', 'AFTERNOON', 'EVENING', 'ANYTIME']);
-export const ContactTime = ContactTimeEnum.enum;
-
 export const AddCompanyContactSchema = z
   .object({
     firstName: z.string().min(2, 'Please enter a valid first name'),
@@ -115,8 +115,10 @@ export const SubmitCompanyContactSchema = z.object({
   companyInfo: AddCompanySchema,
   contactInfo: AddCompanyContactSchema,
 });
+
 export const UpdateCompanySchema = AddCompanySchema.partial().extend({
   companyCode: z.string().optional(),
+  companyStatus: z.nativeEnum(CompanyStatus).optional(),
 });
 
 export const AddKudosSchema = z.object({
@@ -128,7 +130,7 @@ export const AddKudosSchema = z.object({
   companyCode: z.string(),
 });
 
-export const EditKudosSchema = AddKudosSchema.extend({
+export const UpdateKudosSchema = AddKudosSchema.partial().extend({
   id: z.string(),
   isHidden: z.boolean(),
 });
@@ -140,7 +142,7 @@ export const NewCommentSchema = z.object({
   userId: z.string(),
 });
 
-export const EditCommentSchema = NewCommentSchema.extend({
+export const UpdateCommentsSchema = NewCommentSchema.extend({
   commentId: z.string(),
 });
 
@@ -148,4 +150,10 @@ export const ResetPasswordSchema = z.object({
   password: z.string().min(6, 'Password must be at least 6 characters'),
   confirmPassword: z.string().min(6, 'Password must be at least 6 characters'),
   token: z.string(),
+});
+
+export const AddErrorLogSchema = z.object({
+  userId: z.string(),
+  message: z.string(),
+  stack: z.string(),
 });

@@ -62,11 +62,7 @@ export class CompanyController {
   @UseGuards(CompanyGuard)
   @UseGuards(JwtGuard)
   @Get(':companyCode')
-  async findOneById(
-    @Param('companyCode') companyCode: string,
-    @Req() req: any,
-  ) {
-    console.log(req.user);
+  async findOneById(@Param('companyCode') companyCode: string) {
     return await this.companyService.findOneByCompanyCode(companyCode);
   }
 

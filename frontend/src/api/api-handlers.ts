@@ -15,6 +15,8 @@ import {
   UserNotificationQueryParams,
   VerifyTokenAndResetPasswordProps,
   CompanySignUpFormProps,
+  ErrorLogFormProps,
+  ErrorLog,
 } from '@/types';
 import { ApiRoutes } from './api-routes';
 import { AxiosClientsHandlers } from './axios';
@@ -241,3 +243,20 @@ export const patchUpdateComment = async (
     data: { content },
   });
 };
+
+//error Logging
+export const createErrorLog = async (error: ErrorLogFormProps) =>
+  await AxiosClientsHandlers.poster<ErrorLogFormProps, void>({
+    url: ApiRoutes.errors.createErrorLog,
+    data: error,
+    client: 'API',
+  });
+
+export const getErrorLogById = async (errorId: string) =>
+  await AxiosClientsHandlers.getter<ErrorLog>({ url: ApiRoutes.errors.getErrorLogById(errorId) });
+
+export const getAllErrorLogs = async () =>
+  await AxiosClientsHandlers.getter<ErrorLog[]>({ url: ApiRoutes.errors.getAllErrorLogs });
+
+export const deleteErrorById = async (errorId: string) =>
+  await AxiosClientsHandlers.deleter<void>({ url: ApiRoutes.errors.deleteErrorLogById(errorId) });

@@ -9,7 +9,7 @@ import { Company, Role } from '@/types';
 export default function CompanyCard({ company }: { company: Company }) {
   const { user: currentUser } = useAuth().state;
 
-  const canEditCompany = currentUser?.role === Role.COMPANY_OWNER;
+  const canUpdateCompany = currentUser?.role === Role.COMPANY_OWNER;
 
   return (
     <>
@@ -20,7 +20,7 @@ export default function CompanyCard({ company }: { company: Company }) {
               <CardTitle className='flex justify-between items-center'>{company.name}</CardTitle>
               <CardDescription>CompanyCode: {company.companyCode}</CardDescription>
             </div>
-            {canEditCompany && (
+            {canUpdateCompany && (
               <div>
                 <FormDialog
                   form={UpdateCompanyForm}
@@ -28,7 +28,7 @@ export default function CompanyCard({ company }: { company: Company }) {
                   title='Update Company'
                   description='Update company details'
                 >
-                  <Button variant={'secondary'}>Edit</Button>
+                  <Button variant={'secondary'}>Update</Button>
                 </FormDialog>
               </div>
             )}

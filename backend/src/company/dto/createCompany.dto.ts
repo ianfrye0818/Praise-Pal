@@ -44,6 +44,7 @@ export class UpdateCompanyDTO extends PartialType(CreateCompanyDTO) {
   @IsDate()
   deletedAt?: Date;
 
+  @IsOptional()
   @IsEnum(['PENDING', 'ACTIVE', 'INACTIVE'], {
     message: 'Status must be either PENDING, ACTIVE, or INACTIVE',
   })

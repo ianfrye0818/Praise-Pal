@@ -100,7 +100,7 @@ export default function UsersTable({ users, showUserAmount = false, take }: User
                           variant={'outline'}
                           disabled={disabled || user.deletedAt !== null}
                         >
-                          Edit
+                          Update
                         </Button>
                       </FormDialog>
 

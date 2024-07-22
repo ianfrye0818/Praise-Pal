@@ -10,7 +10,7 @@ import { TKudos } from '@/types';
 import { useState } from 'react';
 import { DeleteKudoDialog } from '../dialogs-and-menus/delete-kudo-dialog';
 import { QueryKey } from '@tanstack/react-query';
-import EditKudosForm from '../forms/edit-kudos-form';
+import UpdateKudosForm from '../forms/update-kudos-form';
 import FormDialog from './form-dialog';
 
 interface KudoCardDropDownMenuProps {
@@ -42,16 +42,16 @@ export default function KudoCardDropDownMenu({ kudo, querKey }: KudoCardDropDown
       >
         <DropdownMenuItem asChild>
           <FormDialog
-            form={EditKudosForm}
-            title='Edit Your Kudo'
-            description='Make Edits and Resend.'
+            form={UpdateKudosForm}
+            title='Update Your Kudo'
+            description='Make Updates and Resend.'
             formProps={{ kudo, setMenuOpen, querKey }}
           >
             <Button
               className='w-full px-2 flex justify-start'
               variant={'ghost'}
             >
-              Edit Kudo
+              Update Kudo
             </Button>
           </FormDialog>
         </DropdownMenuItem>

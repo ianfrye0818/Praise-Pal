@@ -14,8 +14,8 @@ export default function SideBarFooter() {
     <footer className='w-full p-1'>
       <div className='mt-auto flex items-center gap-2 relative'>
         <FormDialog
-          description='Edit user information'
-          title='Edit User'
+          description='Update user information'
+          title='Update User'
           form={UpdateUserForm}
           formProps={{ type: 'update', updatingUser: currentUser }}
         >

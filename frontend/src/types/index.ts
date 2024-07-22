@@ -4,6 +4,7 @@ import { ForwardRefExoticComponent, RefAttributes } from 'react';
 import { Control, FieldPath } from 'react-hook-form';
 import { AxiosRequestConfig } from 'axios';
 import {
+  AddErrorLogSchema,
   AddUserSchema,
   SignInSchema,
   SubmitCompanyContactSchema,
@@ -16,6 +17,10 @@ export type SignInFormProps = z.infer<typeof SignInSchema>;
 export type SignUpFormProps = z.infer<typeof AddUserSchema>;
 
 export type CompanySignUpFormProps = z.infer<typeof SubmitCompanyContactSchema>;
+
+export type ErrorLogFormProps = z.infer<typeof AddErrorLogSchema>;
+
+export type ErrorLog = ErrorLogFormProps & { id: string; createdAt: string; updatedAt: string };
 export interface User {
   email: string;
   userId: string;
@@ -109,6 +114,7 @@ export interface Company {
   createdAt?: EpochTimeStamp;
   updatedAt?: EpochTimeStamp;
   deletedAt?: EpochTimeStamp | null;
+  status: CompanyStatus;
 }
 
 // export type UpdateCompanyProps = Partial<
@@ -238,6 +244,12 @@ export interface VerifyTokenAndResetPasswordProps {
     userId: string;
     email: string;
   };
+}
+
+export enum CompanyStatus {
+  ACTIVE = 'ACTIVE',
+  INACTIVE = 'INACTIVE',
+  PENDIGN = 'PENDING',
 }
 
 export type TokenType = 'NEW_USER' | 'PASSWORD';

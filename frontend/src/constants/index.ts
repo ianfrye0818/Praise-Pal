@@ -24,6 +24,8 @@ export const QueryKeys = {
   userNotifications: ['userNotifications'],
   comments: ['comments'],
   verifyToken: (token: string) => ['verifyToken', token],
+  allErrorLogs: ['errorLogs'],
+  singleErrorLog: (errorLogId: string) => ['errorLogs', errorLogId],
 };
 
 export const sidebarLinks: SidebarLink[] = [
@@ -110,7 +112,7 @@ export const ADD_KUDOS_DIALOG_FORM_DEFAULT_VALUES = (senderId: string, companyCo
   return { title: '', message: '', isAnonymous: false, receiverId: '', senderId, companyCode };
 };
 
-export function EDIT_KUDOS_DIALOG_FORM_DEFAULT_VALUES(kudo: TKudos) {
+export function UPDATE_KUDOS_DIALOG_FORM_DEFAULT_VALUES(kudo: TKudos) {
   return {
     title: kudo.title,
     message: kudo.message,
@@ -138,6 +140,7 @@ export const UPDATE_COMPANY_DIALOG_DEFAULT_VALUES = (company: Company) => {
     zip: company.zip,
     phone: company.phone,
     companyCode: company.companyCode,
+    companyStatus: company.status,
   };
 };
 

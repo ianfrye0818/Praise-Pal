@@ -137,14 +137,14 @@ export const UpdateKudosSchema = AddKudosSchema.partial().extend({
   isHidden: z.boolean(),
 });
 
-export const NewCommentSchema = z.object({
+export const AddCommentSchema = z.object({
   content: z.string().min(2, 'Please enter a valid comment'),
   parentId: z.string().optional(),
   kudosId: z.string(),
   userId: z.string(),
 });
 
-export const UpdateCommentsSchema = NewCommentSchema.extend({
+export const UpdateCommentsSchema = AddCommentSchema.partial().extend({
   commentId: z.string(),
 });
 
@@ -159,3 +159,35 @@ export const AddErrorLogSchema = z.object({
   message: z.string(),
   stack: z.string(),
 });
+
+export const AddCoachingQuestionSchema = z.object({
+  title: z.string().min(2, 'Please enter a valid title'),
+  question: z.string().min(2, 'Please enter a valid question'),
+  companyCode: z
+    .string()
+    .min(4, 'Please enter a valid company code')
+    .max(4, 'Please enter a valid company code'),
+  authorId: z.string(),
+  isAnonymous: z.boolean().default(false),
+  isClosed: z.boolean().default(false),
+});
+
+export const UpdateCoachingQuestionSchema = AddCoachingQuestionSchema.partial().extend({
+  id: z.string(),
+});
+
+export const AddCoachingCommentSchema = z.object({
+  coachingQuestionId: z.string(),
+  parentId: z.string().optional(),
+  userId: z.string(),
+  content: z.string().min(2, 'Please enter a valid comment'),
+});
+
+export const UpdateCoachingCommentSchema = AddCoachingCommentSchema.partial().extend({
+  id: z.string(),
+});
+
+export type AddCoachingQuestionProps = z.infer<typeof AddCoachingQuestionSchema>;
+export type UpdateCoachingQuestionProps = z.infer<typeof UpdateCoachingQuestionSchema>;
+export type AddCoachingCommentProps = z.infer<typeof AddCoachingCommentSchema>;
+export type UpdateCoachingCommentProps = z.infer<typeof UpdateCoachingCommentSchema>;

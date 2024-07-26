@@ -18,6 +18,9 @@ export default {
       },
     },
     extend: {
+      gridTemplateColumns: {
+        rootLayout: 'minmax(15%, min-content) 1fr',
+      },
       colors: {
         customBlue: '#1481BA',
         customLightBlue: {

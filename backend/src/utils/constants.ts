@@ -15,6 +15,19 @@ export const commentLikeSelectOptions = {
   userId: true,
 };
 
+export const privateCoachingRoomSelectOptions = {
+  id: true,
+  coachingQuestionId: true,
+  user: {
+    select: userSelectOptions,
+  },
+  responder: {
+    select: userSelectOptions,
+  },
+  createdAt: true,
+  updatedAt: true,
+};
+
 export const commentSelectOptions = {
   id: true,
   content: true,
@@ -28,6 +41,33 @@ export const commentSelectOptions = {
   comments: true,
   commentLikes: {
     select: commentLikeSelectOptions,
+  },
+};
+
+export const coachingCommentSelectOptions = {
+  id: true,
+  coachingQuestionId: true,
+  content: true,
+  parentId: true,
+  user: {
+    select: userSelectOptions,
+  },
+  createdAt: true,
+  comments: true,
+};
+
+export const coachingQuestionSelectOptions = {
+  id: true,
+  companyCode: true,
+  title: true,
+  question: true,
+  author: { select: userSelectOptions },
+  isAnonymous: true,
+  isClosed: true,
+  createdAt: true,
+  updatedAt: true,
+  comments: {
+    select: coachingCommentSelectOptions,
   },
 };
 
@@ -56,7 +96,12 @@ export const userNotificationSelectOptions = {
   isRead: true,
   createdAt: true,
   message: true,
-  referenceId: true,
+  kudosId: true,
+  coachingQuestionId: true,
+  coachingCommentId: true,
+  newUserId: true,
+  commentId: true,
+  companyCode: true,
 };
 
 export const kudoSelectOptions = {

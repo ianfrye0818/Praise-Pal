@@ -12,6 +12,7 @@ import {
   UpdateUserSchema,
 } from '@/zodSchemas';
 import { HTTPClients } from '@/api/axios';
+import { IconType } from 'react-icons/lib';
 
 export type SignInFormProps = z.infer<typeof SignInSchema>;
 
@@ -55,7 +56,9 @@ export interface AuthTokens {
 export type SidebarLink = {
   label: string;
   route: string;
-  icon: ForwardRefExoticComponent<Omit<LucideProps, 'ref'> & RefAttributes<SVGSVGElement>>;
+  icon:
+    | ForwardRefExoticComponent<Omit<LucideProps, 'ref'> & RefAttributes<SVGSVGElement>>
+    | IconType;
 };
 
 export interface TKudos {
@@ -159,7 +162,6 @@ interface QueryParams {
   take?: number;
   sortBy?: 'ASC' | 'DESC';
   skip?: number;
-  page?: number;
 }
 
 export interface UserQueryParams extends QueryParams {
@@ -201,6 +203,22 @@ export interface CompanyQueryParams extends QueryParams {
   phone?: string;
 }
 
+export interface CoachingQuestionQueryParams extends QueryParams {
+  id?: string;
+  companyCode: string;
+  authorId?: string;
+  isAnonymous?: boolean;
+  isClosed?: boolean;
+}
+
+export interface CoachingCommentQueryParams extends QueryParams {
+  companyCode: string;
+  id?: string;
+  coachingQuestionId?: string;
+  parentId?: string;
+  userId?: string;
+}
+
 export interface UserNotificationQueryParams extends QueryParams {
   id?: string;
   userId?: string;
@@ -237,6 +255,9 @@ export enum ActionTypes {
   KUDOS_LIKE = 'KUDOS_LIKE',
   KUDOS = 'KUDOS',
   NEW_USER = 'NEW_USER',
+  COACHING_COMMENT = 'COACHING_COMMENT',
+  COACHING_QUESITON = 'COACHING_QUESTION',
+  COACHING_COMMENT_COMMENT = 'COACHING_COMMENT_COMMENT',
 }
 
 export interface VerifyTokenAndResetPasswordProps {
@@ -256,3 +277,27 @@ export enum CompanyStatus {
 }
 
 export type TokenType = 'NEW_USER' | 'PASSWORD';
+
+export type CoachingQuestion = {
+  id: string;
+  companyCode: string;
+  title: string;
+  question: string;
+  author: User;
+  isAnonymous: boolean;
+  isClosed: boolean;
+  createdAt: string;
+  updatedAt: string;
+  comments: CoachingQuestionComment[];
+};
+
+export type CoachingQuestionComment = {
+  id: string;
+  coachingQuestionId: string;
+  content: string;
+  parentId?: string;
+  user: User;
+  createdAt: string;
+  updatedAt: string;
+  comments: CoachingQuestionComment[];
+};

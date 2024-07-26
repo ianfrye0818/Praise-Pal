@@ -25,11 +25,10 @@ export function RootLayout() {
   }
 
   return (
-    <main className='flex h-full '>
+    <main className='grid lg:grid-cols-rootLayout '>
       <Sidebar />
-
-      <div className='lg:ml-[300px] md:p-4 flex-1 flex flex-col'>
-        {!adminMode && <Header />}
+      <div className=' md:p-4 flex flex-col'>
+        <Header />
         <Outlet />
       </div>
       <div className='lg:hidden'>

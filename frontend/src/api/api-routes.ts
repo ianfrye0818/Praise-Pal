@@ -1,5 +1,7 @@
 import { generateQueryString } from '@/lib/utils';
 import {
+  CoachingCommentQueryParams,
+  CoachingQuestionQueryParams,
   CommentQueryParams,
   CompanyQueryParams,
   KudosQueryParams,
@@ -66,12 +68,13 @@ export const ApiRoutes = {
   company: {
     findAll: (query?: CompanyQueryParams) => `/company?${generateQueryString(query)}`,
     findOneById: (companyCode: string) => `/company/${companyCode}`,
+    findCompanyContacts: (companyCode: string) => `/company/company-contacts/${companyCode}`,
     updateCompanyById: (companyCode: string) => `/company/${companyCode}`,
     requestNewCompany: '/company/request-new-company',
   },
   companyContacts: {
     createContact: '/company-contact',
-    getContacts: (companyCode: string) => `/company-contact?companyCode=${companyCode}`,
+    convertToUser: (contactId: string) => `/company-contact/convert/${contactId}`,
     updateContact: (contactId: string) => `/company-contact/${contactId}`,
     deleteContact: (contactId: string) => `/company-contact/${contactId}`,
   },
@@ -91,5 +94,28 @@ export const ApiRoutes = {
     getErrorLogById: (errorId: string) => `/errors/logs/${errorId}`,
     createErrorLog: '/errors/logs',
     deleteErrorLogById: (errorId: string) => `/errors/logs/${errorId}`,
+  },
+  coachingQuestions: {
+    getAllCoachingQuestions: (query: CoachingQuestionQueryParams) =>
+      `/coaching-question?${generateQueryString(query)}`,
+    getSingleCoachingQuestion: (companyCode: string, questionId: string) =>
+      `/coaching-question/${questionId}?companyCode=${companyCode}`,
+    createCoachingQuestion: (companyCode: string) =>
+      `/coaching-question?companyCode=${companyCode}`,
+    updateCoachingQuestion: (companyCode: string, questionId: string) =>
+      `/coaching-question/${questionId}?companyCode=${companyCode}`,
+    deleteCoachingQuestion: (companyCode: string, questionId: string) =>
+      `/coaching-question/${questionId}?companyCode=${companyCode}`,
+  },
+  coachingComments: {
+    getAllCoachingComments: (query: CoachingCommentQueryParams) =>
+      `/coaching-comment?${generateQueryString(query)}`,
+    getSingleCoachingComment: (companyCode: string, commentId: string) =>
+      `/coaching-comment/${commentId}?companyCode=${companyCode}`,
+    createCoachingComment: (companyCode: string) => `/coaching-comment?companyCode=${companyCode}`,
+    updateCoachingComment: (companyCode: string, commentId: string) =>
+      `/coaching-comment/${commentId}?companyCode=${companyCode}`,
+    deleteCoachingComment: (companyCode: string, commentId: string) =>
+      `/coaching-comment/${commentId}?companyCode=${companyCode}`,
   },
 };

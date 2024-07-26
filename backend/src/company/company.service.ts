@@ -20,6 +20,7 @@ import { CompanyFilterDTO } from './dto/filterCompany.dto';
 import { UserNotificationsService } from 'src/(user)/user-notifications/user-notifications.service';
 import { ClientUser } from 'src/types';
 import { CompanyContactService } from '../company-contact/company-contact.service';
+import { userSelectOptions } from 'src/utils/constants';
 
 @Injectable()
 export class CompanyService {
@@ -27,13 +28,15 @@ export class CompanyService {
     private prismaService: PrismaService,
     private emailService: EmailService,
     private notificationService: UserNotificationsService,
-    @Inject(forwardRef(() => CompanyContactService)) // Use forwardRef to resolve circular dependency
     private companyContactService: CompanyContactService,
   ) {}
 
   async findAll(filter?: CompanyFilterDTO) {
     try {
-      return await this.prismaService.company.findMany({ where: filter });
+      return await this.prismaService.company.findMany({
+        where: filter,
+        include: { users: { select: userSelectOptions } },
+      });
     } catch (error) {
       console.error(error);
       throw new InternalServerErrorException('Could not retrieve companies');
@@ -174,6 +177,20 @@ export class CompanyService {
         throw new HttpException('Company not found', 404);
       }
       throw new InternalServerErrorException('Could not update company');
+    }
+  }
+
+  async restoreSoftDeletedCompany(companyCode: string) {
+    try {
+      return await this.prismaService.company.update({
+        where: { companyCode },
+        data: { deletedAt: null },
+      });
+    } catch (error) {
+      console.error(error);
+      if (error.code === 'P2025')
+        throw new HttpException('Company not found', 404);
+      throw new InternalServerErrorException('Could not restore company');
     }
   }
 

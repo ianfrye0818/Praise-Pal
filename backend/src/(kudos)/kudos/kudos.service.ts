@@ -118,11 +118,6 @@ export class KudosService {
     }
   }
 
-  kudoIncludeOptions = {
-    comments: true,
-    sender: true,
-  };
-
   async updateKudoById(id: string, data: UpdateKudosDTO): Promise<Kudos> {
     try {
       const kudo = await this.prismaService.kudos.update({

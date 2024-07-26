@@ -1,7 +1,6 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-// import { PrismaService } from './core-services/prisma.service';
 import { UserModule } from './(user)/user/user.module';
 import { CompanyModule } from './company/company.module';
 import { AuthModule } from './auth/auth.module';
@@ -16,6 +15,9 @@ import { KudosModule } from './(kudos)/kudos/kudos.module';
 import { VerifyModule } from './verify/verify.module';
 import { CompanyContactModule } from './company-contact/company-contact.module';
 import { ErrorLoggerModule } from './error-logger/error-logger.module';
+import { CoachingQuestionModule } from './(coaching-corner)/coaching-question/coaching-question.module';
+import { CoachingCommentModule } from './(coaching-corner)/coaching-comment/coaching-comment.module';
+import { PrivateCoachingRoomModule } from './(coaching-corner)/private-coaching-room/private-coaching-room.module';
 
 @Module({
   imports: [
@@ -36,6 +38,9 @@ import { ErrorLoggerModule } from './error-logger/error-logger.module';
     VerifyModule,
     CompanyContactModule,
     ErrorLoggerModule,
+    CoachingQuestionModule,
+    CoachingCommentModule,
+    PrivateCoachingRoomModule,
   ],
   controllers: [AppController],
   providers: [

@@ -1,10 +1,7 @@
 import { adminSidebarLinks } from '@/constants';
 import { Link } from '@tanstack/react-router';
-import { ArrowLeft } from 'lucide-react';
-
 import logo from '@/assets/logo.png';
 import NavBarLink from '../ui/nav-bar-link';
-import { Button } from '../ui/button';
 
 export default function AdminNavLinkList({
   setMenuOpen,
@@ -33,19 +30,6 @@ export default function AdminNavLinkList({
           link={link}
         />
       ))}
-      <Button
-        variant={'ghost'}
-        className='justify-start p-2 '
-        onClick={async () => {
-          type === 'mobile' && setMenuOpen!(false);
-        }}
-        asChild
-      >
-        <Link to='/'>
-          <ArrowLeft />
-          Back
-        </Link>
-      </Button>
     </nav>
   );
 }

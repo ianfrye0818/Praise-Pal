@@ -2,11 +2,9 @@ import {
   Body,
   Controller,
   Delete,
-  Get,
   Param,
   Patch,
   Post,
-  Query,
   UseGuards,
 } from '@nestjs/common';
 import { CompanyContactService } from './company-contact.service';
@@ -19,18 +17,13 @@ import {
 @Controller('company-contact')
 export class CompanyContactController {
   constructor(private readonly companyContactService: CompanyContactService) {}
-  @UseGuards(SuperAdminGuard)
-  @UseGuards(JwtGuard)
-  @Get()
-  async getCompanyContacts(@Query('companyCode') companyCode: string) {
-    return await this.companyContactService.getCompanyContacts(companyCode);
-  }
+
   @Post()
   async addNewContact(@Body() data: CreateCompanyContactDTO) {
     return await this.companyContactService.addNewContact(data);
   }
-  @UseGuards(SuperAdminGuard)
-  @UseGuards(JwtGuard)
+
+  @UseGuards(JwtGuard, SuperAdminGuard)
   @Patch(':contactId')
   async updateContact(
     @Param('contactId') contactId: string,
@@ -38,8 +31,14 @@ export class CompanyContactController {
   ) {
     return await this.companyContactService.updateContact(contactId, data);
   }
-  @UseGuards(SuperAdminGuard)
-  @UseGuards(JwtGuard)
+
+  @UseGuards(JwtGuard, SuperAdminGuard)
+  @Patch('covert/:contactId')
+  async convertContactToUser(@Param('contactId') contactId: string) {
+    return await this.companyContactService.convertContactToUser(contactId);
+  }
+
+  @UseGuards(JwtGuard, SuperAdminGuard)
   @Delete(':contactId')
   async deleteContact(@Param('contactId') contactId: string) {
     return await this.companyContactService.deleteContact(contactId);

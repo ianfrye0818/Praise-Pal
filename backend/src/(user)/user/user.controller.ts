@@ -55,6 +55,7 @@ export class UserController {
     return await this.userService.updateUserById(id, data);
   }
 
+  @UseGuards(UpdateUserGuard)
   @Patch(':id/restore')
   async restoreUserById(@Param('id') id: string) {
     return await this.userService.restoreUserById(id);

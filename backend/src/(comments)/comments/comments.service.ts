@@ -9,7 +9,6 @@ import { UserNotificationsService } from 'src/(user)/user-notifications/user-not
 import { commentSelectOptions, userSelectOptions } from 'src/utils/constants';
 import { FilterCommentDTO } from './dto/filterCommentDTO';
 import { PrismaService } from 'src/core-services/prisma.service';
-import { EmailService } from 'src/core-services/email.service';
 import { UserService } from 'src/(user)/user/user.service';
 import { getDisplayName } from 'src/utils';
 
@@ -17,7 +16,6 @@ import { getDisplayName } from 'src/utils';
 export class CommentsService {
   constructor(
     private readonly prismaService: PrismaService,
-    private readonly emailService: EmailService,
     private readonly userNotificationsService: UserNotificationsService,
     private readonly userService: UserService,
   ) {}
@@ -32,10 +30,9 @@ export class CommentsService {
         take,
         skip: skip || 0,
       });
-      if (!comments) throw new NotFoundException('No comments found');
       return comments;
     } catch (error) {
-      console.error(error);
+      console.error(['findAllComments'], error);
       throw new InternalServerErrorException('Could not retreive Kudos');
     }
   }
@@ -46,30 +43,13 @@ export class CommentsService {
         where: { id: commentId },
         select: commentSelectOptions,
       });
-      if (!comment) throw new NotFoundException('Comment not found');
       return comment;
     } catch (error) {
-      console.error(error);
-      throw new InternalServerErrorException('Could not retreive Kudos');
-    }
-  }
-
-  async findNestedComments(comment: any) {
-    const stack = [comment];
-
-    while (stack.length > 0) {
-      const currentComment = stack.pop();
-      currentComment.comments = await this.prismaService.comment.findMany({
-        where: { parentId: currentComment.id },
-        include: {
-          commentLikes: true,
-          user: { select: userSelectOptions },
-        },
-        orderBy: { createdAt: 'asc' },
-      });
-
-      for (const childComment of currentComment.comments) {
-        stack.push(childComment);
+      console.error(['findCommentById'], error);
+      if (error.code === 'P2025') {
+        throw new NotFoundException('Comment not found');
+      } else {
+        throw new InternalServerErrorException('Could not retreive Kudos');
       }
     }
   }
@@ -143,7 +123,7 @@ export class CommentsService {
 
       return childComment;
     } catch (error) {
-      console.error(error);
+      console.error(['Create Child Comment Error'], error);
       throw new InternalServerErrorException('Could not create comment');
     }
   }
@@ -157,7 +137,7 @@ export class CommentsService {
       });
       return updatedComment;
     } catch (error) {
-      console.error(error);
+      console.error(['Update Comment Error'], error);
       throw new InternalServerErrorException('Could not update comment');
     }
   }
@@ -213,8 +193,28 @@ export class CommentsService {
         where: { id: commentId },
       });
     } catch (error) {
-      console.error(error);
+      console.error(['Delete Comment Error'], error);
       throw new InternalServerErrorException('Could not delete comment');
+    }
+  }
+
+  async findNestedComments(comment: any) {
+    const stack = [comment];
+
+    while (stack.length > 0) {
+      const currentComment = stack.pop();
+      currentComment.comments = await this.prismaService.comment.findMany({
+        where: { parentId: currentComment.id },
+        include: {
+          commentLikes: true,
+          user: { select: userSelectOptions },
+        },
+        orderBy: { createdAt: 'asc' },
+      });
+
+      for (const childComment of currentComment.comments) {
+        stack.push(childComment);
+      }
     }
   }
 }

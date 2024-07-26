@@ -7,7 +7,6 @@ import {
   CommandItem,
   CommandList,
 } from '@/components/ui/command';
-import { Popover, PopoverContent, PopoverTrigger } from '@radix-ui/react-popover';
 import { Button } from '../ui/button';
 import { useState } from 'react';
 import { ControllerRenderProps, UseFormReturn } from 'react-hook-form';
@@ -15,6 +14,7 @@ import { AddKudosSchema } from '@/zodSchemas';
 import { getUserDisplayName } from '@/lib/utils';
 import { useAuth } from '@/hooks/useAuth';
 import useGetCompanyUsers from '@/hooks/api/useCompayUsers/useGetCompanyUsers';
+import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
 
 interface ReceiverComboBox {
   field: ControllerRenderProps<z.infer<typeof AddKudosSchema>, 'receiverId'>;

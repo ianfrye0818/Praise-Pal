@@ -12,7 +12,7 @@ export default function SideBarFooter() {
 
   return (
     <footer className='w-full p-1'>
-      <div className='mt-auto flex items-center gap-2 relative'>
+      <div className='mt-auto flex items-center gap-2'>
         <FormDialog
           description='Update user information'
           title='Update User'

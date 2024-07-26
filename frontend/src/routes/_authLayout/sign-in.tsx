@@ -1,4 +1,5 @@
 import SignInCard from '@/components/cards/sign-in-card';
+
 import { createFileRoute } from '@tanstack/react-router';
 
 export const Route = createFileRoute('/_authLayout/sign-in')({

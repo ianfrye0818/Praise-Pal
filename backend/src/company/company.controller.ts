@@ -34,6 +34,12 @@ export class CompanyController {
     return await this.companyService.findAll(filter);
   }
 
+  @UseGuards(JwtGuard, SuperAdminGuard)
+  @Get('company-contacts/:companyCode')
+  async getCompanyContacts(@Param('companyCode') companyCode: string) {
+    return await this.companyService.findCompanyContacts(companyCode);
+  }
+
   @Post('request-new-company')
   async requestNewCompany(@Body() data: CreateCompanyWithContactDto) {
     return await this.companyService.requestNewCompany(data);
@@ -76,14 +82,19 @@ export class CompanyController {
     );
   }
 
-  @UseGuards(CompanyOwnerGuard)
-  @UseGuards(JwtGuard)
+  @UseGuards(JwtGuard, CompanyOwnerGuard)
   @Patch(':companyCode')
   async updateCompanyById(
     @Param('companyCode') companyCode: string,
     @Body() data: UpdateCompanyDTO,
   ) {
     return await this.companyService.updateCompany(companyCode, data);
+  }
+
+  @UseGuards(SuperAdminGuard)
+  @Patch('restore/:companyCode')
+  async restoreCompany(@Param('companyCode') companyCode: string) {
+    return await this.companyService.restoreSoftDeletedCompany(companyCode);
   }
 
   @UseGuards(SuperAdminGuard)

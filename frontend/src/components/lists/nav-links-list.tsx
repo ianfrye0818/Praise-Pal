@@ -34,7 +34,7 @@ export default function NavLinksList({
           link={link}
         />
       ))}
-      {isAdmin && (
+      {/* {isAdmin && (
         <Button
           variant={'link'}
           className='flex gap-3 items-center p-3 justify-start rounded-md hover:no-underline text-lg'
@@ -45,7 +45,7 @@ export default function NavLinksList({
         >
           <ShieldCheck /> Admin Dashboard
         </Button>
-      )}
+      )} */}
     </nav>
   );
 }

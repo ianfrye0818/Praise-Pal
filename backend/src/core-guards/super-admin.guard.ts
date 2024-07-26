@@ -15,6 +15,8 @@ export class SuperAdminGuard implements CanActivate {
     const user = request.user as ClientUser;
     if (!user) throw new UnauthorizedException();
 
+    console.log(user);
+
     if (user.role !== Role.SUPER_ADMIN) {
       throw new ForbiddenException('Only Super Admin can perform this action');
     }

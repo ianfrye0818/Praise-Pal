@@ -13,3 +13,7 @@ services:
       - ./data:/var/lib/postgresql/data
     ports:
       - '5432:5432'
+    resources:
+      limits:
+        cpus: '0.50'
+        memory: 1G

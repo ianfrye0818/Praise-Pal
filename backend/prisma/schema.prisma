@@ -8,73 +8,82 @@ datasource db {
 }
 
 model User {
-  userId        String              @id @default(cuid())
-  firstName     String
-  lastName      String
-  email         String              @unique
-  password      String
-  role          Role                @default(USER)
-  companyCode   String
-  createdAt     DateTime            @default(now())
-  updatedAt     DateTime            @updatedAt
-  deletedAt     DateTime?
-  isActive      Boolean             @default(true)
-  comments      Comment[]
-  commentLkes   Comment_Like[]
-  kudoLikes     Kudo_Like[]
-  receivedKudos Kudos[]             @relation("ReceivedKudos")
-  sentKudos     Kudos[]             @relation("SentKudos")
-  refreshTokens RefreshToken[]
-  company       Company             @relation(fields: [companyCode], references: [companyCode], onDelete: Cascade)
-  newUser       UserNotifications[] @relation("newUser")
-  notifications UserNotifications[] @relation("user")
-  settings      UserSettings[]
-  errorLogs     ErrorLog[]
+  userId      String    @id @default(cuid())
+  firstName   String
+  lastName    String
+  email       String    @unique
+  password    String
+  companyCode String
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime?
+  isActive    Boolean   @default(true)
+
+  role                  Role                  @default(USER)
+  comments              Comment[]
+  commentLkes           Comment_Like[]
+  kudoLikes             Kudo_Like[]
+  receivedKudos         Kudos[]               @relation("ReceivedKudos")
+  sentKudos             Kudos[]               @relation("SentKudos")
+  refreshTokens         RefreshToken[]
+  company               Company               @relation(fields: [companyCode], references: [companyCode], onDelete: Cascade)
+  newUser               UserNotifications[]   @relation("newUser")
+  notifications         UserNotifications[]   @relation("user")
+  settings              UserSettings[]
+  errorLogs             ErrorLog[]
+  coachingQuestions     CoachingQuestion[]
+  coachingComments      CoachingComment[]
+  coachingRoomCreator   PrivateCoachingRoom[] @relation("user")
+  coachingRoomResponder PrivateCoachingRoom[] @relation("responder")
 }
 
 model Company {
-  companyCode    String              @id
-  name           String
-  address        String?
-  city           String?
-  state          String?
-  zip            String?
-  phone          String
-  status         CompanyStatus       @default(PENDING)
-  createdAt      DateTime            @default(now())
-  updatedAt      DateTime            @updatedAt
-  deletedAt      DateTime?
-  kudos          Kudos[]
-  users          User[]
-  companyContacts CompanyContact[]
-  notifications  UserNotifications[]
+  companyCode String    @id
+  name        String
+  address     String?
+  city        String?
+  state       String?
+  zip         String?
+  phone       String
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime?
+
+  status            CompanyStatus       @default(PENDING)
+  kudos             Kudos[]
+  users             User[]
+  companyContacts   CompanyContact[]
+  notifications     UserNotifications[]
+  coachingQuestions CoachingQuestion[]
 }
 
 model CompanyContact {
   id          String   @id @default(cuid())
-  companyCode String   
+  companyCode String
   firstName   String
   lastName    String
   email       String
   phone       String
-  bestTimeToContact BestTimeToContact
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-  company     Company  @relation(fields: [companyCode], references: [companyCode], onDelete: Cascade)
+
+  bestTimeToContact BestTimeToContact
+  company           Company           @relation(fields: [companyCode], references: [companyCode], onDelete: Cascade)
 }
 
 model Kudos {
-  id                String              @id @default(cuid())
-  senderId          String
-  receiverId        String
-  companyCode       String
-  message           String
-  title             String?
-  createdAt         DateTime            @default(now())
-  updatedAt         DateTime            @updatedAt
-  likes             Int                 @default(0)
-  isAnonymous       Boolean             @default(false)
-  isHidden          Boolean             @default(false)
+  id          String   @id @default(cuid())
+  senderId    String
+  receiverId  String
+  companyCode String
+  message     String
+  title       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  likes       Int      @default(0)
+  isAnonymous Boolean  @default(false)
+  isHidden    Boolean  @default(false)
+
   comments          Comment[]
   kudoLikes         Kudo_Like[]
   company           Company             @relation(fields: [companyCode], references: [companyCode], onDelete: Cascade)
@@ -83,15 +92,64 @@ model Kudos {
   userNotifications UserNotifications[]
 }
 
+model CoachingQuestion {
+  id          String   @id @default(cuid())
+  companyCode String
+  title       String
+  question    String
+  authorId    String
+  isClosed    Boolean  @default(false)
+  isAnonymous Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  comments             CoachingComment[]
+  userNotifications    UserNotifications[]
+  company              Company               @relation(fields: [companyCode], references: [companyCode], onDelete: Cascade)
+  author               User                  @relation(fields: [authorId], references: [userId])
+  privateCoachingRooms PrivateCoachingRoom[]
+}
+
+model PrivateCoachingRoom {
+  id                 String   @id @default(cuid())
+  coachingQuestionId String
+  userId             String
+  responderId        String
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  coachingQuestion  CoachingQuestion    @relation(fields: [coachingQuestionId], references: [id], onDelete: Cascade)
+  user              User                @relation("user", fields: [userId], references: [userId])
+  responder         User                @relation("responder", fields: [responderId], references: [userId])
+  userNotifications UserNotifications[]
+}
+
+model CoachingComment {
+  id                 String   @id @default(cuid())
+  coachingQuestionId String
+  parentId           String?
+  userId             String
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+  content            String
+
+  parentComment     CoachingComment?    @relation("CoachingCommentToCoachingComment", fields: [parentId], references: [id], onDelete: Cascade)
+  comments          CoachingComment[]   @relation("CoachingCommentToCoachingComment")
+  coachingQuestion  CoachingQuestion    @relation(fields: [coachingQuestionId], references: [id], onDelete: Cascade)
+  user              User                @relation(fields: [userId], references: [userId], onDelete: Cascade)
+  userNotifications UserNotifications[]
+}
+
 model Comment {
-  id                String              @id @default(cuid())
-  kudosId           String
-  parentId          String?
-  userId            String
-  likes             Int                 @default(0)
-  content           String
-  createdAt         DateTime            @default(now())
-  updatedAt         DateTime            @updatedAt
+  id        String   @id @default(cuid())
+  kudosId   String
+  parentId  String?
+  userId    String
+  likes     Int      @default(0)
+  content   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   kudos             Kudos               @relation(fields: [kudosId], references: [id], onDelete: Cascade)
   parentComment     Comment?            @relation("CommentToComment", fields: [parentId], references: [id], onDelete: Cascade)
   comments          Comment[]           @relation("CommentToComment")
@@ -104,8 +162,9 @@ model Kudo_Like {
   userId  String
   kudosId String
   likedAt DateTime @default(now())
-  kudos   Kudos    @relation(fields: [kudosId], references: [id], onDelete: Cascade)
-  user    User     @relation(fields: [userId], references: [userId], onDelete: Cascade)
+
+  kudos Kudos @relation(fields: [kudosId], references: [id], onDelete: Cascade)
+  user  User  @relation(fields: [userId], references: [userId], onDelete: Cascade)
 
   @@id([userId, kudosId])
 }
@@ -114,29 +173,37 @@ model Comment_Like {
   userId    String
   commentId String
   likedAt   DateTime @default(now())
-  comment   Comment  @relation(fields: [commentId], references: [id], onDelete: Cascade)
-  user      User     @relation(fields: [userId], references: [userId], onDelete: Cascade)
+
+  comment Comment @relation(fields: [commentId], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [userId], references: [userId], onDelete: Cascade)
 
   @@id([userId, commentId])
 }
 
 model UserNotifications {
-  id          String     @id @default(cuid())
-  userId      String
-  actionType  ActionType
-  message     String
-  newUserId   String?
-  kudosId     String?
-  commentId   String?
-  companyCode String?
-  company     Company?   @relation(fields: [companyCode], references: [companyCode])
-  isRead      Boolean    @default(false)
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
-  comment     Comment?   @relation(fields: [commentId], references: [id], onDelete: Cascade)
-  kudo        Kudos?     @relation(fields: [kudosId], references: [id], onDelete: Cascade)
-  newUser     User?      @relation("newUser", fields: [newUserId], references: [userId])
-  user        User       @relation("user", fields: [userId], references: [userId])
+  id                    String   @id @default(cuid())
+  userId                String
+  message               String
+  newUserId             String?
+  kudosId               String?
+  commentId             String?
+  coachingQuestionId    String?
+  coachingCommentId     String?
+  companyCode           String?
+  privateCoachingRoomId String?
+  isRead                Boolean  @default(false)
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  actionType          ActionType
+  company             Company?             @relation(fields: [companyCode], references: [companyCode])
+  comment             Comment?             @relation(fields: [commentId], references: [id], onDelete: Cascade)
+  kudo                Kudos?               @relation(fields: [kudosId], references: [id], onDelete: Cascade)
+  newUser             User?                @relation("newUser", fields: [newUserId], references: [userId])
+  user                User                 @relation("user", fields: [userId], references: [userId])
+  coachingQuestion    CoachingQuestion?    @relation(fields: [coachingQuestionId], references: [id], onDelete: Cascade)
+  coachingComment     CoachingComment?     @relation(fields: [coachingCommentId], references: [id], onDelete: Cascade)
+  privateCoachingRoom PrivateCoachingRoom? @relation(fields: [privateCoachingRoomId], references: [id], onDelete: Cascade)
 }
 
 model ErrorLog {
@@ -146,7 +213,8 @@ model ErrorLog {
   stack     String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  user      User     @relation(fields: [userId], references: [userId])
+
+  user User @relation(fields: [userId], references: [userId])
 }
 
 model UserSettings {
@@ -155,7 +223,8 @@ model UserSettings {
   settings  Json
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  user      User     @relation(fields: [userId], references: [userId])
+
+  user User @relation(fields: [userId], references: [userId])
 }
 
 model RefreshToken {
@@ -164,7 +233,8 @@ model RefreshToken {
   token     String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  user      User     @relation(fields: [userId], references: [userId], onDelete: Cascade)
+
+  user User @relation(fields: [userId], references: [userId], onDelete: Cascade)
 }
 
 enum Role {
@@ -182,6 +252,10 @@ enum ActionType {
   KUDOS
   NEW_USER
   NEW_COMPANY
+  COACHING_QUESTION
+  COACHING_COMMENT
+  COACHING_COMMENT_COMMENT
+  PRIVATE_ROOM_INVITE
 }
 
 enum CompanyStatus {

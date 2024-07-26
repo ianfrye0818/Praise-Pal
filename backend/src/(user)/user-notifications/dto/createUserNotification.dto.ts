@@ -26,9 +26,13 @@ export class CreateUserNotificationDTO {
       'KUDOS',
       'NEW_USER',
       'NEW_COMPANY',
+      'COACHING_QUESTION',
+      'COACHING_COMMENT',
+      'COACHING_COMMENT_COMMENT',
+      'PRIVATE_ROOM_INVITE',
     ],
     {
-      message: 'Action Type Must Be LIKE, COMMENT, or KUDOS',
+      message: 'Action type is not valid',
     },
   )
   @Transform(({ value }: { value: string }) => value.toUpperCase())
@@ -41,4 +45,16 @@ export class CreateUserNotificationDTO {
   @IsOptional()
   @IsString()
   newUserId?: string;
+
+  @IsOptional()
+  @IsString()
+  coachingQuestionId?: string;
+
+  @IsOptional()
+  @IsString()
+  coachingCommentId?: string;
+
+  @IsOptional()
+  @IsString()
+  privateCoachingRoomId?: string;
 }

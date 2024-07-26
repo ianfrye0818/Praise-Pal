@@ -7,9 +7,11 @@ import {
   UserIcon,
   ScrollText,
   LayoutDashboard,
+  ArrowLeft,
 } from 'lucide-react';
 import { env } from '@/zodSchemas/env';
 import { ContactTime } from '@/zodSchemas';
+import { GiWhistle } from 'react-icons/gi';
 
 export const QueryKeys = {
   allKudos: ['kudos'],
@@ -44,6 +46,16 @@ export const sidebarLinks: SidebarLink[] = [
     route: '/kudos/sent',
     icon: SendIcon,
   },
+  {
+    label: 'Coaching Corner',
+    route: '/coaching-corner',
+    icon: GiWhistle,
+  },
+  {
+    label: 'Admin Dashboard',
+    route: '/admin/dashboard',
+    icon: ShieldCheck,
+  },
 ];
 
 export const adminSidebarLinks: SidebarLink[] = [
@@ -61,6 +73,11 @@ export const adminSidebarLinks: SidebarLink[] = [
     label: 'Kudos',
     route: '/admin/kudos',
     icon: ScrollText,
+  },
+  {
+    label: 'Back',
+    route: '/',
+    icon: ArrowLeft,
   },
 ];
 

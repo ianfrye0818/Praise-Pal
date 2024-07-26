@@ -21,7 +21,9 @@ import { Route as RootLayoutAdminLayoutImport } from './routes/_rootLayout/_admi
 import { Route as AuthLayoutSignUpImport } from './routes/_authLayout/sign-up'
 import { Route as AuthLayoutSignInImport } from './routes/_authLayout/sign-in'
 import { Route as AuthLayoutCompanySignUpImport } from './routes/_authLayout/company-sign-up'
+import { Route as RootLayoutCoachingCornerIndexImport } from './routes/_rootLayout/coaching-corner/index'
 import { Route as VerificationLayoutResetPasswordTokenImport } from './routes/_verification-layout/reset-password/$token'
+import { Route as RootLayoutCoachingCornerQuestionIdImport } from './routes/_rootLayout/coaching-corner/$questionId'
 import { Route as RootLayoutAdminLayoutAdminDashboardImport } from './routes/_rootLayout/_adminLayout/admin/dashboard'
 import { Route as RootLayoutAdminLayoutAdminVerifyUserUserIdImport } from './routes/_rootLayout/_adminLayout/admin/verify-user/$userId'
 
@@ -85,6 +87,12 @@ const AuthLayoutCompanySignUpRoute = AuthLayoutCompanySignUpImport.update({
   getParentRoute: () => AuthLayoutRoute,
 } as any)
 
+const RootLayoutCoachingCornerIndexRoute =
+  RootLayoutCoachingCornerIndexImport.update({
+    path: '/coaching-corner/',
+    getParentRoute: () => RootLayoutRoute,
+  } as any)
+
 const RootLayoutKudosSentLazyRoute = RootLayoutKudosSentLazyImport.update({
   path: '/kudos/sent',
   getParentRoute: () => RootLayoutRoute,
@@ -113,6 +121,12 @@ const VerificationLayoutResetPasswordTokenRoute =
   VerificationLayoutResetPasswordTokenImport.update({
     path: '/reset-password/$token',
     getParentRoute: () => VerificationLayoutRoute,
+  } as any)
+
+const RootLayoutCoachingCornerQuestionIdRoute =
+  RootLayoutCoachingCornerQuestionIdImport.update({
+    path: '/coaching-corner/$questionId',
+    getParentRoute: () => RootLayoutRoute,
   } as any)
 
 const RootLayoutAdminLayoutAdminUsersLazyRoute =
@@ -207,6 +221,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof RootLayoutIndexImport
       parentRoute: typeof RootLayoutImport
     }
+    '/_rootLayout/coaching-corner/$questionId': {
+      id: '/_rootLayout/coaching-corner/$questionId'
+      path: '/coaching-corner/$questionId'
+      fullPath: '/coaching-corner/$questionId'
+      preLoaderRoute: typeof RootLayoutCoachingCornerQuestionIdImport
+      parentRoute: typeof RootLayoutImport
+    }
     '/_verification-layout/reset-password/$token': {
       id: '/_verification-layout/reset-password/$token'
       path: '/reset-password/$token'
@@ -233,6 +254,13 @@ declare module '@tanstack/react-router' {
       path: '/kudos/sent'
       fullPath: '/kudos/sent'
       preLoaderRoute: typeof RootLayoutKudosSentLazyImport
+      parentRoute: typeof RootLayoutImport
+    }
+    '/_rootLayout/coaching-corner/': {
+      id: '/_rootLayout/coaching-corner/'
+      path: '/coaching-corner'
+      fullPath: '/coaching-corner'
+      preLoaderRoute: typeof RootLayoutCoachingCornerIndexImport
       parentRoute: typeof RootLayoutImport
     }
     '/_rootLayout/_adminLayout/admin/dashboard': {
@@ -282,9 +310,11 @@ export const routeTree = rootRoute.addChildren({
       RootLayoutAdminLayoutAdminVerifyUserUserIdRoute,
     }),
     RootLayoutIndexRoute,
+    RootLayoutCoachingCornerQuestionIdRoute,
     RootLayoutKudosKudosIdLazyRoute,
     RootLayoutKudosReceivedLazyRoute,
     RootLayoutKudosSentLazyRoute,
+    RootLayoutCoachingCornerIndexRoute,
   }),
   VerificationLayoutRoute: VerificationLayoutRoute.addChildren({
     VerificationLayoutResetPasswordTokenRoute,
@@ -317,9 +347,11 @@ export const routeTree = rootRoute.addChildren({
       "children": [
         "/_rootLayout/_adminLayout",
         "/_rootLayout/",
+        "/_rootLayout/coaching-corner/$questionId",
         "/_rootLayout/kudos/$kudosId",
         "/_rootLayout/kudos/received",
-        "/_rootLayout/kudos/sent"
+        "/_rootLayout/kudos/sent",
+        "/_rootLayout/coaching-corner/"
       ]
     },
     "/_verification-layout": {
@@ -354,6 +386,10 @@ export const routeTree = rootRoute.addChildren({
       "filePath": "_rootLayout/index.tsx",
       "parent": "/_rootLayout"
     },
+    "/_rootLayout/coaching-corner/$questionId": {
+      "filePath": "_rootLayout/coaching-corner/$questionId.tsx",
+      "parent": "/_rootLayout"
+    },
     "/_verification-layout/reset-password/$token": {
       "filePath": "_verification-layout/reset-password/$token.tsx",
       "parent": "/_verification-layout"
@@ -368,6 +404,10 @@ export const routeTree = rootRoute.addChildren({
     },
     "/_rootLayout/kudos/sent": {
       "filePath": "_rootLayout/kudos/sent.lazy.tsx",
+      "parent": "/_rootLayout"
+    },
+    "/_rootLayout/coaching-corner/": {
+      "filePath": "_rootLayout/coaching-corner/index.tsx",
       "parent": "/_rootLayout"
     },
     "/_rootLayout/_adminLayout/admin/dashboard": {

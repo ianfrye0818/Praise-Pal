@@ -17,11 +17,19 @@ import {
   CompanySignUpFormProps,
   ErrorLogFormProps,
   ErrorLog,
+  CoachingQuestionQueryParams,
+  CoachingQuestion,
+  CoachingCommentQueryParams,
 } from '@/types';
 import { ApiRoutes } from './api-routes';
 import { AxiosClientsHandlers } from './axios';
 import { createRefreshHeader } from '@/lib/utils';
 import { CleanedData } from '@/hooks/api/useCompany/useRequestNewCompany';
+import {
+  AddCoachingCommentProps,
+  AddCoachingQuestionProps,
+  UpdateCoachingQuestionProps,
+} from '@/zodSchemas';
 
 //auth actions
 export const postLoginUser = async (payload: SignInFormProps) =>
@@ -161,6 +169,12 @@ export const deleteRemoveLikeKudo = async (kudoId: string) =>
 export const getCompany = async (companyCode: string) =>
   await AxiosClientsHandlers.getter<Company>({ url: ApiRoutes.company.findOneById(companyCode) });
 
+export const getComapnyContacts = async (companyCode: string) => {
+  return await AxiosClientsHandlers.getter({
+    url: ApiRoutes.company.findCompanyContacts(companyCode),
+  });
+};
+
 export const patchUpdateCompany = async (payload: UpdateCompanyProps) =>
   await AxiosClientsHandlers.patcher<UpdateCompanyProps, void>({
     url: ApiRoutes.company.updateCompanyById(payload.companyCode as string),
@@ -260,3 +274,84 @@ export const getAllErrorLogs = async () =>
 
 export const deleteErrorById = async (errorId: string) =>
   await AxiosClientsHandlers.deleter<void>({ url: ApiRoutes.errors.deleteErrorLogById(errorId) });
+
+//Coaching Corner
+//Coaching Questions
+export const getAllCoachingQuestions = async (query: CoachingQuestionQueryParams) => {
+  return await AxiosClientsHandlers.getter<CoachingQuestion[]>({
+    url: ApiRoutes.coachingQuestions.getAllCoachingQuestions(query),
+  });
+};
+
+export const getSingleCoachingQuestion = async (companyCode: string, questionId: string) => {
+  return await AxiosClientsHandlers.getter<CoachingQuestion>({
+    url: ApiRoutes.coachingQuestions.getSingleCoachingQuestion(companyCode, questionId),
+  });
+};
+
+export const postCreateCoachingQuestion = async (
+  companyCode: string,
+  payload: AddCoachingQuestionProps
+) => {
+  return await AxiosClientsHandlers.poster<any, CoachingQuestion>({
+    url: ApiRoutes.coachingQuestions.createCoachingQuestion(companyCode),
+    data: payload,
+  });
+};
+
+export const patchUpdateCoachingQuestion = async (
+  companyCode: string,
+  questionId: string,
+  payload: UpdateCoachingQuestionProps
+) => {
+  return await AxiosClientsHandlers.patcher<any, CoachingQuestion>({
+    url: ApiRoutes.coachingQuestions.updateCoachingQuestion(companyCode, questionId),
+    data: payload,
+  });
+};
+
+export const deleteCoachingQuestionByID = async (companyCode: string, questionId: string) => {
+  return await AxiosClientsHandlers.deleter<void>({
+    url: ApiRoutes.coachingQuestions.deleteCoachingQuestion(companyCode, questionId),
+  });
+};
+
+//Coaching Comments
+export const getAllCoachingComments = async (query: CoachingCommentQueryParams) => {
+  return await AxiosClientsHandlers.getter<CoachingQuestion[]>({
+    url: ApiRoutes.coachingComments.getAllCoachingComments(query),
+  });
+};
+
+export const getSingleCoachingComment = async (companyCode: string, commentId: string) => {
+  return await AxiosClientsHandlers.getter<CoachingQuestion>({
+    url: ApiRoutes.coachingComments.getSingleCoachingComment(companyCode, commentId),
+  });
+};
+
+export const postCreateCoachingComment = async (
+  companyCode: string,
+  payload: AddCoachingCommentProps
+) => {
+  return await AxiosClientsHandlers.poster<any, CoachingQuestion>({
+    url: ApiRoutes.coachingComments.createCoachingComment(companyCode),
+    data: payload,
+  });
+};
+
+export const patchUpdateCoachingComment = async (
+  companyCode: string,
+  commentId: string,
+  payload: UpdateCoachingQuestionProps
+) => {
+  return await AxiosClientsHandlers.patcher<any, CoachingQuestion>({
+    url: ApiRoutes.coachingComments.updateCoachingComment(companyCode, commentId),
+    data: payload,
+  });
+};
+
+export const deleteCoachingCommentById = async (companyCode: string, commentId: string) => {
+  return await AxiosClientsHandlers.deleter<void>({
+    url: ApiRoutes.coachingComments.deleteCoachingComment(companyCode, commentId),
+  });
+};

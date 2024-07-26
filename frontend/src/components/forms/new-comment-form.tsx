@@ -8,7 +8,7 @@ import { FormInputItem } from '../forms/form-input-item';
 import { Form } from '../ui/form';
 import { Button } from '../ui/button';
 import { Send } from 'lucide-react';
-import { NewCommentSchema } from '@/zodSchemas';
+import { AddCommentSchema } from '@/zodSchemas';
 import { useSingleKudoContext } from '@/hooks/useSingleKudoContext';
 import { QueryKeys } from '@/constants';
 
@@ -30,17 +30,17 @@ export default function NewCommentForm({
     commentQueryKey: QueryKeys.comments,
   });
 
-  const form = useForm<z.infer<typeof NewCommentSchema>>({
+  const form = useForm<z.infer<typeof AddCommentSchema>>({
     defaultValues: {
       content: '',
       parentId: type === 'child' && commentId ? commentId : undefined,
       kudosId: kudo.id,
       userId: currentUser?.userId as string,
     },
-    resolver: zodResolver(NewCommentSchema),
+    resolver: zodResolver(AddCommentSchema),
   });
 
-  const onSubmit = async (data: z.infer<typeof NewCommentSchema>) => {
+  const onSubmit = async (data: z.infer<typeof AddCommentSchema>) => {
     await createComment(data);
     type === 'child' && setReplyVisible!(false);
     form.reset();
@@ -52,7 +52,7 @@ export default function NewCommentForm({
         onSubmit={form.handleSubmit(onSubmit)}
         className='relative min-w-[300px]'
       >
-        <FormInputItem<typeof NewCommentSchema>
+        <FormInputItem<typeof AddCommentSchema>
           control={form.control}
           name='content'
           placeholder={type === 'child' ? 'Reply to comment' : 'Add a comment'}

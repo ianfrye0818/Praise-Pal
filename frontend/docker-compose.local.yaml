@@ -9,6 +9,11 @@ services:
       - praisepal_staging
     ports:
       - 8014:80
+    resources:
+      limits:
+        cpus: '0.5'
+        memory: 512M
+    restart: unless-stopped
 
 networks:
   praisepal_staging:

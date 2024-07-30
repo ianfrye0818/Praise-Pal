@@ -10,7 +10,7 @@ import { PrismaService } from 'src/core-services/prisma.service';
 import {
   CreateCompanyContactDTO,
   UpdateCompanyContactDTO,
-} from './create-contact.dto';
+} from './dto/create-contact.dto';
 import { Role } from '@prisma/client';
 
 @Injectable()

@@ -6,6 +6,8 @@ import DataLoader from '@/components/ui/data-loader';
 import AddKudosDialog from '@/components/dialogs-and-menus/add-kudos-dialog';
 import { Button } from '@/components/ui/button';
 import KudosCard from '@/components/cards/kudos-card';
+import { isCustomError } from '@/errors';
+import CustomErrorComponent from '@/components/custom-error';
 
 export const Route = createFileRoute('/_rootLayout/')({
   component: () => <HomePage />,
@@ -13,7 +15,11 @@ export const Route = createFileRoute('/_rootLayout/')({
 
 function HomePage() {
   const { user } = useAuth().state;
-  const { data: kudos, isLoading } = useGetCompanyKudos(
+  const {
+    data: kudos,
+    isLoading,
+    error,
+  } = useGetCompanyKudos(
     {
       companyCode: user?.companyCode as string,
       isHidden: false,
@@ -23,6 +29,10 @@ function HomePage() {
 
   if (isLoading) {
     return <DataLoader />;
+  }
+
+  if (error) {
+    <CustomErrorComponent error={error} />;
   }
 
   if (!kudos || kudos.length === 0) {

@@ -13,7 +13,7 @@ import { SuperAdminGuard } from 'src/core-guards/super-admin.guard';
 import {
   CreateCompanyContactDTO,
   UpdateCompanyContactDTO,
-} from './create-contact.dto';
+} from './dto/create-contact.dto';
 @Controller('company-contact')
 export class CompanyContactController {
   constructor(private readonly companyContactService: CompanyContactService) {}

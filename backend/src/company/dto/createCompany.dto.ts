@@ -9,7 +9,7 @@ import {
 } from 'class-validator';
 import { capitalizeWords } from '../../utils';
 import { CompanyStatus } from '@prisma/client';
-import { CreateCompanyContactDTO } from 'src/company-contact/create-contact.dto';
+import { CreateCompanyContactDTO } from 'src/company-contact/dto/create-contact.dto';
 
 export class CreateCompanyDTO {
   @IsString()

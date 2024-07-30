@@ -3,11 +3,9 @@ import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import { env } from './env';
 import 'dotenv/config';
-import * as cookieParser from 'cookie-parser';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  app.use(cookieParser());
 
   // CORS configuration
   app.enableCors({
@@ -33,7 +31,6 @@ async function bootstrap() {
     }),
   );
 
-  app.use(cookieParser());
   await app.listen(env.PORT || 3000, () =>
     console.log(`Server is running on port ${env.PORT}`),
   );

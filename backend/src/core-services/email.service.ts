@@ -34,7 +34,7 @@ export class EmailService {
   }
 
   async sendEmail({
-    from = 'Praise-Pal Support <support@email.praise-pal.com>',
+    from = 'Praise-Pal Email Support <praise-pal@email.ianfrye.dev>',
     ...rest
   }: EmailData) {
     const { data, error } = await this.resend.emails.send({ from, ...rest });

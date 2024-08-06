@@ -33,7 +33,7 @@ jobs:
       - name: Build backend Docker image and push
         run: |
           cd backend
-          npm run docker:build-staging"
+          npm run docker:build-staging
 
   build-and-push-frontend:
     runs-on: ubuntu-latest
@@ -61,4 +61,4 @@ jobs:
       - name: Build backend Docker image and push
         run: |
           cd frontend
-          npm run docker:build-staging"
+          npm run docker:build-staging

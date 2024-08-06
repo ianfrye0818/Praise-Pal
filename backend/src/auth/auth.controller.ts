@@ -3,7 +3,7 @@ import { AuthService } from './auth.service';
 import { LocalAuthGuard } from './guards/local.guard';
 import { createUserDTO } from '../(user)/user/dto/createUser.dto';
 import { RefreshJwtGuard } from './guards/refresh.guard';
-import { SkipThrottle } from '@nestjs/throttler';
+import { SkipThrottle, Throttle } from '@nestjs/throttler';
 
 @Controller('auth')
 export class AuthController {
@@ -15,7 +15,7 @@ export class AuthController {
     return await this.authService.login(req.user);
   }
 
-  @SkipThrottle()
+  @Throttle({ default: { limit: 20, ttl: 30 } })
   @UseGuards(RefreshJwtGuard)
   @Post('refresh')
   async refreshToken(@Request() req) {

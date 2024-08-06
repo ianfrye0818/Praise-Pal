@@ -1,7 +1,5 @@
 import {
-  forwardRef,
   HttpException,
-  Inject,
   Injectable,
   InternalServerErrorException,
   NotFoundException,
@@ -20,7 +18,10 @@ import { CompanyFilterDTO } from './dto/filterCompany.dto';
 import { UserNotificationsService } from 'src/(user)/user-notifications/user-notifications.service';
 import { ClientUser } from 'src/types';
 import { CompanyContactService } from '../company-contact/company-contact.service';
-import { userSelectOptions } from 'src/utils/constants';
+import {
+  undeletableCompanyCodes,
+  userSelectOptions,
+} from 'src/utils/constants';
 
 @Injectable()
 export class CompanyService {
@@ -198,7 +199,30 @@ export class CompanyService {
     try {
       return await this.prismaService.company.update({
         where: { companyCode },
-        data: { deletedAt: new Date() },
+        data: { deletedAt: new Date(), status: 'INACTIVE' },
+      });
+    } catch (error) {
+      console.error(error);
+      if (error.code === 'P2025')
+        throw new HttpException('Company not found', 404);
+      throw new InternalServerErrorException('Could not delete company');
+    }
+  }
+
+  async hardDeleteCompany(companyCode: string) {
+    try {
+      if (undeletableCompanyCodes.includes(companyCode)) {
+        throw new HttpException('Company cannot be deleted', 400);
+      }
+      const deletingCompany = await this.findOneByCompanyCode(companyCode);
+      if (deletingCompany.status === 'ACTIVE') {
+        throw new HttpException(
+          'Please deactivate company before permanently deleting',
+          400,
+        );
+      }
+      return await this.prismaService.company.delete({
+        where: { companyCode },
       });
     } catch (error) {
       console.error(error);

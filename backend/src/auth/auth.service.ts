@@ -169,7 +169,7 @@ export class AuthService {
 
   private generateAccessToken(payload: object) {
     return this.jwtService.sign(payload, {
-      expiresIn: '15m',
+      expiresIn: '2m',
       secret: process.env.JWT_SECRET,
     });
   }

@@ -152,3 +152,5 @@ export class ConstantsService {
   singleKudoSelectOptions = singleKudoSelectOptions;
   singleCommentSelectOptions = singleCommentSelectOptions;
 }
+
+export const undeletableCompanyCodes = ['TEST', 'DEMO', 'ADMN'];

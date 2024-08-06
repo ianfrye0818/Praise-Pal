@@ -1,9 +1,6 @@
 import { sidebarLinks } from '@/constants';
-import { Link, useNavigate } from '@tanstack/react-router';
+import { Link } from '@tanstack/react-router';
 import NavBarLink from '../ui/nav-bar-link';
-import { useAuth } from '@/hooks/useAuth';
-import { Button } from '../ui/button';
-import { ShieldCheck } from 'lucide-react';
 import logo from '@/assets/logo.png';
 
 export default function NavLinksList({
@@ -13,8 +10,6 @@ export default function NavLinksList({
   setMenuOpen?: React.Dispatch<React.SetStateAction<boolean>>;
   type?: 'desktop' | 'mobile';
 }) {
-  const { isAdmin } = useAuth().state;
-  const navigate = useNavigate();
   return (
     <nav className='flex flex-col gap-4'>
       <Link
@@ -34,18 +29,6 @@ export default function NavLinksList({
           link={link}
         />
       ))}
-      {/* {isAdmin && (
-        <Button
-          variant={'link'}
-          className='flex gap-3 items-center p-3 justify-start rounded-md hover:no-underline text-lg'
-          onClick={async () => {
-            type === 'mobile' && setMenuOpen!(false);
-            await navigate({ to: '/admin/dashboard' });
-          }}
-        >
-          <ShieldCheck /> Admin Dashboard
-        </Button>
-      )} */}
     </nav>
   );
 }

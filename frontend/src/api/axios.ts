@@ -87,56 +87,6 @@ APIClientWithToken.interceptors.response.use(
   }
 );
 
-// async function getter<T, D = any>({ client = 'APITOKEN', url }: APIProps<D>) {
-//   try {
-//     const response = await clients[client].get<T>(url);
-//     return response.data;
-//   } catch (error) {
-//     handleApiError(error);
-//   }
-// }
-
-// async function poster<D = any, T = any>({
-//   client = 'APITOKEN',
-//   data,
-//   url,
-//   config,
-// }: APIProps<D>): Promise<T | undefined> {
-//   try {
-//     const response = await clients[client].post<T>(url, data, config);
-//     return response.data;
-//   } catch (error) {
-//     handleApiError(error);
-//   }
-// }
-
-// async function patcher<D = any, T = any>({
-//   client = 'APITOKEN',
-//   url,
-//   data,
-//   config,
-// }: APIProps<D>): Promise<T | undefined> {
-//   try {
-//     const response = await clients[client].patch<T>(url, data, config);
-//     return response.data as T;
-//   } catch (error) {
-//     handleApiError(error);
-//   }
-// }
-
-// async function deleter<D = any, T = any>({
-//   client = 'APITOKEN',
-//   url,
-//   config,
-// }: APIProps<D>): Promise<T | undefined> {
-//   try {
-//     const response = await clients[client].delete<T>(url, config);
-//     return response.data as T;
-//   } catch (error) {
-//     handleApiError(error);
-//   }
-// }
-
 export class AxiosClientsHandlers {
   static async getter<T, D = any>({ client = 'APITOKEN', url }: APIProps<D>) {
     try {

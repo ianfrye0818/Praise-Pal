@@ -6,10 +6,6 @@ services:
     env_file:
       - .env
     networks:
-      - praisepal_default
+      ipv4_address: '10.55.1.252'
     ports:
-      - 8012:80
-
-networks:
-  praisepal_default:
-    external: true
+      - 80:80

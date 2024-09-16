@@ -1,5 +1,4 @@
-version: '3.9'
-
+---
 services:
   backend:
     container_name: praisepal-backend
@@ -7,13 +6,9 @@ services:
     env_file:
       - .env
     networks:
-      - praisepal_default
+      ipv4_address: '10.56.1.251'
     ports:
       - 3001:3001
     volumes:
       - /docker/appdata/praisepal/backend:/app
     restart: unless-stopped
-
-networks:
-  praisepal_default:
-    external: true

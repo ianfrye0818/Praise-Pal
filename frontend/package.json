@@ -8,14 +8,16 @@
     "build": "tsc && vite build",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
-    "docker:build-local": "docker buildx build --push --build-arg VITE_API_BASE_URL=http://10.55.1.4:3004 -t ianfrye/praisepal-frontend:local .",
-    "docker:build-staging": "docker buildx build --push --build-arg VITE_API_BASE_URL=https://staging-api.praise-pal.com -t ianfrye/praisepal-frontend:staging .",
-    "docker:build-prod": "docker buildx build --push --build-arg VITE_API_BASE_URL=https://api.praise-pal.com -t ianfrye/praisepal-frontend:latest .",
+    "docker:build-dev": "docker buildx build --platform linux/amd64,linux/arm64 --push --build-arg VITE_API_BASE_URL=http://10.55.1.4:3004 -t ianfrye/praisepal-frontend:dev .",
+    "docker:build-staging": "docker buildx build --platform linux/amd64,linux/arm64 --push --build-arg VITE_API_BASE_URL=https://staging-api.praise-pal.com -t ianfrye/praisepal-frontend:staging .",
+    "docker:build-prod": "docker buildx build --platform linux/amd64,linux/arm64 --push --build-arg VITE_API_BASE_URL=https://api.praise-pal.com -t ianfrye/praisepal-frontend:prod .",
     "docker:push": "docker push ianfrye/praisepal-frontend:latest",
     "docker:deploy-staging": "docker-compose -f docker-compose.staging.yaml up -d",
     "docker:deploy-local": "docker-compose -f docker-compose.local.yaml up -d",
     "docker:deploy": "docker-compose up -d",
-    "docker": "docker buildx build --push --build-arg VITE_API_BASE_URL=https://api.praise-pal.com -t ianfrye/praisepal-frontend:latest . && docker push ianfrye/praisepal-frontend:latest"
+    "docker:prod": "docker buildx build --platform linux/amd64,linux/arm64 --push --build-arg VITE_API_BASE_URL=https://api.praise-pal.com -t ianfrye/praisepal-frontend:prod . && docker push ianfrye/praisepal-frontend:prod",
+    "docker:staging": "docker buildx build --platform linux/amd64,linux/arm64 --push --build-arg VITE_API_BASE_URL=https://staging-api.praise-pal.com -t ianfrye/praisepal-frontend:staging . && docker push ianfrye/praisepal-frontend:staging",
+    "docker:dev": "docker buildx build --platform linux/amd64,linux/arm64 --push --build-arg VITE_API_BASE_URL=http://10.55.1.4:3004 -t ianfrye/praisepal-frontend:dev . && docker push ianfrye/praisepal-frontend:dev"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.6.0",

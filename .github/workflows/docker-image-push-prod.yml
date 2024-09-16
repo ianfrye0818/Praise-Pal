@@ -3,7 +3,7 @@ name: Build and Deploy Docker Image
 on:
   push:
     branches:
-      - main
+      - prod
   workflow_dispatch:
 
 jobs:
@@ -33,7 +33,7 @@ jobs:
       - name: Build backend Docker image and push
         run: |
           cd backend
-          npm run docker:build-prod
+          npm run docker:prod
 
   build-and-push-frontend:
     runs-on: ubuntu-latest
@@ -61,4 +61,4 @@ jobs:
       - name: Build backend Docker image and push
         run: |
           cd frontend
-          npm run docker:build-prod
+          npm run docker:prod
